@@ -1,5 +1,4 @@
 add_library(controller
-    ControlLink.cpp
     Controller.cpp
 )
 

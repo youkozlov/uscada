@@ -4,7 +4,7 @@
 
 #include "CompDefs.hpp"
 #include "Container.hpp"
-#include "ReactorSimple.hpp"
+#include "Reactor.hpp"
 #include "ConnectorSimple.hpp"
 #include "Modbus.hpp"
 #include "Controller.hpp"
@@ -42,13 +42,13 @@ void Deployer::apply(reactor::ReactorManager& manager, DeploymentType depType)
 {
     for (auto const& container : getDepl(depType))
     {
-        reactor::ReactorSimple::Init reactorInit
+        reactor::Reactor::Init reactorInit
         {
               container.numThreads
             , container.cpuMask
             , manager.getMsgMemPool()
         };
-        std::unique_ptr<reactor::ReactorInterface> reactor{new reactor::ReactorSimple(reactorInit)};
+        std::unique_ptr<reactor::ReactorInterface> reactor{new reactor::Reactor(reactorInit)};
         for (auto& compId : container.components)
         {
             switch (compId)

@@ -10,6 +10,13 @@
 #include "DetectorInitRsp.hpp"
 #include "ModbusInitReq.hpp"
 #include "ModbusInitRsp.hpp"
+#include "ModbusReleaseReq.hpp"
+#include "ModbusReleaseRsp.hpp"
+#include "ModbusConfigReq.hpp"
+#include "ModbusConfigRsp.hpp"
+#include "ModbusAduReq.hpp"
+#include "ModbusAduRsp.hpp"
+
 
 namespace app
 {
@@ -42,6 +49,14 @@ void Controller::registerComponent()
           ModbusInitRsp::msgId
         , [this](auto const& msg){ receive(static_cast<ModbusInitRsp const&>(msg)); }
     );
+    getReactor().registerHandler(
+          ModbusReleaseRsp::msgId
+        , [this](auto const& msg){ receive(static_cast<ModbusReleaseRsp const&>(msg)); }
+    );
+    getReactor().registerHandler(
+          ModbusAduReq::msgId
+        , [this](auto const& msg){ receive(static_cast<ModbusAduReq const&>(msg)); }
+    );
 }
 
 void Controller::receive(ControllerStartReq const&)
@@ -50,18 +65,22 @@ void Controller::receive(ControllerStartReq const&)
 
     ConnectorInitReq req;
     getSender().send(req);
+
+    ModbusInitReq modbusReq;
+    getSender().send(modbusReq);
 }
 
 void Controller::receive(ControllerStopReq const&)
 {
+    LM(CTRL, LD, "ControllerStopReq received");
+
+    ModbusReleaseReq req;
+    getSender().send(req);
 }
 
 void Controller::receive(ConnectorInitRsp const&)
 {
     LM(CTRL, LD, "ConnectorInitRsp received");
-
-    ModbusInitReq req;
-    getSender().send(req);
 }
 
 void Controller::receive(DetectorInitRsp const&)
@@ -72,6 +91,28 @@ void Controller::receive(DetectorInitRsp const&)
 void Controller::receive(ModbusInitRsp const&)
 {
     LM(CTRL, LD, "ModbusInitRsp received");
+
+    ModbusConfigReq req;
+    getSender().send(req);
+}
+
+void Controller::receive(ModbusReleaseRsp const&)
+{
+    LM(CTRL, LD, "ModbusReleaseRsp received");
+}
+
+void Controller::receive(ModbusAduReq const& req)
+{
+    LM(CTRL, LD, "ModbusAduReq received");
+
+    ModbusAduRsp rsp;
+    rsp.serverId = req.serverId;
+    rsp.sessionId = req.sessionId;
+    rsp.aduId = req.aduId;
+    rsp.status = MsgStatus::success;
+    rsp.numItems = req.numItems;
+
+    getSender().send(rsp);
 }
 
 } // namespace app

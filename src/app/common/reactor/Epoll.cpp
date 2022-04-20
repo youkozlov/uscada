@@ -24,37 +24,28 @@ Epoll::~Epoll()
     close(epollfd);
 }
 
-void Epoll::add(FdHandler& handler, int events)
+int Epoll::add(FdHandler& handler, int events)
 {
     struct epoll_event ev;
     ev.events = events;
     ev.data.ptr = &handler;
-    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, handler.getFd(), &ev) == -1)
-    {
-        throw std::runtime_error("epoll_ctl: add fd");
-    }
+    return epoll_ctl(epollfd, EPOLL_CTL_ADD, handler.getFd(), &ev);
 }
 
-void Epoll::mod(FdHandler& handler, int events)
+int Epoll::mod(FdHandler& handler, int events)
 {
     struct epoll_event ev;
     ev.events = events;
     ev.data.ptr = &handler;
-    if (epoll_ctl(epollfd, EPOLL_CTL_MOD, handler.getFd(), &ev) == -1)
-    {
-        throw std::runtime_error("epoll_ctl: add fd");
-    }
+    return epoll_ctl(epollfd, EPOLL_CTL_MOD, handler.getFd(), &ev);
 }
 
-void Epoll::del(FdHandler& handler)
+int Epoll::del(FdHandler& handler)
 {
     struct epoll_event ev;
     ev.events = 0;
     ev.data.ptr = &handler;
-    if (epoll_ctl(epollfd, EPOLL_CTL_DEL, handler.getFd(), &ev) == -1)
-    {
-        throw std::runtime_error("epoll_ctl: add fd");
-    }
+    return epoll_ctl(epollfd, EPOLL_CTL_DEL, handler.getFd(), &ev);
 }
 
 void Epoll::wait()

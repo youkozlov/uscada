@@ -6,6 +6,9 @@
 #include <atomic>
 
 #include "ReactorInterface.hpp"
+#include "ThreadHandler.hpp"
+#include "PipeHandler.hpp"
+
 
 namespace reactor
 {
@@ -13,11 +16,9 @@ namespace reactor
 class Pipe;
 class Epoll;
 class Thread;
-class Timer;
-class Link;
 class MsgMemPool;
 
-class ReactorSimple : public ReactorInterface
+class Reactor : public ReactorInterface, public ThreadHandler, public PipeHandler
 {
 public:
     struct Init
@@ -27,15 +28,17 @@ public:
         MsgMemPool& msgMemPool;
     };
     
-    explicit ReactorSimple(Init const&);
+    explicit Reactor(Init const&);
 
-    ~ReactorSimple();
+    ~Reactor();
 
     void registerHandler(MsgId, MsgHandler) final;
 
-    TimerInterface* createTimer(TimerHandler) final;
+    TimerPtr createTimer(TimerHandler) final;
 
-    LinkInterface* createLink(LinkHandler&) final;
+    LinkPtr createLink(LinkHandler&) final;
+
+    AcceptorPtr createAcceptor(AcceptorHandler&) final;
 
     void send(MsgInterface const&) final;
 
@@ -45,15 +48,13 @@ public:
 
     void run() final;
 
-    void handlePipeEvent(PipeEvent const&) final;
+    void onPipeEvent(PipeEvent const&) final;
 
 private:
     std::atomic<bool> stopped;
     MsgMemPool& msgMemPool;
-    std::unique_ptr<Pipe> pipe;
     std::unique_ptr<Epoll> epoll;
-    std::vector<std::unique_ptr<Link>> links;
-    std::vector<std::unique_ptr<Timer>> timers;
+    std::unique_ptr<Pipe> pipe;
     std::vector<std::unique_ptr<Thread>> threads;
     std::map<MsgId, MsgHandler> handlers;
 };

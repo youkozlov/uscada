@@ -46,7 +46,12 @@ char const* toString(LogTask task)
 
 
 Logger::Logger()
-{}
+{
+    for (auto& lvl : logLevels)
+    {
+        lvl = LogLevel::LD;
+    }
+}
 
 Logger& Logger::getInst()
 {

@@ -5,7 +5,6 @@
 #include "CompDefs.hpp"
 #include "ComponentBase.hpp"
 #include "TimerInterface.hpp"
-#include "ControlLink.hpp"
 
 namespace app
 {
@@ -15,6 +14,8 @@ struct ControllerStopReq;
 struct ConnectorInitRsp;
 struct DetectorInitRsp;
 struct ModbusInitRsp;
+struct ModbusReleaseRsp;
+struct ModbusAduReq;
 
 class Controller : public reactor::ComponentBase<CompIds::controller>
 {
@@ -26,6 +27,8 @@ public:
     void receive(ConnectorInitRsp const&);
     void receive(DetectorInitRsp const&);
     void receive(ModbusInitRsp const&);
+    void receive(ModbusReleaseRsp const&);
+    void receive(ModbusAduReq const&);
 
 private:
     void registerComponent();

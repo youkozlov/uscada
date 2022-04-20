@@ -5,6 +5,7 @@
 #include "Deployer.hpp"
 #include "ReactorManager.hpp"
 #include "ControllerStartReq.hpp"
+#include "ControllerStopReq.hpp"
 
 int main(int, char**)
 {
@@ -18,11 +19,17 @@ int main(int, char**)
 
         reactorManager.start();
 
-        app::ControllerStartReq req;
-        reactorManager.send(req);
+        app::ControllerStartReq start;
+        reactorManager.send(start);
 
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(10000ms);
+        std::this_thread::sleep_for(10s);
+
+        app::ControllerStopReq stop;
+        reactorManager.send(stop);
+
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
 
         reactorManager.stop();
     }

@@ -27,11 +27,11 @@ enum class LogLevel
 
 #define LM(LM_TASK, LM_LEVEL, ...) \
 { \
-    if (LogLevel::LM_LEVEL >= Logger::getInst().getTaskLogLevel(LogTask::LM_TASK)) \
+    if (app::LogLevel::LM_LEVEL >= app::Logger::getInst().getTaskLogLevel(app::LogTask::LM_TASK)) \
     {\
         char msg[256] = {};\
         sprintf(msg, __VA_ARGS__);\
-        Logger::getInst().dispatch(msg, LogLevel::LM_LEVEL, LogTask::LM_TASK, __FILE__, __LINE__);\
+        app::Logger::getInst().dispatch(msg, app::LogLevel::LM_LEVEL, app::LogTask::LM_TASK, __FILE__, __LINE__);\
     }\
 }
 
@@ -39,18 +39,18 @@ class Logger
 {
 public:
 
-    static Logger& getInst();
+    static app::Logger& getInst();
 
-    LogLevel getTaskLogLevel(LogTask) const;
+    app::LogLevel getTaskLogLevel(app::LogTask) const;
 
-    void dispatch(char const*, LogLevel, LogTask, char const*, int);
+    void dispatch(char const*, app::LogLevel, app::LogTask, char const*, int);
 
 private:
     Logger();
 
     std::mutex mutex;
-    static constexpr int numLogTasks = static_cast<int>(LogTask::NUM);
-    LogLevel logLevels[numLogTasks] = {};
+    static constexpr int numLogTasks = static_cast<int>(app::LogTask::NUM);
+    app::LogLevel logLevels[numLogTasks] = {};
 };
 
 } // namespace app

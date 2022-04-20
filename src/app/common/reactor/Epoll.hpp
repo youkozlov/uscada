@@ -15,11 +15,11 @@ public:
 
     ~Epoll();
 
-    void add(FdHandler&, int events);
+    int add(FdHandler&, int events);
 
-    void mod(FdHandler&, int events);
+    int mod(FdHandler&, int events);
 
-    void del(FdHandler&);
+    int del(FdHandler&);
 
     void wait();
 

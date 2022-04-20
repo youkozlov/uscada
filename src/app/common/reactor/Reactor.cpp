@@ -1,4 +1,4 @@
-#include "ReactorSimple.hpp"
+#include "Reactor.hpp"
 
 #include <stdexcept>
 #include <cstring>
@@ -8,14 +8,16 @@
 #include "Epoll.hpp"
 #include "Timer.hpp"
 #include "Link.hpp"
+#include "Acceptor.hpp"
 #include "Thread.hpp"
 #include "MsgMemPool.hpp"
 #include "MsgInterface.hpp"
+#include "Logger.hpp"
 
 namespace reactor
 {
 
-ReactorSimple::ReactorSimple(Init const& init)
+Reactor::Reactor(Init const& init)
     : stopped(false)
     , msgMemPool(init.msgMemPool)
 {
@@ -24,41 +26,41 @@ ReactorSimple::ReactorSimple(Init const& init)
         throw std::runtime_error("Unexpected number of threads");
     }
 
-    pipe = std::make_unique<Pipe>(*this);
-
     epoll = std::make_unique<Epoll>();
 
-    epoll->add(*pipe, EPOLLIN);
+    pipe = std::make_unique<Pipe>(*this, *epoll);
 
     for (size_t i = 0; i < init.numThreads; ++i)
     {
-        threads.push_back(std::make_unique<Thread>(init.cpuMask));
+        threads.push_back(std::make_unique<Thread>(init.cpuMask, *this));
     }
 }
 
-ReactorSimple::~ReactorSimple()
+Reactor::~Reactor()
 {
 }
 
-void ReactorSimple::registerHandler(MsgId id, MsgHandler hanler)
+void Reactor::registerHandler(MsgId id, MsgHandler hanler)
 {
     handlers[id] = hanler;
 }
 
-TimerInterface* ReactorSimple::createTimer(TimerHandler handler)
+TimerPtr Reactor::createTimer(TimerHandler handler)
 {
-    timers.push_back(std::make_unique<Timer>(handler));
-    epoll->add(*timers.back(), EPOLLIN);
-    return &*timers.back();
+    return std::make_unique<Timer>(handler, *epoll);
 }
 
-LinkInterface* ReactorSimple::createLink(LinkHandler& handler)
+LinkPtr Reactor::createLink(LinkHandler& handler)
 {
-    links.push_back(std::make_unique<Link>(handler, *epoll));
-    return &*links.back();
+    return std::make_unique<Link>(handler, *epoll);
 }
 
-void ReactorSimple::send(MsgInterface const& msg)
+AcceptorPtr Reactor::createAcceptor(AcceptorHandler& handler)
+{
+    return std::make_unique<Acceptor>(handler, *epoll);
+}
+
+void Reactor::send(MsgInterface const& msg)
 {
     PipeEvent ev;
     if (not msgMemPool.alloc(ev.id))
@@ -69,30 +71,23 @@ void ReactorSimple::send(MsgInterface const& msg)
     pipe->send(ev);
 }
 
-void ReactorSimple::start()
+void Reactor::start()
 {
     for (auto& thread : threads)
     {
-        thread->start(*this);
+        thread->start();
     }
 }
 
-void ReactorSimple::stop()
+void Reactor::stop()
 {
-    PipeEvent ev;
-    ev.id = -1;
-    pipe->send(ev);
+    stopped = true;
 }
 
-void ReactorSimple::handlePipeEvent(PipeEvent const& ev)
+void Reactor::onPipeEvent(PipeEvent const& ev)
 {
     if (stopped)
     {
-        return;
-    }
-    if (ev.id == -1)
-    {
-        stopped = true;
         return;
     }
     MsgInterface const& msg = *static_cast<MsgInterface const*>(msgMemPool.get(ev.id));
@@ -104,10 +99,8 @@ void ReactorSimple::handlePipeEvent(PipeEvent const& ev)
     msgMemPool.free(ev.id);
 }
 
-void ReactorSimple::run()
+void Reactor::run()
 {
-    std::cout << "run enter" << std::endl;
-
     while (not stopped)
     {
         try
@@ -119,13 +112,6 @@ void ReactorSimple::run()
             std::cerr << e.what() << std::endl;
         }
     }
-
-    for (auto& timer : timers)
-    {
-        timer->release();
-    }
-
-    std::cout << "run exit" << std::endl;
 }
 
 } // namespace reactor

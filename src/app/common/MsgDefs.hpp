@@ -18,10 +18,16 @@ enum MsgIds : reactor::MsgId
 
     , modbusInitReq
     , modbusInitRsp
+    , modbusReleaseReq
+    , modbusReleaseRsp
     , modbusConfigReq
     , modbusConfigRsp
     , modbusDataReq
     , modbusDataInd
+    , modbusClientAduReq
+    , modbusClientAduRsp
+    , modbusAduReq
+    , modbusAduRsp
 };
 
 } // namespace app

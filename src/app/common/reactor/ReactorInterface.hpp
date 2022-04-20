@@ -2,12 +2,13 @@
 
 #include "MsgId.hpp"
 #include "MsgHandler.hpp"
-#include "TimerId.hpp"
 #include "TimerHandler.hpp"
+#include "TimerPtr.hpp"
 #include "PipeEvent.hpp"
-#include "TimerInterface.hpp"
+#include "LinkPtr.hpp"
 #include "LinkHandler.hpp"
-#include "LinkInterface.hpp"
+#include "AcceptorPtr.hpp"
+#include "AcceptorHandler.hpp"
 
 namespace reactor
 {
@@ -19,19 +20,17 @@ public:
 
     virtual void registerHandler(MsgId, MsgHandler) = 0;
 
-    virtual TimerInterface* createTimer(TimerHandler) = 0;
+    virtual TimerPtr createTimer(TimerHandler) = 0;
 
-    virtual LinkInterface* createLink(LinkHandler&) = 0;
+    virtual LinkPtr createLink(LinkHandler&) = 0;
+
+    virtual AcceptorPtr createAcceptor(AcceptorHandler&) = 0;
 
     virtual void send(MsgInterface const&) = 0;
 
     virtual void start() = 0;
 
     virtual void stop() = 0;
-
-    virtual void run() = 0;
-
-    virtual void handlePipeEvent(PipeEvent const&) = 0;
 };
 
 }

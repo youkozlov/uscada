@@ -4,16 +4,24 @@
 #include <sys/timerfd.h>
 #include <unistd.h>
 
+#include "Logger.hpp"
+
 namespace reactor
 {
 
-Timer::Timer(TimerHandler handler_)
+Timer::Timer(TimerHandler handler_, Epoll& epoll_)
     : handler(handler_)
+    , epoll(epoll_)
 {
     fd = ::timerfd_create(CLOCK_REALTIME, 0);
     if (fd == -1)
     {
         throw std::runtime_error("timerfd_create");
+    }
+    if (-1 == epoll.add(*this, EPOLLIN | EPOLLET))
+    {
+        ::close(fd);
+        throw std::runtime_error("fd add");
     }
 }
 
@@ -21,7 +29,15 @@ Timer::~Timer()
 {
     if (-1 != fd)
     {
-        ::close(fd);
+        LM(GEN, LD, "Close");
+        if (-1 == epoll.del(*this))
+        {
+            LM(GEN, LE, "fd del errno: %d", errno);
+        }
+        if (-1 == ::close(fd))
+        {
+            LM(GEN, LE, "close errno: %d", errno);
+        }
     }
 }
 
@@ -74,11 +90,6 @@ void Timer::onEvent(int)
 int Timer::getFd() const
 {
     return fd;
-}
-
-void Timer::release()
-{
-    handler = {};
 }
 
 } // namespace reactor

@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <stdexcept>
 
+#include "Logger.hpp"
+
 namespace reactor
 {
 
@@ -21,8 +23,17 @@ Link::~Link()
 {
     if (-1 != fd)
     {
-        ::close(fd);
+        close();
     }
+}
+
+void Link::assignFd(int val)
+{
+    if (-1 != fd)
+    {
+        throw std::runtime_error("already connected");
+    }
+    fd = val;
 }
 
 void Link::connect(LinkAddr const&)
@@ -53,7 +64,12 @@ void Link::connect(LinkAddr const&)
         fd = -1;
         throw std::runtime_error("connect");
     }
-    epoll.add(*this, EPOLLIN | EPOLLOUT);
+    if (-1 == epoll.add(*this, EPOLLIN | EPOLLET | EPOLLOUT))
+    {
+        ::close(fd);
+        fd = -1;
+        throw std::runtime_error("fd add");
+    }
 }
 
 void Link::close()
@@ -62,26 +78,34 @@ void Link::close()
     {
         throw std::runtime_error("invalid fd");
     }
-    epoll.del(*this);
-    ::close(fd);
+    LM(GEN, LD, "Close");
+    if (-1 == epoll.del(*this))
+    {
+        LM(GEN, LE, "fd del errno: %d", errno);
+    }
+    if (-1 == ::close(fd))
+    {
+        LM(GEN, LE, "close errno: %d", errno);
+    }
     fd = -1;
 }
 
-void Link::send(void const* data, std::size_t len)
+int Link::send(void const* data, std::size_t len)
 {
     if (-1 == fd)
     {
-        throw std::runtime_error("invalid fd");
+        return -1;
     }
     if (-1 == ::write(fd, data, len))
     {
-        throw std::runtime_error("write");
+        return -1;
     }
+    return 1;
 }
 
-int Link::receive(void*, std::size_t)
+int Link::receive(void* data, std::size_t len)
 {
-    return -1;
+    return ::read(fd, data, len);
 }
 
 void Link::onEvent(int events)
@@ -95,8 +119,16 @@ void Link::onEvent(int events)
     break;
     case EPOLLOUT:
     {
-        epoll.mod(*this, EPOLLIN);
-        handler.onConnected();
+        if (-1 == epoll.mod(*this, EPOLLIN | EPOLLET))
+        {
+            LM(GEN, LD, "fd mod");
+            close();
+            handler.onError();
+        }
+        else
+        {
+            handler.onConnected();
+        }
     }
     break;
     default:

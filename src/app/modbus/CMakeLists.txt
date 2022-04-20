@@ -1,10 +1,23 @@
 add_library(modbus
-    ModbusSession.cpp
+    client/ModbusClient.cpp
+    client/ModbusClientFsm.cpp
+    client/ModbusClientInit.cpp
+    client/ModbusClientConnect.cpp
+    client/ModbusClientSend.cpp
+    client/ModbusClientReceive.cpp
+    client/ModbusClientBackoff.cpp
+    server/ModbusServer.cpp
+    server/ModbusSession.cpp
+    server/ModbusAduPool.cpp
+    server/ModbusSessionPool.cpp
+    ModbusCodec.cpp
     Modbus.cpp
 )
 
 target_include_directories(modbus PUBLIC
-    ./
+    .
+    client
+    server
 )
 
 target_link_libraries(modbus

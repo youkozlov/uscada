@@ -1,5 +1,5 @@
 #include "Thread.hpp"
-#include "ReactorInterface.hpp"
+#include "ThreadHandler.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -12,15 +12,16 @@ namespace
 
 static void* executer(void* args)
 {
-    ReactorInterface& reactor = *static_cast<ReactorInterface*>(args);
-    reactor.run();
+    ThreadHandler& handler = *static_cast<ThreadHandler*>(args);
+    handler.run();
     return nullptr;
 }
 
 }
 
-Thread::Thread(uint64_t cpuMask_)
+Thread::Thread(uint64_t cpuMask_, ThreadHandler& handler_)
     : cpuMask(cpuMask_)
+    , handler(handler_)
 {
     int result = pthread_attr_init(&attr);
     if (result != 0)
@@ -44,9 +45,9 @@ Thread::~Thread()
     }
 }
 
-void Thread::start(ReactorInterface& reactor)
+void Thread::start()
 {
-    int result = pthread_create(&tid, &attr, &executer, &reactor);
+    int result = pthread_create(&tid, &attr, &executer, &handler);
     if (result != 0)
     {
         throw std::runtime_error("pthread_create");

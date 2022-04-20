@@ -7,20 +7,20 @@
 namespace reactor
 {
 
-class ReactorInterface;
+class ThreadHandler;
 
 class Thread
 {
 public:
-    explicit Thread(uint64_t);
+    explicit Thread(uint64_t, ThreadHandler&);
 
     ~Thread();
 
-    void start(ReactorInterface&);
+    void start();
 
 private:
-
     uint64_t const cpuMask;
+    ThreadHandler& handler;
     pthread_t tid;
     pthread_attr_t attr;
 };

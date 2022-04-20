@@ -3,17 +3,18 @@
 #include <cstdint>
 
 #include "FdHandler.hpp"
+#include "Epoll.hpp"
 
 namespace reactor
 {
 
-class ReactorInterface;
+class PipeHandler;
 struct PipeEvent;
 
 class Pipe : public FdHandler
 {
 public:
-    explicit Pipe(ReactorInterface&);
+    explicit Pipe(PipeHandler&, Epoll&);
 
     ~Pipe();
 
@@ -24,7 +25,8 @@ public:
     void onEvent(int) final;
 
 private:
-    ReactorInterface& reactor;
+    PipeHandler& handler;
+    Epoll& epoll;
     int pipefd[2] = {};
 };
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FdHandler.hpp"
 #include "LinkHandler.hpp"
 #include "LinkInterface.hpp"
 #include "Epoll.hpp"
@@ -8,7 +7,7 @@
 namespace reactor
 {
 
-class Link : public FdHandler, public LinkInterface
+class Link : public LinkInterface
 {
 public:
     explicit Link(LinkHandler&, Epoll&);
@@ -19,11 +18,13 @@ public:
 
     void onEvent(int) final;
 
+    void assignFd(int) final;
+
     void connect(LinkAddr const&) final;
 
     void close() final;
 
-    void send(void const*, std::size_t) final;
+    int send(void const*, std::size_t) final;
 
     int receive(void*, std::size_t) final;
 

@@ -4,24 +4,41 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "ReactorInterface.hpp"
+#include "PipeHandler.hpp"
+#include "Logger.hpp"
 
 namespace reactor
 {
 
-Pipe::Pipe(ReactorInterface& reactor_)
-    : reactor(reactor_)
+Pipe::Pipe(PipeHandler& handler_, Epoll& epoll_)
+    : handler(handler_)
+    , epoll(epoll_)
 {
     if (::pipe2(pipefd, 0) == -1)
     {
         throw std::runtime_error("pipe2");
     }
+    if (-1 == epoll.add(*this, EPOLLIN | EPOLLET))
+    {
+        throw std::runtime_error("fd add");
+    }
 }
 
 Pipe::~Pipe()
 {
-    ::close(pipefd[0]);
-    ::close(pipefd[1]);
+    LM(GEN, LD, "Close");
+    if (-1 == epoll.del(*this))
+    {
+        LM(GEN, LE, "fd del errno: %d", errno);
+    }
+    if (-1 == ::close(pipefd[0]))
+    {
+        LM(GEN, LE, "close errno: %d", errno);
+    }
+    if (-1 == ::close(pipefd[1]))
+    {
+        LM(GEN, LE, "close errno: %d", errno);
+    }
 }
 
 void Pipe::send(PipeEvent const& ev)
@@ -36,7 +53,7 @@ void Pipe::onEvent(int)
     {
         throw std::runtime_error("read");
     }
-    reactor.handlePipeEvent(ev);
+    handler.onPipeEvent(ev);
 }
 
 int Pipe::getFd() const
