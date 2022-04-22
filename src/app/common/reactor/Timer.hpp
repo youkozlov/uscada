@@ -3,19 +3,26 @@
 #include "FdHandler.hpp"
 #include "TimerHandler.hpp"
 #include "TimerInterface.hpp"
-#include "Epoll.hpp"
 
 namespace reactor
 {
 
-class ReactorInterface;
+class EpollInterface;
 
 class Timer : public FdHandler, public TimerInterface
 {
 public:
-    explicit Timer(TimerHandler, Epoll&);
+    explicit Timer(EpollInterface&);
 
     ~Timer();
+
+    void create();
+
+    void close();
+
+    void setHandler(TimerHandler*);
+
+private:
 
     void start(long) final;
 
@@ -25,9 +32,10 @@ public:
 
     void onEvent(int) final;
 
-private:
-    TimerHandler handler;
-    Epoll& epoll;
+    void release() final;
+
+    EpollInterface& epoll;
+    TimerHandler* handler;
     int fd;
 };
 

@@ -8,7 +8,7 @@ namespace app
 
 struct DetectorInitReq;
 
-class Detector : public reactor::ComponentBase<CompIds::detector>
+class Detector : public reactor::ComponentBase<CompIds::compDetector>
 {
 public:
     explicit Detector(reactor::SenderInterface&, reactor::ReactorInterface&);

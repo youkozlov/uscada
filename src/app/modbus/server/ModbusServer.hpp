@@ -3,45 +3,50 @@
 #include <vector>
 #include <memory>
 
-#include "SenderInterface.hpp"
 #include "ReactorInterface.hpp"
 #include "AcceptorPtr.hpp"
 #include "AcceptorHandler.hpp"
+#include "ModbusSessionHandler.hpp"
 #include "ModbusSessionPool.hpp"
 #include "ModbusAduPool.hpp"
 
 namespace app
 {
+struct ModbusAduRsp;
+} // namespace app
+
+namespace app::modbus
+{
 
 class ModbusSession;
-struct ModbusAduRsp;
 
-class ModbusServer : public reactor::AcceptorHandler
+class ModbusServer : public reactor::AcceptorHandler, public ModbusSessionHandler
 {
 public:
-    explicit ModbusServer(reactor::SenderInterface&, reactor::ReactorInterface&);
+    explicit ModbusServer(reactor::ReactorInterface&);
 
     ~ModbusServer();
 
     void start();
 
+    void stop();
+
     void receive(ModbusAduRsp const&);
-
-    void createSession();
-
-    void removeSession(ModbusSession&);
-
-    void onAduReceived(ModbusSession&);
 
 private:
 
+    void createSession();
+
     void onAccept() final;
 
-    reactor::SenderInterface& sender;
+    void onRemoveSession(ModbusSession&) final;
+
+    void onAduReceived(ModbusSession&) final;
+
     reactor::ReactorInterface& reactor;
     reactor::AcceptorPtr acceptor;
     ModbusSessionPool sessionPool;
     ModbusAduPool aduPool;
 };
 
-} // namespace app
+} // namespace app::modbus

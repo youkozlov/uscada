@@ -3,7 +3,7 @@
 #include "ModbusClientConnect.hpp"
 #include "Logger.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 void ModbusClientInit::start(ModbusClientFsm& fsm)
@@ -13,4 +13,4 @@ void ModbusClientInit::start(ModbusClientFsm& fsm)
     fsm.transit<ModbusClientConnect>();
 }
 
-} // namespace app
+} // namespace app::modbus

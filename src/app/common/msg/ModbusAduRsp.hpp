@@ -10,14 +10,21 @@
 namespace app
 {
 
-struct ModbusAduRsp : public reactor::MsgBase<ModbusAduRsp, CompIds::modbus, MsgIds::modbusAduRsp>
+struct ModbusAduRsp : public reactor::MsgBase<ModbusAduRsp, CompIds::compModbus, MsgIds::modbusAduRsp>
 {
     EntityId  serverId;
     EntityId  sessionId;
     EntityId  aduId;
     MsgStatus status;
-    uint16_t  numItems;
-    uint16_t  items[];
+    uint16_t  numBytes;
+    uint8_t   data[];
+
+    std::size_t size() const final
+    {
+        return sizeof(ModbusAduRsp) + numBytes;
+    }
 };
+
+
 
 } // namespace app

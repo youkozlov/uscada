@@ -2,15 +2,16 @@
 
 #include "LinkHandler.hpp"
 #include "LinkInterface.hpp"
-#include "Epoll.hpp"
 
 namespace reactor
 {
 
+class EpollInterface;
+
 class Link : public LinkInterface
 {
 public:
-    explicit Link(LinkHandler&, Epoll&);
+    explicit Link(EpollInterface&);
 
     ~Link();
 
@@ -24,13 +25,17 @@ public:
 
     void close() final;
 
+    void release() final;
+
     int send(void const*, std::size_t) final;
 
     int receive(void*, std::size_t) final;
 
+    void setHandler(LinkHandler*);
+
 private:
-    LinkHandler& handler;
-    Epoll& epoll;
+    EpollInterface& epoll;
+    LinkHandler* handler;
     int fd;
 };
 

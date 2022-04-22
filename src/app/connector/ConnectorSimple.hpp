@@ -8,7 +8,7 @@ namespace app
 
 struct ConnectorInitReq;
 
-class ConnectorSimple : public reactor::ComponentBase<CompIds::connector>
+class ConnectorSimple : public reactor::ComponentBase<CompIds::compConnector>
 {
 public:
     explicit ConnectorSimple(reactor::SenderInterface&, reactor::ReactorInterface&);

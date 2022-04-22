@@ -6,7 +6,7 @@
 #include "Container.hpp"
 #include "Reactor.hpp"
 #include "ConnectorSimple.hpp"
-#include "Modbus.hpp"
+#include "ModbusComponent.hpp"
 #include "Controller.hpp"
 #include "ReactorManager.hpp"
 
@@ -22,14 +22,14 @@ std::vector<reactor::Container> getDepl(DeploymentType depType)
     case DeploymentType::def:
         return
             {
-                {{CompIds::connector, CompIds::detector, CompIds::controller}, 1, 0}
+                {{CompIds::compConnector, CompIds::compDetector, CompIds::compController}, 1, 0}
             };
     case DeploymentType::cpu3:
         return
             {
-                  {{CompIds::connector}, 1,  0b00010}
-                , {{CompIds::modbus}, 1,     0b00100}
-                , {{CompIds::controller}, 1, 0b01000}
+                  {{CompIds::compConnector}, 1,  0b00010}
+                , {{CompIds::compModbus}, 1,     0b00100}
+                , {{CompIds::compController}, 1, 0b01000}
             };
     default:
         break;
@@ -53,21 +53,21 @@ void Deployer::apply(reactor::ReactorManager& manager, DeploymentType depType)
         {
             switch (compId)
             {
-            case CompIds::connector:
+            case CompIds::compConnector:
             {
                 std::unique_ptr<reactor::ComponentInterface> comp{new ConnectorSimple(manager, *reactor)};
                 manager.addComponent(std::move(comp));
             }
             break;
-            case CompIds::modbus:
+            case CompIds::compModbus:
             {
-                std::unique_ptr<reactor::ComponentInterface> comp{new Modbus(manager, *reactor)};
+                std::unique_ptr<reactor::ComponentInterface> comp{new modbus::ModbusComponent(manager, *reactor)};
                 manager.addComponent(std::move(comp));
             }
             break;
-            case CompIds::controller:
+            case CompIds::compController:
             {
-                std::unique_ptr<reactor::ComponentInterface> comp{new Controller(manager, *reactor)};
+                std::unique_ptr<reactor::ComponentInterface> comp{new controller::Controller(manager, *reactor)};
                 manager.addComponent(std::move(comp));
             }
             break;

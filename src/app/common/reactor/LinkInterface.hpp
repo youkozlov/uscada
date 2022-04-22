@@ -18,6 +18,8 @@ public:
 
     virtual void close() = 0;
 
+    virtual void release() = 0;
+
     virtual int send(void const*, std::size_t) = 0;
 
     virtual int receive(void*, std::size_t) = 0;

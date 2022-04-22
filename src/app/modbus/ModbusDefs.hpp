@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace app
+namespace app::modbus
 {
 
 enum ModbusErorr
@@ -52,6 +52,10 @@ struct ModbusTcpAdu
     {
         return pktLen > 2 && pktLen < 256;
     }
+    bool isRead() const
+    {
+        return func == 0x3 || func == 0x4;
+    }
 };
 
 struct ModbusReq
@@ -62,4 +66,4 @@ struct ModbusReq
     uint16_t numRegs;
 };
 
-} // namespace app
+} // namespace app::modbus

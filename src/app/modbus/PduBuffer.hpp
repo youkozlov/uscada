@@ -1,8 +1,10 @@
 #pragma once
 
 #include <cstring>
+#include <sstream>
+#include <iomanip>
 
-namespace app
+namespace app::modbus
 {
 
 class PduBuffer
@@ -82,9 +84,20 @@ public:
         pos = 0;
     }
 
+    std::string toString()
+    {
+        std::stringstream ss;
+        for(unsigned i = 0; i < len; ++i)
+        {
+            ss << ":" << std::setfill('0') << std::setw(2) << std::hex << (int)buf[i];
+        }
+        return ss.str();
+    }
+
 private:
     unsigned char buf[maxLen];
     unsigned pos;
     unsigned len;
 };
+
 }

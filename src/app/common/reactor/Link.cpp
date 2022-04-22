@@ -6,15 +6,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdexcept>
+#include <sys/epoll.h>
+#include "EpollInterface.hpp"
 
 #include "Logger.hpp"
 
 namespace reactor
 {
 
-Link::Link(LinkHandler& handler_, Epoll& epoll_)
-    : handler(handler_)
-    , epoll(epoll_)
+Link::Link(EpollInterface& epoll_)
+    : epoll(epoll_)
+    , handler(nullptr)
     , fd(-1)
 {
 }
@@ -76,9 +78,10 @@ void Link::close()
 {
     if (-1 == fd)
     {
-        throw std::runtime_error("invalid fd");
+        LM(GEN, LW, "fd is invalid");
+        return;
     }
-    LM(GEN, LD, "Close");
+    LM(GEN, LD, "Close fd=%d", fd);
     if (-1 == epoll.del(*this))
     {
         LM(GEN, LE, "fd del errno: %d", errno);
@@ -90,6 +93,12 @@ void Link::close()
     fd = -1;
 }
 
+void Link::release()
+{
+    close();
+    setHandler(nullptr);
+}
+
 int Link::send(void const* data, std::size_t len)
 {
     if (-1 == fd)
@@ -98,6 +107,7 @@ int Link::send(void const* data, std::size_t len)
     }
     if (-1 == ::write(fd, data, len))
     {
+        LM(GEN, LE, "write errno: %d", errno);
         return -1;
     }
     return 1;
@@ -108,33 +118,43 @@ int Link::receive(void* data, std::size_t len)
     return ::read(fd, data, len);
 }
 
+void Link::setHandler(LinkHandler* val)
+{
+    handler = val;
+}
+
 void Link::onEvent(int events)
 {
+    if (nullptr == handler)
+    {
+        LM(GEN, LW, "Handler is undefined");
+        return;
+    }
     switch (events)
     {
     case EPOLLIN:
     {
-        handler.onDataReceived();
+        handler->onDataReceived();
     }
     break;
     case EPOLLOUT:
     {
         if (-1 == epoll.mod(*this, EPOLLIN | EPOLLET))
         {
-            LM(GEN, LD, "fd mod");
+            LM(GEN, LE, "fd mod");
             close();
-            handler.onError();
+            handler->onError();
         }
         else
         {
-            handler.onConnected();
+            handler->onConnected();
         }
     }
     break;
     default:
     {
         close();
-        handler.onError();
+        handler->onError();
     }
     break;
     }

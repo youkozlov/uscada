@@ -7,7 +7,7 @@
 namespace app
 {
 
-struct ControllerStopReq : public reactor::MsgBase<ControllerStopReq, CompIds::controller, MsgIds::controllerStopReq>
+struct ControllerStopReq : public reactor::MsgBase<ControllerStopReq, CompIds::compController, MsgIds::controllerStopReq>
 {
 };
 

@@ -1,20 +1,22 @@
 #pragma once
 
 #include "LinkPtr.hpp"
+#include "TimerPtr.hpp"
 #include "LinkHandler.hpp"
+#include "TimerHandler.hpp"
 #include "PduBuffer.hpp"
 #include "ModbusDefs.hpp"
 
-namespace app
+namespace app::modbus
 {
 
-class ModbusServer;
+class ModbusSessionHandler;
 
-class ModbusSession : public reactor::LinkHandler
+class ModbusSession : public reactor::LinkHandler, public reactor::TimerHandler
 {
 public:
 
-    explicit ModbusSession(ModbusServer&, int);
+    explicit ModbusSession(ModbusSessionHandler &, int);
 
     ~ModbusSession();
 
@@ -22,19 +24,25 @@ public:
 
     void setLink(reactor::LinkPtr);
 
-    reactor::LinkInterface& getLink() const;
+    void setTimer(reactor::TimerPtr);
 
-    bool isActive() const;
+    reactor::LinkInterface& getLink() const;
 
     ModbusTcpAdu const& adu() const;
 
     PduBuffer const& pdu() const;
 
-    void respond(ModbusTcpAdu const&);
+    void respond(ModbusTcpAdu const&, void const*, unsigned);
+
+    void respondError(ModbusTcpAdu const&, ModbusErorr);
 
 private:
 
+    static constexpr long timeout = 60000000;
+
     void reset();
+
+    void remove();
 
     void onConnected() final {}
 
@@ -42,13 +50,14 @@ private:
 
     void onError() final {}
 
-    void onTimer();
+    void onTimer() final;
 
     int const id;
-    ModbusServer& server;
+    ModbusSessionHandler &handler;
+    reactor::TimerPtr timer;
     reactor::LinkPtr link;
     PduBuffer pduBuf;
     ModbusTcpAdu storedAdu;
 };
 
-} // namespace app
+} // namespace app::modbus

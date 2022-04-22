@@ -8,14 +8,14 @@
 #include "MsgMemPool.hpp"
 #include "ReactorInterface.hpp"
 #include "ComponentInterface.hpp"
-
+#include "MaxMsgSize.hpp"
 
 namespace reactor
 {
 
 ReactorManager::ReactorManager()
 {
-    msgMemPool = std::make_unique<MsgMemPool>(1 << 16, 128);
+    msgMemPool = std::make_unique<MsgMemPool>(maxMsgSize, 128);
 }
 
 ReactorManager::~ReactorManager()

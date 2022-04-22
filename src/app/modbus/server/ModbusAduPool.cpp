@@ -1,6 +1,6 @@
 #include "ModbusAduPool.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 ModbusAduPool::ModbusAduPool()
@@ -37,4 +37,4 @@ ModbusTcpAdu& ModbusAduPool::get(int id)
     return adus[id];
 }
 
-} // namespace app
+} // namespace app::modbus

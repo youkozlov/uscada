@@ -3,16 +3,19 @@
 #include <unistd.h>
 #include <stdexcept>
 #include <iostream>
+#include <sys/epoll.h>
 
 #include "PipeHandler.hpp"
 #include "Logger.hpp"
 
+#include "EpollInterface.hpp"
+
 namespace reactor
 {
 
-Pipe::Pipe(PipeHandler& handler_, Epoll& epoll_)
-    : handler(handler_)
-    , epoll(epoll_)
+Pipe::Pipe(EpollInterface& epoll_, PipeHandler& handler_)
+    : epoll(epoll_)
+    , handler(handler_)
 {
     if (::pipe2(pipefd, 0) == -1)
     {

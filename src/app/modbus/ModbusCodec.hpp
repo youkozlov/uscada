@@ -3,7 +3,7 @@
 #include "ModbusDefs.hpp"
 #include "PduBuffer.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusCodec
@@ -13,10 +13,14 @@ public:
 
     bool encode(ModbusTcpAdu const&);
 
+    bool encode(ModbusTcpAdu const&, void const*, unsigned);
+
+    bool encode(ModbusTcpAdu const&, ModbusErorr);
+
     bool decode(ModbusTcpAdu&);
 
 private:
     PduBuffer& buf;
 };
 
-} // namespace app
+} // namespace app::modbus

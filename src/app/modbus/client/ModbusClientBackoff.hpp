@@ -2,7 +2,7 @@
 
 #include "ModbusClientState.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusClientBackoff : public ModbusClientState
@@ -20,4 +20,4 @@ private:
     /* data */
 };
 
-} // namespace app
+} // namespace app::modbus

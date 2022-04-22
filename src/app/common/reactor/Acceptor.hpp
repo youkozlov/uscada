@@ -3,15 +3,16 @@
 #include "LinkInterface.hpp"
 #include "AcceptorInterface.hpp"
 #include "AcceptorHandler.hpp"
-#include "Epoll.hpp"
 
 namespace reactor
 {
 
+class EpollInterface;
+
 class Acceptor : public FdHandler, public AcceptorInterface
 {
 public:
-    Acceptor(AcceptorHandler&, Epoll&);
+    Acceptor(EpollInterface&, AcceptorHandler&);
 
     ~Acceptor();
 
@@ -26,8 +27,8 @@ public:
     void close() final;
 
 private:
+    EpollInterface& epoll;
     AcceptorHandler& handler;
-    Epoll& epoll;
     int sfd;
 };
 

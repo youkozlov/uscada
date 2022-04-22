@@ -3,7 +3,7 @@
 #include "ModbusClientConnect.hpp"
 #include "Logger.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 void ModbusClientBackoff::onEnter(ModbusClientFsm& fsm)
@@ -23,4 +23,4 @@ void ModbusClientBackoff::onExit(ModbusClientFsm& fsm)
     fsm.stopTimer();
 }
 
-} // namespace app
+} // namespace app::modbus

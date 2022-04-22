@@ -4,25 +4,31 @@
 #include "ModbusCodec.hpp"
 #include "PduBuffer.hpp"
 
-namespace app
+#include "Logger.hpp"
+
+namespace app::modbus
 {
 
-ModbusClient::ModbusClient(reactor::SenderInterface&, reactor::ReactorInterface& reactor)
-    : fsm(*this)
-    , link(reactor.createLink(*this))
-    , timer(reactor.createTimer([this](){ onTimer(); }))
+ModbusClient::ModbusClient(reactor::ReactorInterface& reactor_)
+    : reactor(reactor_)
+    , fsm(*this)
+    , link(reactor_.createLink(this))
+    , timer(reactor_.createTimer(this))
 {
 }
 
 ModbusClient::~ModbusClient()
 {
-    timer->stop();
-    link->close();
+    LM(MODBUS, LD, "~ModbusClient");
 }
 
 void ModbusClient::start()
 {
     fsm.getState().start(fsm);
+}
+
+void ModbusClient::receive(ModbusClientAduReq const& req)
+{
 }
 
 void ModbusClient::connect()
@@ -56,6 +62,10 @@ int ModbusClient::send()
     adu.numRegs = 2;
     adu.slaveAddr = 0x1;
     adu.func = 0x4;
+
+    LM(MODBUS, LD, "TX ADU: %u:%u LEN=%u START=%u NUM=%u ADDR=%u FC=%u"
+        , adu.transactionId, adu.protocolId, adu.pktLen
+        , adu.startReg, adu.numRegs, adu.slaveAddr, adu.func);
 
     codec.encode(adu);
 
@@ -99,4 +109,4 @@ void ModbusClient::onTimer()
     fsm.getState().onTimer(fsm);
 }
 
-} // namespace app
+} // namespace app::modbus

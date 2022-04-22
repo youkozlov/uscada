@@ -4,7 +4,7 @@
 #include "ModbusClientReceive.hpp"
 #include "Logger.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 void ModbusClientSend::onEnter(ModbusClientFsm& fsm)
@@ -54,4 +54,4 @@ void ModbusClientSend::onExit(ModbusClientFsm& fsm)
     fsm.stopTimer();
 }
 
-} // namespace app
+} // namespace app::modbus

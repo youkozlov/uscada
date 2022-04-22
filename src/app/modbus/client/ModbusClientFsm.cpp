@@ -2,7 +2,7 @@
 #include "ModbusClientInit.hpp"
 #include "ModbusClient.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 ModbusClientFsm::ModbusClientFsm(ModbusClient& entity_)
@@ -50,4 +50,4 @@ void ModbusClientFsm::close()
     entity.close();
 }
 
-} // namespace app
+} // namespace app::modbus

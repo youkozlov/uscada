@@ -22,8 +22,6 @@ enum MsgIds : reactor::MsgId
     , modbusReleaseRsp
     , modbusConfigReq
     , modbusConfigRsp
-    , modbusDataReq
-    , modbusDataInd
     , modbusClientAduReq
     , modbusClientAduRsp
     , modbusAduReq

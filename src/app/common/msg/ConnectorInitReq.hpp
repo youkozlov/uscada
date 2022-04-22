@@ -7,7 +7,7 @@
 namespace app
 {
 
-struct ConnectorInitReq : public reactor::MsgBase<ConnectorInitReq, CompIds::connector, MsgIds::connectorInitReq>
+struct ConnectorInitReq : public reactor::MsgBase<ConnectorInitReq, CompIds::compConnector, MsgIds::connectorInitReq>
 {
 };
 

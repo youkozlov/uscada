@@ -2,7 +2,7 @@
 
 #include "ModbusClientState.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusClientReceive : public ModbusClientState
@@ -24,4 +24,4 @@ private:
     /* data */
 };
 
-} // namespace app
+} // namespace a::modbuspp

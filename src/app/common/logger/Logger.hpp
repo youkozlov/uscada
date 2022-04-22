@@ -29,9 +29,9 @@ enum class LogLevel
 { \
     if (app::LogLevel::LM_LEVEL >= app::Logger::getInst().getTaskLogLevel(app::LogTask::LM_TASK)) \
     {\
-        char msg[256] = {};\
-        sprintf(msg, __VA_ARGS__);\
-        app::Logger::getInst().dispatch(msg, app::LogLevel::LM_LEVEL, app::LogTask::LM_TASK, __FILE__, __LINE__);\
+        char temporary___[1024];\
+        sprintf(temporary___, __VA_ARGS__);\
+        app::Logger::getInst().dispatch(temporary___, app::LogLevel::LM_LEVEL, app::LogTask::LM_TASK, __FILE__, __LINE__);\
     }\
 }
 

@@ -17,7 +17,7 @@ ConnectorSimple::ConnectorSimple(reactor::SenderInterface& sender, reactor::Reac
 void ConnectorSimple::registerComponent()
 {
     getReactor().registerHandler(
-          ConnectorInitReq::msgId
+          ConnectorInitReq::msgId()
         , [this](reactor::MsgInterface const& msg){ receive(static_cast<ConnectorInitReq const&>(msg)); }
     );
 }

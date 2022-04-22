@@ -4,16 +4,16 @@
 #include <queue>
 #include <memory>
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusSession;
-class ModbusServer;
+class ModbusSessionHandler;
 
 class ModbusSessionPool
 {
 public:
-    explicit ModbusSessionPool(ModbusServer&);
+    explicit ModbusSessionPool(ModbusSessionHandler&);
 
     ~ModbusSessionPool();
 
@@ -30,4 +30,4 @@ private:
     std::queue<int> ids;
 };
 
-} // namespace app
+} // namespace app::modbus

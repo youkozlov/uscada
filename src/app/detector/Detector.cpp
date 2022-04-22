@@ -17,7 +17,7 @@ Detector::Detector(reactor::SenderInterface& sender, reactor::ReactorInterface& 
 void Detector::registerComponent()
 {
     getReactor().registerHandler(
-          DetectorInitReq::msgId
+          DetectorInitReq::msgId()
         , [this](reactor::MsgInterface const& msg){ receive(static_cast<DetectorInitReq const&>(msg)); }
     );
 }

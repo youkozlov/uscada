@@ -4,20 +4,28 @@
 #include "ReactorInterface.hpp"
 #include "ModbusClientFsm.hpp"
 #include "LinkHandler.hpp"
-#include "LinkPtr.hpp"
+#include "TimerHandler.hpp"
+#include "LinkInterface.hpp"
 #include "TimerPtr.hpp"
 
 namespace app
 {
+struct ModbusClientAduReq;
+}
 
-class ModbusClient : public reactor::LinkHandler
+namespace app::modbus
+{
+
+class ModbusClient : public reactor::LinkHandler, public reactor::TimerHandler
 {
 public:
-    explicit ModbusClient(reactor::SenderInterface&, reactor::ReactorInterface&);
+    explicit ModbusClient(reactor::ReactorInterface&);
 
     ~ModbusClient();
 
     void start();
+
+    void receive(ModbusClientAduReq const&);
 
     void connect();
 
@@ -40,11 +48,12 @@ private:
 
     void onError() final;
 
-    void onTimer();
+    void onTimer() final;
 
+    reactor::ReactorInterface& reactor;
     ModbusClientFsm fsm;
     reactor::LinkPtr link;
     reactor::TimerPtr timer;
 };
 
-} // namespace app
+} // namespace app::modbus

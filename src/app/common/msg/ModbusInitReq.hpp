@@ -7,7 +7,7 @@
 namespace app
 {
 
-struct ModbusInitReq : public reactor::MsgBase<ModbusInitReq, CompIds::modbus, MsgIds::modbusInitReq>
+struct ModbusInitReq : public reactor::MsgBase<ModbusInitReq, CompIds::compModbus, MsgIds::modbusInitReq>
 {
 };
 

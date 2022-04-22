@@ -7,10 +7,10 @@ namespace app
 
 enum CompIds : reactor::ComponentId
 {
-      connector = 0
-    , detector
-    , controller
-    , modbus
+      compConnector = 0
+    , compDetector
+    , compController
+    , compModbus
 };
 
 } // namespace app

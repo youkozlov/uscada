@@ -2,6 +2,7 @@
 
 #include "MsgId.hpp"
 #include "MsgHandler.hpp"
+#include "MsgHandlerVector.hpp"
 #include "TimerHandler.hpp"
 #include "TimerPtr.hpp"
 #include "PipeEvent.hpp"
@@ -20,9 +21,11 @@ public:
 
     virtual void registerHandler(MsgId, MsgHandler) = 0;
 
-    virtual TimerPtr createTimer(TimerHandler) = 0;
+    virtual void registerHandlers(MsgHandlerVector const&) = 0;
 
-    virtual LinkPtr createLink(LinkHandler&) = 0;
+    virtual TimerPtr createTimer(TimerHandler*) = 0;
+
+    virtual LinkPtr createLink(LinkHandler*) = 0;
 
     virtual AcceptorPtr createAcceptor(AcceptorHandler&) = 0;
 

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <functional>
+
+#include "TimerInterface.hpp"
 
 namespace reactor
 {
 
-class TimerInterface;
-
-using TimerPtr = std::unique_ptr<TimerInterface>;
+using TimerPtr = std::unique_ptr<TimerInterface, std::function<void(TimerInterface*)>>;
 
 } // namespace reactor

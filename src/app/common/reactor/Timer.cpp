@@ -3,16 +3,35 @@
 #include <stdexcept>
 #include <sys/timerfd.h>
 #include <unistd.h>
+#include <sys/epoll.h>
+
+#include "EpollInterface.hpp"
 
 #include "Logger.hpp"
 
 namespace reactor
 {
 
-Timer::Timer(TimerHandler handler_, Epoll& epoll_)
-    : handler(handler_)
-    , epoll(epoll_)
+Timer::Timer(EpollInterface& epoll_)
+    : epoll(epoll_)
+    , fd(-1)
 {
+}
+
+Timer::~Timer()
+{
+    if (-1 != fd)
+    {
+        close();
+    }
+}
+
+void Timer::create()
+{
+    if (-1 != fd)
+    {
+        throw std::runtime_error("already created");
+    }
     fd = ::timerfd_create(CLOCK_REALTIME, 0);
     if (fd == -1)
     {
@@ -25,20 +44,28 @@ Timer::Timer(TimerHandler handler_, Epoll& epoll_)
     }
 }
 
-Timer::~Timer()
+void Timer::close()
 {
-    if (-1 != fd)
+    if (-1 == fd)
     {
-        LM(GEN, LD, "Close");
-        if (-1 == epoll.del(*this))
-        {
-            LM(GEN, LE, "fd del errno: %d", errno);
-        }
-        if (-1 == ::close(fd))
-        {
-            LM(GEN, LE, "close errno: %d", errno);
-        }
+        LM(GEN, LW, "fd is invalid");
+        return;
     }
+    LM(GEN, LD, "Close");
+    if (-1 == epoll.del(*this))
+    {
+        LM(GEN, LE, "fd del errno: %d", errno);
+    }
+    if (-1 == ::close(fd))
+    {
+        LM(GEN, LE, "close errno: %d", errno);
+    }
+    fd = -1;
+}
+
+void Timer::setHandler(TimerHandler* handler_)
+{
+    handler = handler_;
 }
 
 void Timer::start(long interval)
@@ -74,17 +101,26 @@ void Timer::stop()
     }
 }
 
+void Timer::release()
+{
+    stop();
+    close();
+    handler = nullptr;
+}
+
 void Timer::onEvent(int)
 {
+    if (nullptr == handler)
+    {
+        LM(GEN, LW, "Handler is undefined");
+        return;
+    }
     uint64_t exp;
     if (sizeof(uint64_t) != ::read(fd, &exp, sizeof(uint64_t)))
     {
         throw std::runtime_error("read");
     }
-    if (handler)
-    {
-        handler();
-    }
+    handler->onTimer();
 }
 
 int Timer::getFd() const

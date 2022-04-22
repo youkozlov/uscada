@@ -12,6 +12,7 @@ add_library(modbus
     server/ModbusSessionPool.cpp
     ModbusCodec.cpp
     Modbus.cpp
+    ModbusComponent.cpp
 )
 
 target_include_directories(modbus PUBLIC

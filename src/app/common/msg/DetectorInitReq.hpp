@@ -7,7 +7,7 @@
 namespace app
 {
 
-struct DetectorInitReq : public reactor::MsgBase<DetectorInitReq, CompIds::detector, MsgIds::detectorInitReq>
+struct DetectorInitReq : public reactor::MsgBase<DetectorInitReq, CompIds::compDetector, MsgIds::detectorInitReq>
 {
 };
 

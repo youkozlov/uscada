@@ -2,7 +2,7 @@
 
 #include "Logger.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusClientFsm;
@@ -27,4 +27,4 @@ public:
     virtual void onExit(ModbusClientFsm&) {}
 };
 
-} // namespace app
+} // namespace app::modbus

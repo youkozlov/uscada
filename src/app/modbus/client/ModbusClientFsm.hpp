@@ -3,7 +3,7 @@
 #include "Singleton.hpp"
 #include "ModbusClientState.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusClient;
@@ -45,4 +45,4 @@ public:
     }
 };
 
-} // namespace app
+} // namespace app::modbus

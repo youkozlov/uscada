@@ -4,30 +4,31 @@
 #include "MsgDefs.hpp"
 #include "MsgBase.hpp"
 
-#include "LinkAddr.hpp"
+#include "EntityId.hpp"
 
 namespace app
 {
 
-struct ModbusLinkConfig
+struct ModbusConfig
 {
-    using Id = int;
-
     enum class Mode
     {
           server
         , client
     };
-
-    Id id;
-    Mode mode;
-    reactor::LinkAddr addr;
+    EntityId id;
+    Mode     mode;
 };
 
-struct ModbusConfigReq : public reactor::MsgBase<ModbusConfigReq, CompIds::modbus, MsgIds::modbusConfigReq>
+struct ModbusConfigReq : public reactor::MsgBase<ModbusConfigReq, CompIds::compModbus, MsgIds::modbusConfigReq>
 {
-    std::size_t numLinks;
-    ModbusLinkConfig links[];
+    unsigned numItems;
+    ModbusConfig items[];
+
+    std::size_t size() const final
+    {
+        return sizeof(ModbusConfigReq) + sizeof(ModbusConfig) * numItems;
+    }
 };
 
 } // namespace app

@@ -1,14 +1,14 @@
 #include "ModbusSessionPool.hpp"
 #include "ModbusSession.hpp"
 
-namespace app
+namespace app::modbus
 {
 
-ModbusSessionPool::ModbusSessionPool(ModbusServer& server)
+ModbusSessionPool::ModbusSessionPool(ModbusSessionHandler& handler)
 {
     for (int id = 0; id < capacity; ++id)
     {
-        sessions.push_back(std::make_unique<ModbusSession>(server, id));
+        sessions.push_back(std::make_unique<ModbusSession>(handler, id));
         ids.push(id);
     }
 }
@@ -37,5 +37,4 @@ ModbusSession& ModbusSessionPool::get(int id) const
 {
     return *sessions[id];
 }
-
-} // namespace app
+} // namespace app::modbus

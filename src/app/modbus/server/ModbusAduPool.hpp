@@ -5,7 +5,7 @@
 
 #include "ModbusDefs.hpp"
 
-namespace app
+namespace app::modbus
 {
 
 class ModbusAduPool
@@ -28,4 +28,4 @@ private:
     std::queue<int> ids;
 };
 
-} // namespace app
+} // namespace app::modbus

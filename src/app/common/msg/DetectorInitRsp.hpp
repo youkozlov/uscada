@@ -7,7 +7,7 @@
 namespace app
 {
 
-struct DetectorInitRsp : public reactor::MsgBase<DetectorInitRsp, CompIds::controller, MsgIds::detectorInitRsp>
+struct DetectorInitRsp : public reactor::MsgBase<DetectorInitRsp, CompIds::compController, MsgIds::detectorInitRsp>
 {
 };
 

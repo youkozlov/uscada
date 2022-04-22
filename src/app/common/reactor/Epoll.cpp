@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "FdHandler.hpp"
+#include "Logger.hpp"
 
 namespace reactor
 {
@@ -55,6 +56,7 @@ void Epoll::wait()
     int nfds = epoll_wait(epollfd, events, MAX_EVENTS, DEFAULT_TIMEOUT);
     if (nfds == -1)
     {
+        LM(GEN, LE, "epoll_wait errno: %d", errno);
         throw std::runtime_error("epoll_wait");
     }
 

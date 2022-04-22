@@ -8,7 +8,7 @@ namespace reactor
 template <typename MSG_TYPE, ComponentId COMP_ID, MsgId MSG_ID>
 struct MsgBase : public MsgInterface
 {
-    static constexpr MsgId msgId = MSG_ID;
+    static constexpr MsgId msgId() { return MSG_ID; }
 
     MsgId getMsgId() const final { return MSG_ID; }
 

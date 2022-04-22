@@ -6,15 +6,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdexcept>
+#include <sys/epoll.h>
 
+#include "EpollInterface.hpp"
 #include "Logger.hpp"
 
 namespace reactor
 {
 
-Acceptor::Acceptor(AcceptorHandler& handler_, Epoll& epoll_)
-    : handler(handler_)
-    , epoll(epoll_)
+Acceptor::Acceptor(EpollInterface& epoll_, AcceptorHandler& handler_)
+    : epoll(epoll_)
+    , handler(handler_)
     , sfd(-1)
 {
 }
@@ -23,15 +25,7 @@ Acceptor::~Acceptor()
 {
     if (-1 != sfd)
     {
-        LM(GEN, LD, "Close");
-        if (-1 == epoll.del(*this))
-        {
-            LM(GEN, LE, "fd del errno: %d", errno);
-        }
-        if (-1 == ::close(sfd))
-        {
-            LM(GEN, LE, "close errno: %d", errno);
-        }
+        close();
     }
 }
 
@@ -105,7 +99,7 @@ void Acceptor::onEvent(int events)
 void Acceptor::accept(LinkInterface& link)
 {
     struct sockaddr_in addr;
-    socklen_t addrlen;
+    socklen_t addrlen = sizeof(addr);
 
     int fd = ::accept(sfd, (struct sockaddr*)&addr, &addrlen);
     if (-1 == fd)
@@ -124,6 +118,7 @@ void Acceptor::accept(LinkInterface& link)
     if (-1 == epoll.add(link, EPOLLIN | EPOLLET))
     {
         ::close(fd);
+        link.assignFd(-1);
         throw std::runtime_error("fd add");
     }
 }

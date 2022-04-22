@@ -1,23 +1,25 @@
 #include "ModbusServer.hpp"
 #include "AcceptorInterface.hpp"
+#include "TimerInterface.hpp"
 #include "ModbusSession.hpp"
-#include "ModbusAduReq.hpp"
 #include "ModbusAduRsp.hpp"
 #include "Logger.hpp"
+#include "ReactorInterface.hpp"
+#include "ModbusSender.hpp"
 
-namespace app
+namespace app::modbus
 {
 
-ModbusServer::ModbusServer(reactor::SenderInterface& sender_, reactor::ReactorInterface& reactor_)
-    : sender(sender_)
-    , reactor(reactor_)
-    , acceptor(reactor.createAcceptor(*this))
+ModbusServer::ModbusServer(reactor::ReactorInterface& reactor_)
+    : reactor(reactor_)
+    , acceptor(reactor_.createAcceptor(*this))
     , sessionPool(*this)
 {
 }
 
 ModbusServer::~ModbusServer()
 {
+    LM(MODBUS, LD, "~ModbusServer");
 }
 
 void ModbusServer::start()
@@ -26,22 +28,28 @@ void ModbusServer::start()
     acceptor->listen(addr);
 }
 
-void ModbusServer::receive(ModbusAduRsp const& rsp)
+void ModbusServer::stop()
 {
-    ModbusSession& session = sessionPool.get(rsp.sessionId);
-    ModbusTcpAdu& storedAdu = aduPool.get(rsp.aduId);
-
-    if (session.isActive())
-    {
-        session.respond(storedAdu);
-    }
-
-    aduPool.free(rsp.aduId);
+    //reactor.releaseAcceptor(acceptor);
+    acceptor->close();
 }
 
-void ModbusServer::onAccept()
+void ModbusServer::receive(ModbusAduRsp const& rsp)
 {
-    createSession();
+    LM(CTRL, LD, "ModbusAduRsp: serverId=%d sessionId=%d aduId=%d status=%d numBytes=%u"
+        , rsp.serverId, rsp.sessionId, rsp.aduId, rsp.status, rsp.numBytes);
+
+    ModbusSession& session = sessionPool.get(rsp.sessionId);
+    ModbusTcpAdu& storedAdu = aduPool.get(rsp.aduId);
+    if (MsgStatus::fail == rsp.status)
+    {
+        session.respondError(storedAdu, ModbusErorr::IllegalDataAddress);
+    }
+    else
+    {
+        session.respond(storedAdu, &rsp.data[0], rsp.numBytes);
+    }
+    aduPool.free(rsp.aduId);
 }
 
 void ModbusServer::createSession()
@@ -56,22 +64,25 @@ void ModbusServer::createSession()
     }
 
     ModbusSession& session = sessionPool.get(id);
-    session.setLink(reactor.createLink(session));
+    session.setLink(reactor.createLink(&session));
+    //session.setTimer(reactor.createTimer(session));
     acceptor->accept(session.getLink());
 }
 
-void ModbusServer::removeSession(ModbusSession& session)
+void ModbusServer::onAccept()
+{
+    createSession();
+}
+
+void ModbusServer::onRemoveSession(ModbusSession& session)
 {
     LM(MODBUS, LD, "Remove session");
 
     sessionPool.free(session.getId());
-    session.setLink(nullptr);
 }
 
 void ModbusServer::onAduReceived(ModbusSession& session)
 {
-    LM(MODBUS, LD, "Adu received");
-
     int aduId;
     if (not aduPool.alloc(aduId))
     {
@@ -82,15 +93,18 @@ void ModbusServer::onAduReceived(ModbusSession& session)
     ModbusTcpAdu& storedAdu = aduPool.get(aduId);
     storedAdu = session.adu();
 
-    ModbusAduReq req;
+    reactor::MsgStore<ModbusAduReq> msgStore;
+    ModbusAduReq& req = msgStore.getMsg();
+
     req.serverId = 0;
     req.sessionId = session.getId();
     req.aduId = aduId;
-    req.func = ModbusFunc::read;
-    req.start = storedAdu.startReg;
-    req.numItems = storedAdu.numRegs;
+    req.func = storedAdu.isRead() ? ModbusFunc::read : ModbusFunc::write;
+    req.startReg = storedAdu.startReg;
+    req.numRegs = storedAdu.numRegs;
+    req.numBytes = 0;
 
-    sender.send(req);
+    Sender::sendMsg(msgStore);
 }
 
-} // namespace app
+} // namespace app::modbus
