@@ -4,14 +4,15 @@
 #include <cstring>
 #include <iostream>
 
-#include "Pipe.hpp"
+#include "Event.hpp"
 #include "Epoll.hpp"
 #include "Timer.hpp"
 #include "Link.hpp"
 #include "Acceptor.hpp"
 #include "Thread.hpp"
-#include "MsgMemPool.hpp"
+#include "MsgMemStorage.hpp"
 #include "MsgInterface.hpp"
+#include "MaxMsgSize.hpp"
 #include "Logger.hpp"
 
 namespace reactor
@@ -19,9 +20,10 @@ namespace reactor
 
 Reactor::Reactor(Init const& init)
     : stopped(false)
-    , msgMemPool(init.msgMemPool)
-    , epoll(std::make_unique<Epoll>())
-    , pipe(std::make_unique<Pipe>(*epoll, *this))
+    , msgMemStorage(std::make_unique<MsgMemStorage>(maxMsgSize, 128))
+    , epoll(std::make_unique<Epoll>(init.id))
+    , event(std::make_unique<Event>(*epoll, *this))
+    , acceptorPool(*epoll, "acceptor")
     , linkPool(*epoll, "link")
     , timerPool(*epoll, "timer")
 {
@@ -87,23 +89,32 @@ LinkPtr Reactor::createLink(LinkHandler* handler)
     return linkPtr;
 }
 
-AcceptorPtr Reactor::createAcceptor(AcceptorHandler& handler)
+AcceptorPtr Reactor::createAcceptor(AcceptorHandler* handler)
 {
-    return std::make_unique<Acceptor>(*epoll, handler);
+    unsigned uid;
+    if (not acceptorPool.alloc(uid))
+    {
+        throw std::runtime_error("acceptorPool alloc");
+    }
+    Acceptor& acceptor = acceptorPool.get(uid);
+    acceptor.setHandler(handler);
+    AcceptorPtr acceptorPtr(&acceptor, [this, uid](auto* acceptor)
+    {
+        acceptor->release();
+        acceptorPool.release(uid);
+    });
+    return acceptorPtr;
 }
 
 void Reactor::send(MsgInterface const& msg)
 {
-    PipeEvent ev;
-    if (not msgMemPool.alloc(ev.id))
+    if (not msgMemStorage->push(&msg, msg.size()))
     {
-        LM(CTRL, LE, "Can not alloc msg buffer");
+        LM(CTRL, LE, "Can not push msg");
         return;
     }
-    LM(GEN, LD, "Send msgId=%zu size=%zu", msg.getMsgId(), msg.size());
-
-    std::memcpy(msgMemPool.get(ev.id), &msg, msg.size());
-    pipe->send(ev);
+    LM(GEN, LD, "Send msgId=%zu", msg.getMsgId());
+    event->send();
 }
 
 void Reactor::start()
@@ -119,23 +130,36 @@ void Reactor::stop()
     stopped = true;
 }
 
-void Reactor::onPipeEvent(PipeEvent const& ev)
+void Reactor::onFdEvent(uint64_t val)
 {
     if (stopped)
     {
         return;
     }
-    MsgInterface const& msg = *static_cast<MsgInterface const*>(msgMemPool.get(ev.id));
-    MsgHandler& handler = handlers[msg.getMsgId()];
-    if (handler)
+
+    for (uint64_t ev = 0; ev < val; ++ev)
     {
-        handler(msg);
+        alignas(64) char localBuf[maxMsgSize];
+        if (not msgMemStorage->pop(&localBuf[0]))
+        {
+            LM(GEN, LE, "Mem storage is empty");
+            return;
+        }
+
+        MsgInterface const& msg = *reinterpret_cast<MsgInterface const*>(&localBuf[0]);
+
+        LM(GEN, LD, "Receive msgId=%zu", msg.getMsgId());
+
+        MsgHandler& handler = handlers[msg.getMsgId()];
+        if (handler)
+        {
+            handler(msg);
+        }
+        else
+        {
+            LM(GEN, LE, "Can not find handler: msgId=%zu", msg.getMsgId());
+        }
     }
-    else
-    {
-        LM(GEN, LE, "Can not find handler: msgId=%zu size=%zu", msg.getMsgId(), msg.size());
-    }
-    msgMemPool.free(ev.id);
 }
 
 void Reactor::run()

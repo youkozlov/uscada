@@ -11,9 +11,10 @@
 namespace reactor
 {
 
-Epoll::Epoll()
+Epoll::Epoll(unsigned id_)
+    : id(id_)
 {
-    epollfd = epoll_create1(0);
+    epollfd = ::epoll_create1(0);
     if (epollfd == -1)
     {
         throw std::runtime_error("epoll_create1");
@@ -22,7 +23,7 @@ Epoll::Epoll()
 
 Epoll::~Epoll()
 {
-    close(epollfd);
+    ::close(epollfd);
 }
 
 int Epoll::add(FdHandler& handler, int events)
@@ -30,7 +31,7 @@ int Epoll::add(FdHandler& handler, int events)
     struct epoll_event ev;
     ev.events = events;
     ev.data.ptr = &handler;
-    return epoll_ctl(epollfd, EPOLL_CTL_ADD, handler.getFd(), &ev);
+    return ::epoll_ctl(epollfd, EPOLL_CTL_ADD, handler.getFd(), &ev);
 }
 
 int Epoll::mod(FdHandler& handler, int events)
@@ -38,7 +39,7 @@ int Epoll::mod(FdHandler& handler, int events)
     struct epoll_event ev;
     ev.events = events;
     ev.data.ptr = &handler;
-    return epoll_ctl(epollfd, EPOLL_CTL_MOD, handler.getFd(), &ev);
+    return ::epoll_ctl(epollfd, EPOLL_CTL_MOD, handler.getFd(), &ev);
 }
 
 int Epoll::del(FdHandler& handler)
@@ -46,14 +47,14 @@ int Epoll::del(FdHandler& handler)
     struct epoll_event ev;
     ev.events = 0;
     ev.data.ptr = &handler;
-    return epoll_ctl(epollfd, EPOLL_CTL_DEL, handler.getFd(), &ev);
+    return ::epoll_ctl(epollfd, EPOLL_CTL_DEL, handler.getFd(), &ev);
 }
 
 void Epoll::wait()
 {
     struct epoll_event events[MAX_EVENTS];
 
-    int nfds = epoll_wait(epollfd, events, MAX_EVENTS, DEFAULT_TIMEOUT);
+    int nfds = ::epoll_wait(epollfd, events, MAX_EVENTS, DEFAULT_TIMEOUT);
     if (nfds == -1)
     {
         LM(GEN, LE, "epoll_wait errno: %d", errno);

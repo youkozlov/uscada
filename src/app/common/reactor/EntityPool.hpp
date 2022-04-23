@@ -14,7 +14,7 @@ template <typename ENTITY>
 class EntityPool
 {
 public:
-    explicit EntityPool(EpollInterface& epoll, const char* name_, unsigned capacity = 256)
+    explicit EntityPool(EpollInterface& epoll, const char* name_, unsigned capacity = 32)
         : name(name_)
     {
         for (unsigned uid = 0; uid < capacity; ++uid)

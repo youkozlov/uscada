@@ -24,8 +24,6 @@ void ConnectorSimple::registerComponent()
 
 void ConnectorSimple::receive(ConnectorInitReq const&)
 {
-    std::cout << "ConnectorInitReq received" << std::endl;
-
     ConnectorInitRsp rsp;
     getSender().send(rsp);
 }

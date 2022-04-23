@@ -29,6 +29,7 @@ struct ModbusTcpAdu
     uint16_t numRegs;
     uint8_t  slaveAddr;
     uint8_t  func;
+    uint8_t  err;
 
     bool     decoded;
 

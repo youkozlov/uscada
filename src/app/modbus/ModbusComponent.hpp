@@ -45,6 +45,7 @@ private:
         void send(ModbusInitRsp const& msg) final { comp.getSender().send(msg); }
         void send(ModbusConfigRsp const& msg) final { comp.getSender().send(msg); }
         void send(ModbusAduReq const& msg) final { comp.getSender().send(msg); }
+        void send(ModbusClientAduRsp const& msg) final { comp.getSender().send(msg); }
         void send(ModbusReleaseRsp const& msg) final { comp.getSender().send(msg); }
     private:
         ModbusComponent& comp;
@@ -52,8 +53,6 @@ private:
 
     ModbusSender modbusSender;
 
-    std::vector<std::unique_ptr<ModbusClient>> clients;
-    std::unique_ptr<ModbusServer> server;
     std::unique_ptr<Modbus> modbus;
 };
 

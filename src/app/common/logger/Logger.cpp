@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include <ctime>
+#include <sys/time.h>
 
 namespace app
 {
@@ -46,11 +47,8 @@ char const* toString(LogTask task)
 
 
 Logger::Logger()
+    : logLevels(numLogTasks, LogLevel::LD)
 {
-    for (auto& lvl : logLevels)
-    {
-        lvl = LogLevel::LD;
-    }
 }
 
 Logger& Logger::getInst()
@@ -66,17 +64,20 @@ LogLevel Logger::getTaskLogLevel(LogTask task) const
 
 void Logger::dispatch(char const* msg, LogLevel lvl, LogTask task, char const* file, int line)
 {
+    std::lock_guard<std::mutex> guard(mutex);
+
     char strTimeInfo[80];
-    time_t rawtime;
-    time (&rawtime);
-    struct tm * timeinfo = localtime(&rawtime);
+
+    struct timeval tv;
+    struct tm* timeinfo;
+    gettimeofday(&tv, NULL);
+
+    timeinfo = localtime(&tv.tv_sec);
     strftime(strTimeInfo, sizeof(strTimeInfo),"%d-%m-%Y %H:%M:%S",timeinfo);
     char const* filePart = strrchr(file, '/');
     char const* fileToLog = filePart ? filePart + 1 : file;
 
-    std::lock_guard<std::mutex> guard(mutex);
-
-    printf("%s %s [%s] %s %d: %s\n", strTimeInfo, toString(lvl), toString(task), fileToLog, line, msg);
+    printf("%s.%03d %s [%s] %s %d: %s\n", strTimeInfo, tv.tv_usec/1000, toString(lvl), toString(task), fileToLog, line, msg);
 }
 
 } // namespace app

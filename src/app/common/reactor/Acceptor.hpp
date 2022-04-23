@@ -12,9 +12,11 @@ class EpollInterface;
 class Acceptor : public FdHandler, public AcceptorInterface
 {
 public:
-    Acceptor(EpollInterface&, AcceptorHandler&);
+    Acceptor(EpollInterface&);
 
     ~Acceptor();
+
+    void setHandler(AcceptorHandler*);
 
     int getFd() const final;
 
@@ -26,9 +28,11 @@ public:
 
     void close() final;
 
+    void release() final;
+
 private:
     EpollInterface& epoll;
-    AcceptorHandler& handler;
+    AcceptorHandler* handler;
     int sfd;
 };
 

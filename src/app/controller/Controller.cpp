@@ -19,7 +19,8 @@
 #include "ModbusClientAduRsp.hpp"
 #include "ModbusAduReq.hpp"
 #include "ModbusAduRsp.hpp"
-
+#include <chrono>
+#include <thread>
 
 namespace app::controller
 {
@@ -59,6 +60,8 @@ void Controller::receive(ControllerStartReq const&)
     getSender().send(req);
 
     ModbusInitReq modbusReq;
+    modbusReq.maxNumServers = 2;
+    modbusReq.maxNumClients = 8;
     getSender().send(modbusReq);
 }
 
@@ -96,6 +99,7 @@ void Controller::receive(ModbusInitRsp const&)
         item.mode = ModbusConfig::Mode::client;
     }
 
+    id = 0;
     for (unsigned i = 0; i < 1u; ++i)
     {
         ModbusConfig& item = req.items[req.numItems++];
@@ -115,14 +119,23 @@ void Controller::receive(ModbusConfigRsp const&)
 {
     LM(CTRL, LD, "ModbusConfigRsp received");
 
-    reactor::MsgStore<ModbusClientAduReq> msgEv;
-    ModbusClientAduReq& req = msgEv.getMsg();
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(2s);
 
-    req.startReg = 5;
-    req.numRegs = 3;
-    req.numBytes = 0;
+    for (size_t i = 0; i < 6; i++)
+    {
+        reactor::MsgStore<ModbusClientAduReq> msgEv;
+        ModbusClientAduReq& req = msgEv.getMsg();
 
-    getSender().send(req);
+        req.clientId = i % 2;
+        req.addr = 1;
+        req.func = 0x4;
+        req.startReg = 5;
+        req.numRegs = 2 * i;
+        req.numBytes = 0;
+
+        getSender().send(req);
+    }
 }
 
 void Controller::receive(ModbusClientAduRsp const&)

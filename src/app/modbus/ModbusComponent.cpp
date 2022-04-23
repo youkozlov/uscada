@@ -1,7 +1,5 @@
 #include "ModbusComponent.hpp"
 
-#include "Logger.hpp"
-
 #include "ModbusInitReq.hpp"
 #include "ModbusReleaseReq.hpp"
 #include "ModbusConfigReq.hpp"
@@ -10,6 +8,8 @@
 #include "ModbusClientAduReq.hpp"
 #include "ModbusAduRsp.hpp"
 #include "Modbus.hpp"
+
+#include "Logger.hpp"
 
 namespace app::modbus
 {
@@ -33,18 +33,12 @@ void ModbusComponent::registerComponent()
     });
 }
 
-void ModbusComponent::receive(ModbusInitReq const&)
+void ModbusComponent::receive(ModbusInitReq const& req)
 {
     LM(MODBUS, LD, "ModbusInitReq received");
 
-    modbus = std::make_unique<Modbus>();
-
-    for (size_t i = 0; i < 2; ++i)
-    {
-        clients.push_back(std::make_unique<ModbusClient>(getReactor()));
-    }
-
-    server = std::make_unique<ModbusServer>(getReactor());
+    Modbus::Init init{getReactor(), req.maxNumServers, req.maxNumClients};
+    modbus = std::make_unique<Modbus>(init);
 
     reactor::MsgStore<ModbusInitRsp> msgStore;
     Sender::sendMsg(msgStore);
@@ -56,13 +50,6 @@ void ModbusComponent::receive(ModbusReleaseReq const&)
 
     modbus.reset();
 
-    for (auto& client : clients)
-    {
-        client.reset();
-    }
-    server->stop();
-    server.reset();
-
     reactor::MsgStore<ModbusReleaseRsp> msgStore;
     Sender::sendMsg(msgStore);
 }
@@ -71,42 +58,23 @@ void ModbusComponent::receive(ModbusConfigReq const& req)
 {
     LM(MODBUS, LD, "ModbusConfigReq received");
 
-    for (auto& client : clients)
-    {
-        if (client)
-            client->start();
-    }
-
-    if (server)
-        server->start();
-
-    reactor::MsgStore<ModbusConfigRsp> msgStore;
-    ModbusConfigRsp& rsp = msgStore.getMsg();
-    rsp.numItems = req.numItems;
-    for (unsigned i = 0; i < req.numItems; i++)
-    {
-        rsp.items[i].id = req.items[i].id;
-        rsp.items[i].status = MsgStatus::success;
-    }
-    Sender::sendMsg(msgStore);
+    if (modbus)
+        modbus->receive(req);
 }
 
 void ModbusComponent::receive(ModbusClientAduReq const& req)
 {
     LM(MODBUS, LD, "ModbusClientAduReq received");
 
-    for (auto& client : clients)
-    {
-        if (client)
-            client->receive(req);
-    }
+    if (modbus)
+        modbus->receive(req);
 }
 
 void ModbusComponent::receive(ModbusAduRsp const& rsp)
 {
     LM(MODBUS, LD, "ModbusAduRsp received");
-    if (server)
-        server->receive(rsp);
+    if (modbus)
+        modbus->receive(rsp);
 }
 
 } // namespace app::modbus

@@ -15,6 +15,8 @@ public:
     virtual void accept(LinkInterface&) = 0;
 
     virtual void close() = 0;
+
+    virtual void release() = 0;
 };
 
 } // namespace reactor

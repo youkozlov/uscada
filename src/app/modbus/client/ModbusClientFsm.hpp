@@ -19,17 +19,7 @@ public:
 
     ModbusClientState& getState();
 
-    void startTimer();
-
-    void stopTimer();
-
-    void connect();
-
-    int send();
-
-    int receive();
-
-    void close();
+    ModbusClient& getEntity();
 
 private:
     ModbusClientState* state;

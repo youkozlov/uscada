@@ -32,7 +32,7 @@ void Timer::create()
     {
         throw std::runtime_error("already created");
     }
-    fd = ::timerfd_create(CLOCK_REALTIME, 0);
+    fd = ::timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);
     if (fd == -1)
     {
         throw std::runtime_error("timerfd_create");
@@ -71,7 +71,7 @@ void Timer::setHandler(TimerHandler* handler_)
 void Timer::start(long interval)
 {
     struct timespec now;
-    if (clock_gettime(CLOCK_REALTIME, &now) == -1)
+    if (::clock_gettime(CLOCK_MONOTONIC, &now) == -1)
     {
         throw std::runtime_error("clock_gettime");
     }
@@ -80,9 +80,9 @@ void Timer::start(long interval)
     long const nano = 1000000000L;
     new_value.it_value.tv_sec = now.tv_sec + (now.tv_nsec + nsec) / nano;
     new_value.it_value.tv_nsec = (now.tv_nsec + nsec) % nano;
-    new_value.it_interval.tv_sec = nsec / nano;
-    new_value.it_interval.tv_nsec = nsec % nano;
-    if (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1)
+    new_value.it_interval.tv_sec = 0;
+    new_value.it_interval.tv_nsec = 0;
+    if (::timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1)
     {
         throw std::runtime_error("timerfd_settime");
     }
@@ -116,7 +116,8 @@ void Timer::onEvent(int)
         return;
     }
     uint64_t exp;
-    if (sizeof(uint64_t) != ::read(fd, &exp, sizeof(uint64_t)))
+    int rc = ::read(fd, &exp, sizeof(uint64_t));
+    if (rc != sizeof(uint64_t))
     {
         throw std::runtime_error("read");
     }

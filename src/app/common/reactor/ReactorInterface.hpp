@@ -5,7 +5,6 @@
 #include "MsgHandlerVector.hpp"
 #include "TimerHandler.hpp"
 #include "TimerPtr.hpp"
-#include "PipeEvent.hpp"
 #include "LinkPtr.hpp"
 #include "LinkHandler.hpp"
 #include "AcceptorPtr.hpp"
@@ -27,7 +26,7 @@ public:
 
     virtual LinkPtr createLink(LinkHandler*) = 0;
 
-    virtual AcceptorPtr createAcceptor(AcceptorHandler&) = 0;
+    virtual AcceptorPtr createAcceptor(AcceptorHandler*) = 0;
 
     virtual void send(MsgInterface const&) = 0;
 

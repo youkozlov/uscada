@@ -20,34 +20,9 @@ ModbusClientState& ModbusClientFsm::getState()
     return *state;
 }
 
-void ModbusClientFsm::startTimer()
+ModbusClient& ModbusClientFsm::getEntity()
 {
-    entity.startTimer();
-}
-
-void ModbusClientFsm::stopTimer()
-{
-    entity.stopTimer();
-}
-
-void ModbusClientFsm::connect()
-{
-    entity.connect();
-}
-
-int ModbusClientFsm::send()
-{
-    return entity.send();
-}
-
-int ModbusClientFsm::receive()
-{
-    return entity.receive();
-}
-
-void ModbusClientFsm::close()
-{
-    entity.close();
+    return entity;
 }
 
 } // namespace app::modbus

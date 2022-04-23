@@ -14,9 +14,9 @@
 namespace reactor
 {
 
-Acceptor::Acceptor(EpollInterface& epoll_, AcceptorHandler& handler_)
+Acceptor::Acceptor(EpollInterface& epoll_)
     : epoll(epoll_)
-    , handler(handler_)
+    , handler(nullptr)
     , sfd(-1)
 {
 }
@@ -27,6 +27,17 @@ Acceptor::~Acceptor()
     {
         close();
     }
+}
+
+void Acceptor::setHandler(AcceptorHandler* handler_)
+{
+    handler = handler_;
+}
+
+void Acceptor::release()
+{
+    close();
+    setHandler(nullptr);
 }
 
 void Acceptor::listen(LinkAddr const&)
@@ -42,7 +53,7 @@ void Acceptor::listen(LinkAddr const&)
     }
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(12345);
+    addr.sin_port = htons(12145);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     if (-1 == ::bind(sfd, (struct sockaddr*) &addr, sizeof(addr)))
     {
@@ -93,7 +104,12 @@ int Acceptor::getFd() const
 
 void Acceptor::onEvent(int events)
 {
-    handler.onAccept();
+    if (nullptr == handler)
+    {
+        LM(GEN, LW, "Handler is undefined");
+        return;
+    }
+    handler->onAccept();
 }
 
 void Acceptor::accept(LinkInterface& link)

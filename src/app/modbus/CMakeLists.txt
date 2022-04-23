@@ -3,9 +3,10 @@ add_library(modbus
     client/ModbusClientFsm.cpp
     client/ModbusClientInit.cpp
     client/ModbusClientConnect.cpp
-    client/ModbusClientSend.cpp
+    client/ModbusClientConnected.cpp
     client/ModbusClientReceive.cpp
     client/ModbusClientBackoff.cpp
+    client/ModbusTransactionStorage.cpp
     server/ModbusServer.cpp
     server/ModbusSession.cpp
     server/ModbusAduPool.cpp

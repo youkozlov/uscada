@@ -24,8 +24,6 @@ void Detector::registerComponent()
 
 void Detector::receive(DetectorInitReq const&)
 {
-    std::cout << "DetectorInitReq received" << std::endl;
-
     DetectorInitRsp rsp;
     getSender().send(rsp);
 }

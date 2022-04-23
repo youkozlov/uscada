@@ -27,9 +27,9 @@ std::vector<reactor::Container> getDepl(DeploymentType depType)
     case DeploymentType::cpu3:
         return
             {
-                  {{CompIds::compConnector}, 1,  0b00010}
-                , {{CompIds::compModbus}, 1,     0b00100}
-                , {{CompIds::compController}, 1, 0b01000}
+                  {{CompIds::compConnector}, 1,  0b00000100}
+                , {{CompIds::compModbus}, 1,     0b00010000}
+                , {{CompIds::compController}, 1, 0b01000000}
             };
     default:
         break;
@@ -40,13 +40,14 @@ std::vector<reactor::Container> getDepl(DeploymentType depType)
 
 void Deployer::apply(reactor::ReactorManager& manager, DeploymentType depType)
 {
+    unsigned id = 0;
     for (auto const& container : getDepl(depType))
     {
         reactor::Reactor::Init reactorInit
         {
-              container.numThreads
+              id++
+            , container.numThreads
             , container.cpuMask
-            , manager.getMsgMemPool()
         };
         std::unique_ptr<reactor::ReactorInterface> reactor{new reactor::Reactor(reactorInit)};
         for (auto& compId : container.components)

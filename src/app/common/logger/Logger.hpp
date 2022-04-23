@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstdio>
 #include <mutex>
+#include <vector>
 
 namespace app
 {
@@ -50,7 +51,7 @@ private:
 
     std::mutex mutex;
     static constexpr int numLogTasks = static_cast<int>(app::LogTask::NUM);
-    app::LogLevel logLevels[numLogTasks] = {};
+    std::vector<app::LogLevel> const logLevels;
 };
 
 } // namespace app

@@ -9,6 +9,8 @@ namespace app
 
 struct ModbusInitReq : public reactor::MsgBase<ModbusInitReq, CompIds::compModbus, MsgIds::modbusInitReq>
 {
+    unsigned maxNumServers;
+    unsigned maxNumClients;
 };
 
 } // namespace app

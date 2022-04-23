@@ -57,7 +57,7 @@ void Link::connect(LinkAddr const&)
     }
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(12345);
+    addr.sin_port = htons(12145);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     int rc = ::connect(fd, (struct sockaddr*)&addr, sizeof(addr));
     if (0 != rc && EINPROGRESS != errno)

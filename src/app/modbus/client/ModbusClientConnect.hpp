@@ -12,6 +12,8 @@ public:
 
     void onEnter(ModbusClientFsm&) final;
 
+    void onReceiveTransactionReq(ModbusClientFsm&) final;
+
     void onConnected(ModbusClientFsm&) final;
 
     void onError(ModbusClientFsm&) final;

@@ -16,11 +16,13 @@ class ModbusSession : public reactor::LinkHandler, public reactor::TimerHandler
 {
 public:
 
-    explicit ModbusSession(ModbusSessionHandler &, int);
+    using Uid = unsigned;
+
+    explicit ModbusSession(ModbusSessionHandler&, Uid);
 
     ~ModbusSession();
 
-    int getId() const;
+    Uid getId() const;
 
     void setLink(reactor::LinkPtr);
 
@@ -38,11 +40,11 @@ public:
 
 private:
 
-    static constexpr long timeout = 60000000;
+    static constexpr long timeout = 30000000;
 
     void reset();
 
-    void remove();
+    void release();
 
     void onConnected() final {}
 
@@ -52,7 +54,7 @@ private:
 
     void onTimer() final;
 
-    int const id;
+    Uid const uid;
     ModbusSessionHandler &handler;
     reactor::TimerPtr timer;
     reactor::LinkPtr link;

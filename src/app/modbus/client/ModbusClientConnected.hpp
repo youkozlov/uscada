@@ -5,21 +5,27 @@
 namespace app::modbus
 {
 
-class ModbusClientSend : public ModbusClientState
+class ModbusClientConnected : public ModbusClientState
 {
 public:
-    explicit ModbusClientSend() {}
+    explicit ModbusClientConnected() {}
 
     void onEnter(ModbusClientFsm&) final;
 
+    void onReceiveTransactionReq(ModbusClientFsm&) final;
+
     void onDataReceived(ModbusClientFsm&) final;
+
+    void onError(ModbusClientFsm&) final;
 
     void onTimer(ModbusClientFsm&) final;
 
     void onExit(ModbusClientFsm&) final;
 
 private:
-    /* data */
+
+    void send(ModbusClientFsm&);
+
 };
 
-} // namespace app::modbus
+} // namespace a::modbuspp

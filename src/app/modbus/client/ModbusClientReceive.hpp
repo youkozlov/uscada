@@ -12,9 +12,9 @@ public:
 
     void onEnter(ModbusClientFsm&) final;
 
-    void onDataReceived(ModbusClientFsm&) final;
+    void onReceiveTransactionReq(ModbusClientFsm&) final;
 
-    void onError(ModbusClientFsm&) final;
+    void onDataReceived(ModbusClientFsm&) final;
 
     void onTimer(ModbusClientFsm&) final;
 
@@ -24,4 +24,4 @@ private:
     /* data */
 };
 
-} // namespace a::modbuspp
+} // namespace app::modbus

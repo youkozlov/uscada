@@ -3,6 +3,6 @@
 namespace app
 {
 
-using EntityId = int;
+using EntityId = unsigned;
 
 } // namespace app

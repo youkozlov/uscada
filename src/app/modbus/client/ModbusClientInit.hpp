@@ -10,7 +10,9 @@ class ModbusClientInit : public ModbusClientState
 public:
     explicit ModbusClientInit() {}
 
-    void start(ModbusClientFsm&) final;
+    void onStart(ModbusClientFsm&) final;
+
+    void onReceiveTransactionReq(ModbusClientFsm&) final;
 
 private:
     /* data */

@@ -1,7 +1,8 @@
 #include "ModbusClientReceive.hpp"
 #include "ModbusClientFsm.hpp"
 #include "ModbusClientBackoff.hpp"
-#include "ModbusClientSend.hpp"
+#include "ModbusClientConnected.hpp"
+#include "ModbusClient.hpp"
 #include "Logger.hpp"
 
 namespace app::modbus
@@ -11,42 +12,44 @@ void ModbusClientReceive::onEnter(ModbusClientFsm& fsm)
 {
     LM(MODBUS, LD, "onEnter");
 
-    fsm.startTimer();
+    fsm.getEntity().startTimer(ModbusClient::receiveTimeout);
+    fsm.getEntity().receivePrepare();
 }
+
+void ModbusClientReceive::onReceiveTransactionReq(ModbusClientFsm&)
+{}
 
 void ModbusClientReceive::onDataReceived(ModbusClientFsm& fsm)
 {
-    switch (fsm.receive())
+    switch (fsm.getEntity().receive())
     {
-    case 0:
+    case Status::error:
     {
-        fsm.close();
+        fsm.getEntity().close();
         fsm.transit<ModbusClientBackoff>();
     }
     break;
-    default:
+    case Status::done:
     {
-        LM(MODBUS, LD, "Adu received");
-
-        fsm.transit<ModbusClientSend>();
+        fsm.transit<ModbusClientConnected>();
     }
     break;
     }
-}
-
-void ModbusClientReceive::onError(ModbusClientFsm& fsm)
-{
-    fsm.transit<ModbusClientBackoff>();
 }
 
 void ModbusClientReceive::onTimer(ModbusClientFsm& fsm)
 {
-    fsm.transit<ModbusClientSend>();
+    LM(MODBUS, LD, "onTimer");
+
+    fsm.getEntity().provideRspTimeout();
+    fsm.transit<ModbusClientConnected>();
 }
 
 void ModbusClientReceive::onExit(ModbusClientFsm& fsm)
 {
-    fsm.stopTimer();
+    LM(MODBUS, LD, "onExit");
+
+    fsm.getEntity().stopTimer();
 }
 
 } // namespace app::modbus

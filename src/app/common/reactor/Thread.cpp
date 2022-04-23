@@ -1,5 +1,6 @@
 #include "Thread.hpp"
 #include "ThreadHandler.hpp"
+#include "Logger.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -35,19 +36,26 @@ Thread::~Thread()
     int result = pthread_attr_destroy(&attr);
     if (result != 0)
     {
-        std::cout << "pthread_attr_destroy" << std::endl;
+        LM(GEN, LE, "pthread_attr_destroy");
     }
 
     result = pthread_join(tid, nullptr);
     if (result != 0)
     {
-        std::cout << "pthread_join" << std::endl;
+        LM(GEN, LE, "pthread_join");
     }
 }
 
 void Thread::start()
 {
-    int result = pthread_create(&tid, &attr, &executer, &handler);
+    int policy = SCHED_FIFO;
+    int result = ::pthread_attr_setschedpolicy(&attr, policy);
+    if (result != 0)
+    {
+        throw std::runtime_error("pthread_attr_setschedpolicy");
+    }
+
+    result = pthread_create(&tid, &attr, &executer, &handler);
     if (result != 0)
     {
         throw std::runtime_error("pthread_create");

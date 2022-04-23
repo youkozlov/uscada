@@ -1,15 +1,15 @@
 #include "ModbusSessionPool.hpp"
-#include "ModbusSession.hpp"
+#include "Logger.hpp"
 
 namespace app::modbus
 {
 
-ModbusSessionPool::ModbusSessionPool(ModbusSessionHandler& handler)
+ModbusSessionPool::ModbusSessionPool(ModbusSessionHandler& handler, unsigned capacity)
 {
-    for (int id = 0; id < capacity; ++id)
+    for (ModbusSession::Uid uid = 0; uid < capacity; ++uid)
     {
-        sessions.push_back(std::make_unique<ModbusSession>(handler, id));
-        ids.push(id);
+        sessions.push_back(std::make_unique<ModbusSession>(handler, uid));
+        ids.push(uid);
     }
 }
 
@@ -17,24 +17,26 @@ ModbusSessionPool::~ModbusSessionPool()
 {
 }
 
-bool ModbusSessionPool::alloc(int& id)
+bool ModbusSessionPool::alloc(ModbusSession::Uid& uid)
 {
     if (ids.empty())
     {
         return false;
     }
-    id = ids.front();
+    uid = ids.front();
+    LM(MODBUS, LD, "Alloc session-%u", uid);
     ids.pop();
     return true;
 }
 
-void ModbusSessionPool::free(int id)
+void ModbusSessionPool::free(ModbusSession::Uid uid)
 {
-    ids.push(id);
+    LM(MODBUS, LD, "Release session-%u", uid);
+    ids.push(uid);
 }
 
-ModbusSession& ModbusSessionPool::get(int id) const
+ModbusSession& ModbusSessionPool::get(ModbusSession::Uid uid) const
 {
-    return *sessions[id];
+    return *sessions[uid];
 }
 } // namespace app::modbus

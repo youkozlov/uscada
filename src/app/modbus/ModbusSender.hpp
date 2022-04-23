@@ -5,6 +5,7 @@
 #include "ModbusInitRsp.hpp"
 #include "ModbusConfigRsp.hpp"
 #include "ModbusAduReq.hpp"
+#include "ModbusClientAduRsp.hpp"
 #include "ModbusReleaseRsp.hpp"
 
 namespace app::modbus
@@ -18,6 +19,7 @@ public:
     virtual void send(ModbusInitRsp const&) = 0;
     virtual void send(ModbusConfigRsp const&) = 0;
     virtual void send(ModbusAduReq const&) = 0;
+    virtual void send(ModbusClientAduRsp const&) = 0;
     virtual void send(ModbusReleaseRsp const&) = 0;
 };
 

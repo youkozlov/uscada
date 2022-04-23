@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Logger.hpp"
+#include "ModbusTransaction.hpp"
 
 namespace app::modbus
 {
@@ -12,9 +13,11 @@ class ModbusClientState
 public:
     virtual ~ModbusClientState() {}
 
-    virtual void start(ModbusClientFsm&) { LM(MODBUS, LE, "Unexpected call"); }
+    virtual void onStart(ModbusClientFsm&) { LM(MODBUS, LE, "Unexpected call"); }
 
     virtual void onConnected(ModbusClientFsm&) { LM(MODBUS, LE, "Unexpected call"); }
+
+    virtual void onReceiveTransactionReq(ModbusClientFsm&) { LM(MODBUS, LE, "Unexpected call"); }
 
     virtual void onDataReceived(ModbusClientFsm&) { LM(MODBUS, LE, "Unexpected call"); }
 

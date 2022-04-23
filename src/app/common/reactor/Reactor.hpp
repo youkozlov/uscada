@@ -7,27 +7,28 @@
 
 #include "ReactorInterface.hpp"
 #include "ThreadHandler.hpp"
-#include "PipeHandler.hpp"
+#include "EventHandler.hpp"
 #include "EntityPool.hpp"
 #include "Link.hpp"
 #include "Timer.hpp"
+#include "Acceptor.hpp"
 
 namespace reactor
 {
 
-class Pipe;
+class Event;
 class Epoll;
 class Thread;
-class MsgMemPool;
+class MsgMemStorage;
 
-class Reactor : public ReactorInterface, public ThreadHandler, public PipeHandler
+class Reactor : public ReactorInterface, public ThreadHandler, public EventHandler
 {
 public:
     struct Init
     {
+        unsigned id;
         std::size_t numThreads;
         uint64_t cpuMask;
-        MsgMemPool& msgMemPool;
     };
     
     explicit Reactor(Init const&);
@@ -42,7 +43,7 @@ public:
 
     LinkPtr createLink(LinkHandler*) final;
 
-    AcceptorPtr createAcceptor(AcceptorHandler&) final;
+    AcceptorPtr createAcceptor(AcceptorHandler*) final;
 
     void send(MsgInterface const&) final;
 
@@ -52,16 +53,17 @@ public:
 
     void run() final;
 
-    void onPipeEvent(PipeEvent const&) final;
+    void onFdEvent(uint64_t) final;
 
 private:
     void releaseLink(unsigned, LinkInterface*);
 
     std::atomic<bool> stopped;
-    MsgMemPool& msgMemPool;
+    std::unique_ptr<MsgMemStorage> msgMemStorage;
     std::unique_ptr<Epoll> epoll;
-    std::unique_ptr<Pipe> pipe;
+    std::unique_ptr<Event> event;
     std::vector<std::unique_ptr<Thread>> threads;
+    EntityPool<Acceptor> acceptorPool;
     EntityPool<Link> linkPool;
     EntityPool<Timer> timerPool;
     std::map<MsgId, MsgHandler> handlers;

@@ -5,26 +5,19 @@
 #include <thread>
 
 #include "MsgInterface.hpp"
-#include "MsgMemPool.hpp"
 #include "ReactorInterface.hpp"
 #include "ComponentInterface.hpp"
 #include "MaxMsgSize.hpp"
+#include "Logger.hpp"
 
 namespace reactor
 {
 
 ReactorManager::ReactorManager()
-{
-    msgMemPool = std::make_unique<MsgMemPool>(maxMsgSize, 128);
-}
+{}
 
 ReactorManager::~ReactorManager()
 {
-}
-
-MsgMemPool& ReactorManager::getMsgMemPool()
-{
-    return *msgMemPool;
 }
 
 void ReactorManager::send(MsgInterface const& msg)
@@ -32,7 +25,7 @@ void ReactorManager::send(MsgInterface const& msg)
     auto& comp = components[msg.getCompId()];
     if (nullptr == comp)
     {
-        std::cout << "Can not find component, compId: " << msg.getCompId() << std::endl;
+        LM(GEN, LE, "Can not find component, compId=%u", msg.getCompId());
         return;
     }
     comp->getReactor().send(msg);
@@ -43,7 +36,7 @@ void ReactorManager::addComponent(std::unique_ptr<ComponentInterface> comp)
     auto& stored = components[comp->getCompId()];
     if (stored)
     {
-        std::cout << "Can not add component, because already exists, compId: " << comp->getCompId() << std::endl;
+        LM(GEN, LE, "Can not add component, because already exists, compId=%u", comp->getCompId());
         return;
     }
     stored = std::move(comp);

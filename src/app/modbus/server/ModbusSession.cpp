@@ -9,10 +9,9 @@
 namespace app::modbus
 {
 
-ModbusSession::ModbusSession(ModbusSessionHandler& handler_, int id_)
-    : id(id_)
+ModbusSession::ModbusSession(ModbusSessionHandler& handler_, Uid uid_)
+    : uid(uid_)
     , handler(handler_)
-    , link(nullptr)
 {
     reset();
 }
@@ -21,9 +20,9 @@ ModbusSession::~ModbusSession()
 {
 }
 
-int ModbusSession::getId() const
+ModbusSession::Uid ModbusSession::getId() const
 {
-    return id;
+    return uid;
 }
 
 void ModbusSession::setLink(reactor::LinkPtr link_)
@@ -57,7 +56,7 @@ void ModbusSession::reset()
     storedAdu.reset();
 }
 
-void ModbusSession::remove()
+void ModbusSession::release()
 {
     reset();
     link.reset();
@@ -69,7 +68,7 @@ void ModbusSession::onDataReceived()
 {
     if (0 == pduBuf.capacity())
     {
-        LM(MODBUS, LW, "Pdu buffer overflow, reseting");
+        LM(MODBUS, LW, "Session-%u, pdu buffer overflow, reseting", uid);
         reset();
         return;
     }
@@ -78,8 +77,8 @@ void ModbusSession::onDataReceived()
 
     if (rc <= 0)
     {
-        LM(MODBUS, LD, "Receive return: %d", rc);
-        remove();
+        LM(MODBUS, LD, "Session-%u, receive return: %d", uid, rc);
+        release();
         return;
     }
 
@@ -98,13 +97,22 @@ void ModbusSession::onDataReceived()
 
     if (not storedAdu.isValid())
     {
-        LM(MODBUS, LW, "Adu is invalid, reseting");
+        LM(MODBUS, LW, "Session-%u, adu is invalid", uid);
+        respondError(storedAdu, ModbusErorr::IllegalFunction);
         reset();
         return;
     }
 
     if (pduBuf.size() != storedAdu.aduLen())
     {
+        return;
+    }
+
+    if (pduBuf.size() > storedAdu.aduLen())
+    {
+        LM(MODBUS, LW, "Session-%u, adu is invalid", uid);
+        respondError(storedAdu, ModbusErorr::IllegalFunction);
+        reset();
         return;
     }
 
@@ -115,8 +123,8 @@ void ModbusSession::onDataReceived()
         storedAdu.startReg = pduBuf.readBe();
         storedAdu.numRegs = pduBuf.readBe();
 
-        LM(MODBUS, LD, "RX ADU: %u:%u LEN=%u START=%u NUM=%u ADDR=%u FC=%u RAW=%s"
-            , storedAdu.transactionId, storedAdu.protocolId, storedAdu.pktLen
+        LM(MODBUS, LD, "Session-%u, RX ADU: %u:%u LEN=%u START=%u NUM=%u ADDR=%u FC=%u RAW=%s"
+            , uid, storedAdu.transactionId, storedAdu.protocolId, storedAdu.pktLen
             , storedAdu.startReg, storedAdu.numRegs, storedAdu.slaveAddr, storedAdu.func, pduBuf.toString().c_str());
 
         handler.onAduReceived(*this);
@@ -124,6 +132,7 @@ void ModbusSession::onDataReceived()
     break;
     default:
     {
+        LM(MODBUS, LW, "Session-%u, function is unsupported", uid);
         respondError(storedAdu, ModbusErorr::IllegalFunction);
     }
     break;
@@ -136,22 +145,22 @@ void ModbusSession::respond(ModbusTcpAdu const& adu, void const* data, unsigned 
 {
     if (!link)
     {
-        LM(MODBUS, LD, "Can not send, link is closed");
+        LM(MODBUS, LD, "Session-%u, can not send, link is undefined", uid);
         return;
     }
     PduBuffer buf;
     ModbusCodec codec(buf);
     codec.encode(adu, data, len);
 
-    LM(MODBUS, LD, "TX ADU: %u:%u LEN=%u START=%u NUM=%u ADDR=%u FC=%u RAW=%s"
-        , adu.transactionId, adu.protocolId, buf.size() + 3
+    LM(MODBUS, LD, "Session-%u, TX ADU: %u:%u LEN=%u START=%u NUM=%u ADDR=%u FC=%u RAW=%s"
+        , uid, adu.transactionId, adu.protocolId, buf.size() + 3
         , adu.startReg, adu.numRegs, adu.slaveAddr, adu.func, buf.toString().c_str());
 
     int rc = link->send(buf.begin(), buf.size());
     if (rc <= 0)
     {
-        LM(MODBUS, LD, "Send return: %d", rc);
-        remove();
+        LM(MODBUS, LD, "Session-%u, send return: %d", uid, rc);
+        release();
     }
 }
 
@@ -159,23 +168,29 @@ void ModbusSession::respondError(ModbusTcpAdu const& adu, ModbusErorr err)
 {
     if (!link)
     {
-        LM(MODBUS, LD, "Can not send, link is closed");
+        LM(MODBUS, LD, "Session-%u, can not send, link is undefined", uid);
         return;
     }
     PduBuffer buf;
     ModbusCodec codec(buf);
     codec.encode(adu, err);
 
+    LM(MODBUS, LD, "Session-%u, TX ERR ADU: %u:%u LEN=%u ADDR=%u ERR=%u RAW=%s"
+        , uid, adu.transactionId, adu.protocolId, 3
+        , adu.slaveAddr, err, buf.toString().c_str());
+
     int rc = link->send(buf.begin(), buf.size());
     if (rc <= 0)
     {
-        LM(MODBUS, LD, "Send return: %d", rc);
-        remove();
+        LM(MODBUS, LD, "Session-%u, send return: %d", uid, rc);
+        release();
     }
 }
 
 void ModbusSession::onTimer()
 {
+    LM(MODBUS, LD, "Session-%u, timeout", uid);
+    release();
 }
 
 } // namespace app::modbus

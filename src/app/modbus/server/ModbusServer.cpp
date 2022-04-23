@@ -10,10 +10,10 @@
 namespace app::modbus
 {
 
-ModbusServer::ModbusServer(reactor::ReactorInterface& reactor_)
-    : reactor(reactor_)
-    , acceptor(reactor_.createAcceptor(*this))
-    , sessionPool(*this)
+ModbusServer::ModbusServer(Init const& init)
+    : id(init.id)
+    , reactor(init.reactor)
+    , sessionPool(*this, maxNumSession)
 {
 }
 
@@ -24,14 +24,17 @@ ModbusServer::~ModbusServer()
 
 void ModbusServer::start()
 {
+    LM(MODBUS, LD, "Server-%u, start", id);
+
+    acceptor = reactor.createAcceptor(this);
+
     reactor::LinkAddr addr;
     acceptor->listen(addr);
 }
 
 void ModbusServer::stop()
 {
-    //reactor.releaseAcceptor(acceptor);
-    acceptor->close();
+    acceptor.reset();
 }
 
 void ModbusServer::receive(ModbusAduRsp const& rsp)
@@ -52,32 +55,23 @@ void ModbusServer::receive(ModbusAduRsp const& rsp)
     aduPool.free(rsp.aduId);
 }
 
-void ModbusServer::createSession()
+void ModbusServer::onAccept()
 {
-    LM(MODBUS, LD, "Create session");
-
-    int id;
-    if (not sessionPool.alloc(id))
+    ModbusSession::Uid uid;
+    if (not sessionPool.alloc(uid))
     {
-        LM(MODBUS, LE, "Can not alloc session from pool");
+        LM(MODBUS, LE, "Server-%u, can not alloc session from pool", id);
         return;
     }
 
-    ModbusSession& session = sessionPool.get(id);
+    ModbusSession& session = sessionPool.get(uid);
     session.setLink(reactor.createLink(&session));
-    //session.setTimer(reactor.createTimer(session));
+    //session.setTimer(reactor.createTimer(&session));
     acceptor->accept(session.getLink());
-}
-
-void ModbusServer::onAccept()
-{
-    createSession();
 }
 
 void ModbusServer::onRemoveSession(ModbusSession& session)
 {
-    LM(MODBUS, LD, "Remove session");
-
     sessionPool.free(session.getId());
 }
 
@@ -86,7 +80,7 @@ void ModbusServer::onAduReceived(ModbusSession& session)
     int aduId;
     if (not aduPool.alloc(aduId))
     {
-        LM(MODBUS, LE, "Can not alloc adu from pool");
+        LM(MODBUS, LE, "Server-%u, can not alloc adu from pool", id);
         return;
     }
 
@@ -96,7 +90,7 @@ void ModbusServer::onAduReceived(ModbusSession& session)
     reactor::MsgStore<ModbusAduReq> msgStore;
     ModbusAduReq& req = msgStore.getMsg();
 
-    req.serverId = 0;
+    req.serverId = id;
     req.sessionId = session.getId();
     req.aduId = aduId;
     req.func = storedAdu.isRead() ? ModbusFunc::read : ModbusFunc::write;

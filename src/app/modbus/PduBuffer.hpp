@@ -78,6 +78,11 @@ public:
         return maxLen - len;
     }
 
+    bool full() const
+    {
+        return 0 == (maxLen - len);
+    }
+
     void reset()
     {
         len = 0;

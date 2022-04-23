@@ -5,7 +5,8 @@ namespace reactor
 
 struct PipeEvent
 {
-    int id;
+    unsigned memId;
+    unsigned memSize;
 };
 
 } // namespace reactor

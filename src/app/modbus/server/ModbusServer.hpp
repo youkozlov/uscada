@@ -9,6 +9,7 @@
 #include "ModbusSessionHandler.hpp"
 #include "ModbusSessionPool.hpp"
 #include "ModbusAduPool.hpp"
+#include "EntityId.hpp"
 
 namespace app
 {
@@ -23,7 +24,12 @@ class ModbusSession;
 class ModbusServer : public reactor::AcceptorHandler, public ModbusSessionHandler
 {
 public:
-    explicit ModbusServer(reactor::ReactorInterface&);
+    struct Init
+    {
+        reactor::ReactorInterface& reactor;
+        app::EntityId id;
+    };
+    explicit ModbusServer(Init const&);
 
     ~ModbusServer();
 
@@ -35,7 +41,7 @@ public:
 
 private:
 
-    void createSession();
+    static constexpr unsigned maxNumSession = 256;
 
     void onAccept() final;
 
@@ -43,6 +49,7 @@ private:
 
     void onAduReceived(ModbusSession&) final;
 
+    app::EntityId const id;
     reactor::ReactorInterface& reactor;
     reactor::AcceptorPtr acceptor;
     ModbusSessionPool sessionPool;
