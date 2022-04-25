@@ -8,6 +8,8 @@ namespace reactor
 MsgMemStorage::MsgMemStorage(std::size_t chunkSize_, std::size_t numChunks_)
     : chunkSize(chunkSize_)
     , numChunks(numChunks_)
+    , freeIds(numChunks)
+    , busyIds(numChunks)
 {
     auto const totalMem = chunkSize * numChunks;
 

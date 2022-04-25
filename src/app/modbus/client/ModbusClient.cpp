@@ -2,9 +2,8 @@
 #include "LinkInterface.hpp"
 #include "TimerInterface.hpp"
 #include "ModbusCodec.hpp"
-#include "PduBuffer.hpp"
 #include "ModbusSender.hpp"
-#include "ModbusClientAduReq.hpp"
+#include "AduRespond.hpp"
 
 #include "Logger.hpp"
 
@@ -17,7 +16,6 @@ ModbusClient::ModbusClient(Init const& init)
     , fsm(*this)
     , link(reactor.createLink(this))
     , timer(reactor.createTimer(this))
-    , transactCounter(0)
 {
     pduBuf.reset();
 }
@@ -50,46 +48,42 @@ void ModbusClient::stopTimer()
 
 Status ModbusClient::send()
 {
-    if (trStorage.empty())
+    if (aduStorage.empty())
     {
         return Status::noerror;
     }
 
-    ModbusTransaction const& tr = trStorage.front();
-
-    ModbusTcpAdu adu{};
-    adu.transactionId = tr.transactId;
-    adu.startReg = tr.startReg;
-    adu.numRegs = tr.numRegs;
-    adu.slaveAddr = tr.addr;
-    adu.func = tr.func;
-
     PduBuffer buf;
     ModbusCodec codec(buf);
+    if (not codec.encode(aduStorage.front()))
+    {
+        LM(MODBUS, LE, "Client-%u, encode error", uid);
+        provideRspError(aduStorage.front());
+        aduStorage.pop();
+        return Status::codecError;
+    }
 
-    codec.encode(adu);
-
-    LM(MODBUS, LD, "Client-%u, TX PDU %s", uid, buf.toString().c_str());
+    LM(MODBUS, LD, "Client-%u, TX ADU %s", uid, buf.toString().c_str());
 
     int rc = link->send(buf.begin(), buf.size());
     if (rc <= 0)
     {
+        LM(MODBUS, LI, "Client-%u, send return: %d", uid, rc);
         return Status::error;
     }
     return Status::done;
 }
 
-void ModbusClient::receivePrepare()
+void ModbusClient::receivePreaction()
 {
     pduBuf.reset();
 }
 
 Status ModbusClient::receive()
 {
-    if (pduBuf.full())
+    if (pduBuf.size() > maxAduLen)
     {
-        LM(MODBUS, LW, "Client-%u, PDU buffer is full, reseting", uid);
-        provideRspTimeout();
+        LM(MODBUS, LW, "Client-%u, received ADU is invalid", uid);
         return Status::done;
     }
 
@@ -97,15 +91,13 @@ Status ModbusClient::receive()
 
     if (rc <= 0)
     {
-        LM(MODBUS, LD, "Client-%u, receive return: %d", uid, rc);
-        provideRspError();
+        LM(MODBUS, LI, "Client-%u, receive return: %d", uid, rc);
         return Status::error;
     }
 
-    if (trStorage.empty())
+    if (aduStorage.empty())
     {
-        LM(MODBUS, LW, "Client-%u, received PDU is unexpected", uid);
-        provideRspTimeout();
+        LM(MODBUS, LW, "Client-%u, received ADU is unexpected", uid);
         return Status::done;
     }
 
@@ -113,77 +105,132 @@ Status ModbusClient::receive()
 
     ModbusCodec codec(pduBuf);
 
-    if (not codec.isPduHdrReceived())
+    if (not codec.isAduHdrReceived())
     {
         return Status::noerror;
     }
 
-    if (not codec.isPduReceived())
+    if (not codec.isAduDataLenValid())
     {
-        return Status::noerror;
-    }
-
-    if (not codec.isPduValid())
-    {
-        LM(MODBUS, LW, "Client-%u, PDU is invalid", uid);
-        provideRspTimeout();
+        LM(MODBUS, LW, "Client-%u, ADU data len is invalid", uid);
         return Status::done;
     }
 
-    LM(MODBUS, LD, "Client-%u, RX PDU %s", uid, pduBuf.toString().c_str());
+    if (not codec.isAduReceived())
+    {
+        return Status::noerror;
+    }
+
+    AduRequest const& aduReq = aduStorage.front();
+
+    if (not codec.isAduValid())
+    {
+        LM(MODBUS, LW, "Client-%u, ADU is invalid", uid);
+        provideRspError(aduReq);
+        return Status::done;
+    }
+
+    LM(MODBUS, LD, "Client-%u, RX ADU %s", uid, pduBuf.toString().c_str());
+
+    AduRespond aduRsp;
+    if (not codec.decode(aduRsp))
+    {
+        LM(MODBUS, LW, "Client-%u, ADU decode error", uid);
+        provideRspError(aduReq);
+        return Status::done;
+    }
+    if (aduReq.transactId != aduRsp.transactId)
+    {
+        LM(MODBUS, LW, "Client-%u, unexpected transaction %u vs %u"
+            , uid, aduReq.transactId, aduRsp.transactId);
+        provideRspError(aduReq);
+        return Status::done;
+    }
+    if (aduReq.addr != aduRsp.addr)
+    {
+        LM(MODBUS, LW, "Client-%u, unexpected slave addr %u vs %u"
+            , uid, aduReq.addr, aduRsp.addr);
+        provideRspError(aduReq);
+        return Status::done;
+    }
+    if (ModbusFunction::modbusError == aduRsp.func)
+    {
+        LM(MODBUS, LW, "Client-%u, modbus error code (%s)"
+            , uid, toString(aduRsp.error));
+        provideRspModbusError(aduReq, aduRsp.error);
+        return Status::done;
+    }
+    if (aduReq.func != aduRsp.func)
+    {
+        LM(MODBUS, LW, "Client-%u, unexpected function %s vs %s"
+            , uid, toString(aduReq.func), toString(aduRsp.func));
+        provideRspError(aduReq);
+        return Status::done;
+    }
 
     reactor::MsgStore<ModbusClientAduRsp> msgStore;
     ModbusClientAduRsp& rsp = msgStore.getMsg();
-
-    ModbusTcpAdu adu;
-    if (not codec.decode(adu, rsp.data, rsp.numBytes))
-    {
-        LM(MODBUS, LW, "Client-%u, PDU decode error", uid);
-        provideRspTimeout();
-        return Status::done;
-    }
-
-    ModbusTransaction const& tr = trStorage.front();
-
-    if (tr.transactId != adu.transactionId)
-    {
-        LM(MODBUS, LW, "Client-%u, unexpected transaction %u vs %u"
-            , uid, tr.transactId, adu.transactionId);
-        provideRspTimeout();
-        return Status::done;
-    }
-
-    rsp.clientId = tr.clientId;
+    rsp.clientId = aduReq.clientId;
+    rsp.transactId = aduRsp.transactId;
+    rsp.error = ModbusError::noerror;
     rsp.status = MsgStatus::success;
+    rsp.numBytes = aduRsp.numBytes;
+    std::memcpy(rsp.data, aduRsp.data, aduRsp.numBytes);
     Sender::sendMsg(msgStore);
-
-    trStorage.pop();
 
     return Status::done;
 }
 
-void ModbusClient::provideRspError(ModbusTransaction const& tr)
+void ModbusClient::receivePostaction()
+{
+    if (aduStorage.empty())
+    {
+        LM(MODBUS, LI, "Client-%u, ADU storage is empty", uid);
+        return;
+    }
+    aduStorage.pop();
+}
+
+void ModbusClient::provideRspError(AduRequest const& adu)
 {
     reactor::MsgStore<ModbusClientAduRsp> msgStore;
     ModbusClientAduRsp& rsp = msgStore.getMsg();
-    rsp.clientId = tr.clientId;
-    rsp.status = MsgStatus::fail;
+    rsp.clientId = adu.clientId;
+    rsp.transactId = adu.transactId;
+    rsp.error = ModbusError::noerror;
+    rsp.status = MsgStatus::error;
     rsp.numBytes = 0;
     Sender::sendMsg(msgStore);
 }
 
 void ModbusClient::provideRspTimeout()
 {
-    provideRspError(trStorage.front());
-    trStorage.pop();
+    if (aduStorage.empty())
+    {
+        LM(MODBUS, LD, "Client-%u, ADU storage is empty", uid);
+        return;
+    }
+    provideRspError(aduStorage.front());
+}
+
+void ModbusClient::provideRspModbusError(AduRequest const& adu, ModbusError error)
+{
+    reactor::MsgStore<ModbusClientAduRsp> msgStore;
+    ModbusClientAduRsp& rsp = msgStore.getMsg();
+    rsp.clientId = adu.clientId;
+    rsp.transactId = adu.transactId;
+    rsp.error = error;
+    rsp.status = MsgStatus::success;
+    rsp.numBytes = 0;
+    Sender::sendMsg(msgStore);
 }
 
 void ModbusClient::provideRspError()
 {
-    while (not trStorage.empty())
+    while (not aduStorage.empty())
     {
-        provideRspError(trStorage.front());
-        trStorage.pop();
+        provideRspError(aduStorage.front());
+        aduStorage.pop();
     }
 }
 
@@ -194,22 +241,22 @@ void ModbusClient::start()
     fsm.getState().onStart(fsm);
 }
 
-void ModbusClient::receive(ModbusClientAduReq const& msg)
+void ModbusClient::receive(ModbusClientAduReqItem const& item)
 {
-    ModbusTransaction tr{};
-    tr.clientId = msg.clientId;
-    tr.transactId = transactCounter++;
-    tr.addr = msg.addr;
-    tr.func = msg.func;
-    tr.startReg = msg.startReg;
-    tr.numRegs = msg.numRegs;
-    tr.numBytes = msg.numBytes;
-    tr.data = msg.data;
+    AduRequest adu;
+    adu.clientId = item.clientId;
+    adu.transactId = item.transactId;
+    adu.addr = item.addr;
+    adu.func = item.func;
+    adu.startItem = item.startItem;
+    adu.numItems = item.numItems;
+    adu.numBytes = item.numBytes;
+    adu.data = const_cast<uint8_t*>(item.data);
 
-    if (not trStorage.push(tr))
+    if (not aduStorage.push(adu))
     {
-        LM(MODBUS, LE, "Client-%u, can not store transaction", tr.clientId);
-        provideRspError(tr);
+        LM(MODBUS, LE, "Client-%u, can not store transaction", adu.clientId);
+        provideRspError(adu);
         return;
     }
 

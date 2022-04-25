@@ -20,4 +20,5 @@ target_include_directories(reactor PUBLIC
 target_link_libraries(reactor
     pthread
     logger
+    utils
 )

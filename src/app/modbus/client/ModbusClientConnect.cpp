@@ -10,8 +10,6 @@ namespace app::modbus
 
 void ModbusClientConnect::onEnter(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onEnter");
-
     fsm.getEntity().startTimer(ModbusClient::connectTimeout);
     fsm.getEntity().connect();
 }

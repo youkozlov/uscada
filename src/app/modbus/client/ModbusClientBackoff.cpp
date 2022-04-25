@@ -9,8 +9,6 @@ namespace app::modbus
 
 void ModbusClientBackoff::onEnter(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onEnter");
-
     fsm.getEntity().startTimer(ModbusClient::backoffTimeout);
 }
 
@@ -21,7 +19,6 @@ void ModbusClientBackoff::onReceiveTransactionReq(ModbusClientFsm& fsm)
 
 void ModbusClientBackoff::onTimer(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onTimer");
     fsm.transit<ModbusClientConnect>();
 }
 

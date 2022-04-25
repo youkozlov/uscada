@@ -10,6 +10,8 @@ class ModbusClientBackoff : public ModbusClientState
 public:
     explicit ModbusClientBackoff() {}
 
+    char const* name() const final { return "ModbusClientBackoff"; }
+
     void onEnter(ModbusClientFsm&) final;
 
     void onReceiveTransactionReq(ModbusClientFsm&) final;

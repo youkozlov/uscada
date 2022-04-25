@@ -10,6 +10,8 @@ class ModbusClientReceive : public ModbusClientState
 public:
     explicit ModbusClientReceive() {}
 
+    char const* name() const final { return "ModbusClientReceive"; }
+
     void onEnter(ModbusClientFsm&) final;
 
     void onReceiveTransactionReq(ModbusClientFsm&) final;

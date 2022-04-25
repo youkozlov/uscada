@@ -8,14 +8,11 @@
 #include "LinkInterface.hpp"
 #include "TimerPtr.hpp"
 #include "EntityId.hpp"
+#include "ModbusError.hpp"
 #include "ModbusDefs.hpp"
 #include "PduBuffer.hpp"
-#include "ModbusTransactionStorage.hpp"
-
-namespace app
-{
-struct ModbusClientAduReq;
-}
+#include "ModbusAduStorage.hpp"
+#include "ModbusClientAduReq.hpp"
 
 namespace app::modbus
 {
@@ -25,6 +22,7 @@ enum class Status
       noerror
     , done
     , error
+    , codecError
 };
 
 class ModbusClient : public reactor::LinkHandler, public reactor::TimerHandler
@@ -41,7 +39,7 @@ public:
 
     void start();
 
-    void receive(ModbusClientAduReq const&);
+    void receive(ModbusClientAduReqItem const&);
 
 
 
@@ -55,9 +53,11 @@ public:
 
     Status send();
 
-    void receivePrepare();
+    void receivePreaction();
 
     Status receive();
+
+    void receivePostaction();
 
     void provideRspTimeout();
 
@@ -66,9 +66,12 @@ public:
     static constexpr long connectTimeout = 3000000;
     static constexpr long backoffTimeout = 500000;
     static constexpr long receiveTimeout = 5000000;
+    static constexpr long sendDelay      = 10000;
 private:
 
-    void provideRspError(ModbusTransaction const&);
+    void provideRspModbusError(AduRequest const&, ModbusError);
+
+    void provideRspError(AduRequest const&);
 
     void onConnected() final;
 
@@ -78,14 +81,13 @@ private:
 
     void onTimer() final;
 
-    app::EntityId const uid;
+    EntityId const uid;
     reactor::ReactorInterface& reactor;
     ModbusClientFsm fsm;
     reactor::LinkPtr link;
     reactor::TimerPtr timer;
-    ModbusTransactionStorage trStorage;
+    ModbusAduStorage aduStorage;
     PduBuffer pduBuf;
-    TransactId transactCounter;
 };
 
 } // namespace app::modbus

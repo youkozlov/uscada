@@ -39,6 +39,8 @@ char const* toString(LogTask task)
         return "CTRL";
     case LogTask::MODBUS:
         return "MODBUS";
+    case LogTask::NUM:
+        return "Invalid";
     }
     return "INVALID";
 }
@@ -47,7 +49,7 @@ char const* toString(LogTask task)
 
 
 Logger::Logger()
-    : logLevels(numLogTasks, LogLevel::LD)
+    : logLevels(numLogTasks, LogLevel::LE)
 {
 }
 
@@ -77,7 +79,7 @@ void Logger::dispatch(char const* msg, LogLevel lvl, LogTask task, char const* f
     char const* filePart = strrchr(file, '/');
     char const* fileToLog = filePart ? filePart + 1 : file;
 
-    printf("%s.%03d %s [%s] %s %d: %s\n", strTimeInfo, tv.tv_usec/1000, toString(lvl), toString(task), fileToLog, line, msg);
+    printf("%s.%03ld %s [%s] %s %d: %s\n", strTimeInfo, tv.tv_usec/1000, toString(lvl), toString(task), fileToLog, line, msg);
 }
 
 } // namespace app

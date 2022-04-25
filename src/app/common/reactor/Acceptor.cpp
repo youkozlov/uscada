@@ -102,7 +102,7 @@ int Acceptor::getFd() const
     return sfd;
 }
 
-void Acceptor::onEvent(int events)
+void Acceptor::onEvent(int)
 {
     if (nullptr == handler)
     {

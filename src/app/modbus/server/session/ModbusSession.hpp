@@ -1,14 +1,28 @@
 #pragma once
 
+#include <array>
+#include <cstdint>
+
 #include "LinkPtr.hpp"
 #include "TimerPtr.hpp"
 #include "LinkHandler.hpp"
 #include "TimerHandler.hpp"
 #include "PduBuffer.hpp"
 #include "ModbusDefs.hpp"
+#include "ModbusSessionFsm.hpp"
+#include "ModbusAduRsp.hpp"
+#include "AduRequest.hpp"
 
 namespace app::modbus
 {
+
+enum class Result
+{
+      noerror
+    , done
+    , error
+    , codecError
+};
 
 class ModbusSessionHandler;
 
@@ -22,29 +36,34 @@ public:
 
     ~ModbusSession();
 
-    Uid getId() const;
-
     void setLink(reactor::LinkPtr);
 
     void setTimer(reactor::TimerPtr);
 
-    reactor::LinkInterface& getLink() const;
+    void setServerId(EntityId);
 
-    ModbusTcpAdu const& adu() const;
+    void start();
 
-    PduBuffer const& pdu() const;
+    void receive(ModbusAduRsp const&);
 
-    void respond(ModbusTcpAdu const&, void const*, unsigned);
 
-    void respondError(ModbusTcpAdu const&, ModbusErorr);
+
+    void startTimer(long);
+
+    void stopTimer();
+
+    void receivePreaction();
+
+    Result receive();
+
+    Result send(ModbusAduRsp const&);
+
+    void releaseSession();
+
+    static constexpr long inactiveTimeout = 30000000;
+    static constexpr long aduRspTimeout = 5000000;
 
 private:
-
-    static constexpr long timeout = 30000000;
-
-    void reset();
-
-    void release();
 
     void onConnected() final {}
 
@@ -55,11 +74,14 @@ private:
     void onTimer() final;
 
     Uid const uid;
+    EntityId serverId;
+    ModbusSessionFsm fsm;
     ModbusSessionHandler &handler;
     reactor::TimerPtr timer;
     reactor::LinkPtr link;
     PduBuffer pduBuf;
-    ModbusTcpAdu storedAdu;
+    std::array<std::uint8_t, maxAduLen> storedAduBuf;
+    AduRequest storedAdu;
 };
 
 } // namespace app::modbus

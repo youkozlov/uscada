@@ -1,7 +1,7 @@
 #include "ModbusClientReceive.hpp"
 #include "ModbusClientFsm.hpp"
 #include "ModbusClientBackoff.hpp"
-#include "ModbusClientConnected.hpp"
+#include "ModbusClientSend.hpp"
 #include "ModbusClient.hpp"
 #include "Logger.hpp"
 
@@ -10,10 +10,8 @@ namespace app::modbus
 
 void ModbusClientReceive::onEnter(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onEnter");
-
     fsm.getEntity().startTimer(ModbusClient::receiveTimeout);
-    fsm.getEntity().receivePrepare();
+    fsm.getEntity().receivePreaction();
 }
 
 void ModbusClientReceive::onReceiveTransactionReq(ModbusClientFsm&)
@@ -25,13 +23,23 @@ void ModbusClientReceive::onDataReceived(ModbusClientFsm& fsm)
     {
     case Status::error:
     {
+        fsm.getEntity().provideRspError();
         fsm.getEntity().close();
         fsm.transit<ModbusClientBackoff>();
     }
     break;
     case Status::done:
     {
-        fsm.transit<ModbusClientConnected>();
+        fsm.transit<ModbusClientSend>();
+    }
+    break;
+    case Status::codecError:
+    {
+        LM(MODBUS, LE, "Unexpected");
+    }
+    break;
+    case Status::noerror:
+    {
     }
     break;
     }
@@ -39,17 +47,15 @@ void ModbusClientReceive::onDataReceived(ModbusClientFsm& fsm)
 
 void ModbusClientReceive::onTimer(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onTimer");
-
+    LM(MODBUS, LI, "onTimer");
     fsm.getEntity().provideRspTimeout();
-    fsm.transit<ModbusClientConnected>();
+    fsm.transit<ModbusClientSend>();
 }
 
 void ModbusClientReceive::onExit(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onExit");
-
     fsm.getEntity().stopTimer();
+    fsm.getEntity().receivePostaction();
 }
 
 } // namespace app::modbus

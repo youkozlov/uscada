@@ -6,7 +6,7 @@ namespace app
 enum class MsgStatus
 {
       success
-    , fail
+    , error
 };
 
 } // namespace app

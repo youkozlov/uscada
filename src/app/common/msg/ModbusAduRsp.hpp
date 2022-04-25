@@ -5,6 +5,7 @@
 #include "MsgBase.hpp"
 
 #include "EntityId.hpp"
+#include "ModbusError.hpp"
 #include "MsgStatus.hpp"
 
 namespace app
@@ -14,7 +15,8 @@ struct ModbusAduRsp : public reactor::MsgBase<ModbusAduRsp, CompIds::compModbus,
 {
     EntityId  serverId;
     EntityId  sessionId;
-    EntityId  aduId;
+    uint16_t  transactId;
+    ModbusError error;
     MsgStatus status;
     uint16_t  numBytes;
     uint8_t   data[];

@@ -2,6 +2,8 @@
 
 #include "ModbusDefs.hpp"
 #include "PduBuffer.hpp"
+#include "AduRequest.hpp"
+#include "AduRespond.hpp"
 
 namespace app::modbus
 {
@@ -11,31 +13,32 @@ class ModbusCodec
 public:
     explicit ModbusCodec(PduBuffer&);
 
-    unsigned pduLen() const;
+    unsigned aduPktLen() const;
 
-    bool isPduHdrReceived() const;
+    unsigned pduLen(ModbusFunction, unsigned) const;
 
-    bool isPduReceived() const;
+    bool isAduHdrReceived() const;
 
-    bool isPduValid() const;
+    bool isAduDataLenValid() const;
 
-    bool encode(ModbusTcpAdu const&);
+    bool isAduReceived() const;
 
-    bool encode(ModbusTcpAdu const&, void const*, unsigned);
+    bool isAduValid() const;
 
-    bool decode(ModbusTcpAdu&, uint8_t*, uint16_t&);
+    bool encode(AduRequest const&);
 
-    bool encode(ModbusTcpAdu const&, ModbusErorr);
+    bool decode(AduRequest&);
 
-    bool decode(ModbusTcpAdu&);
+    bool encode(AduRespond const&);
+
+    bool decode(AduRespond&);
+
 
 private:
-    static constexpr unsigned pduLenOffset = 4;
-    static constexpr unsigned pduHdrLen = 6;
-    static constexpr unsigned maxPduLen = 256;
-
-    static constexpr unsigned modbusErrorFunc = 0x8f;
-    static constexpr unsigned readInputRegistersFunc = 0x4;
+    static constexpr unsigned aduLenOffset = 4;
+    static constexpr unsigned aduFuncCodeOffset = 7;
+    static constexpr unsigned aduRspErrorCodeOffset = 8;
+    static constexpr unsigned aduHdrLen = 6;
 
     PduBuffer& buf;
 };

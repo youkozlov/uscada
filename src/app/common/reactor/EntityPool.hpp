@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <queue>
 #include <memory>
+
+#include "Queue.hpp"
 
 #include "EpollInterface.hpp"
 #include "Logger.hpp"
@@ -16,7 +17,9 @@ class EntityPool
 public:
     explicit EntityPool(EpollInterface& epoll, const char* name_, unsigned capacity = 32)
         : name(name_)
+        , ids(capacity)
     {
+        pool.reserve(capacity);
         for (unsigned uid = 0; uid < capacity; ++uid)
         {
             pool.push_back(std::make_unique<ENTITY>(epoll));
@@ -34,13 +37,13 @@ public:
         }
         uid = ids.front();
         ids.pop();
-        LM(CTRL, LD, "Alloc %s uid=%u", name, uid);
+        LM(GEN, LD, "Alloc %s uid=%u", name, uid);
         return true;
     }
 
     void release(unsigned uid)
     {
-        LM(CTRL, LD, "Release %s uid=%u", name, uid);
+        LM(GEN, LD, "Release %s uid=%u", name, uid);
         ids.push(uid);
     }
 
@@ -52,7 +55,7 @@ public:
 private:
     const char* name;
     std::vector<std::unique_ptr<ENTITY>> pool;
-    std::queue<unsigned> ids;
+    app::Queue<unsigned> ids;
 };
 
 } // namespace reactor

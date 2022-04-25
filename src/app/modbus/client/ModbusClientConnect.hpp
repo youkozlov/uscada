@@ -10,6 +10,8 @@ class ModbusClientConnect : public ModbusClientState
 public:
     explicit ModbusClientConnect() {}
 
+    char const* name() const final { return "ModbusClientConnect"; }
+
     void onEnter(ModbusClientFsm&) final;
 
     void onReceiveTransactionReq(ModbusClientFsm&) final;

@@ -3,10 +3,6 @@
 namespace app
 {
 
-enum class ModbusFunc
-{
-      read
-    , write
-};
+using TransactId = unsigned;
 
 } // namespace app

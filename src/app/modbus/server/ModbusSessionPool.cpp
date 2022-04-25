@@ -5,6 +5,7 @@ namespace app::modbus
 {
 
 ModbusSessionPool::ModbusSessionPool(ModbusSessionHandler& handler, unsigned capacity)
+    : ids(capacity)
 {
     for (ModbusSession::Uid uid = 0; uid < capacity; ++uid)
     {

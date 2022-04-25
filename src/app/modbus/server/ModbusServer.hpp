@@ -8,7 +8,6 @@
 #include "AcceptorHandler.hpp"
 #include "ModbusSessionHandler.hpp"
 #include "ModbusSessionPool.hpp"
-#include "ModbusAduPool.hpp"
 #include "EntityId.hpp"
 
 namespace app
@@ -45,15 +44,12 @@ private:
 
     void onAccept() final;
 
-    void onRemoveSession(ModbusSession&) final;
+    void onReleaseSession(ModbusSession::Uid) final;
 
-    void onAduReceived(ModbusSession&) final;
-
-    app::EntityId const id;
+    EntityId const id;
     reactor::ReactorInterface& reactor;
     reactor::AcceptorPtr acceptor;
     ModbusSessionPool sessionPool;
-    ModbusAduPool aduPool;
 };
 
 } // namespace app::modbus

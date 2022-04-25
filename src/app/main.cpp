@@ -29,7 +29,7 @@ int main(int, char**)
         reactorManager.send(stop);
 
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(3s);
+        std::this_thread::sleep_for(2s);
 
         reactorManager.stop();
     }

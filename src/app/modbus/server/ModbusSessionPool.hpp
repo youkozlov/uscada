@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <queue>
 #include <memory>
 
+#include "Queue.hpp"
 #include "ModbusSession.hpp"
 
 namespace app::modbus
@@ -26,8 +26,8 @@ public:
     ModbusSession& get(ModbusSession::Uid) const;
 
 private:
+    Queue<ModbusSession::Uid> ids;
     std::vector<std::unique_ptr<ModbusSession>> sessions;
-    std::queue<ModbusSession::Uid> ids;
 };
 
 } // namespace app::modbus

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <queue>
 #include <cstdint>
 #include <mutex>
+
+#include "Queue.hpp"
 
 namespace reactor
 {
@@ -32,8 +33,8 @@ private:
     std::mutex mutex;
     void* mem;
     void* ptr;
-    std::queue<unsigned> freeIds;
-    std::queue<unsigned> busyIds;
+    app::Queue<unsigned> freeIds;
+    app::Queue<unsigned> busyIds;
 };
 
 } // namespace reactor

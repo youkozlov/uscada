@@ -25,7 +25,7 @@ void ReactorManager::send(MsgInterface const& msg)
     auto& comp = components[msg.getCompId()];
     if (nullptr == comp)
     {
-        LM(GEN, LE, "Can not find component, compId=%u", msg.getCompId());
+        LM(GEN, LE, "Can not find component, compId=%zu", msg.getCompId());
         return;
     }
     comp->getReactor().send(msg);
@@ -36,7 +36,7 @@ void ReactorManager::addComponent(std::unique_ptr<ComponentInterface> comp)
     auto& stored = components[comp->getCompId()];
     if (stored)
     {
-        LM(GEN, LE, "Can not add component, because already exists, compId=%u", comp->getCompId());
+        LM(GEN, LE, "Can not add component, because already exists, compId=%zu", comp->getCompId());
         return;
     }
     stored = std::move(comp);

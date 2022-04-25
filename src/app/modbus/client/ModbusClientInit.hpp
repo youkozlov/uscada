@@ -10,6 +10,8 @@ class ModbusClientInit : public ModbusClientState
 public:
     explicit ModbusClientInit() {}
 
+    char const* name() const final { return "ModbusClientInit"; }
+
     void onStart(ModbusClientFsm&) final;
 
     void onReceiveTransactionReq(ModbusClientFsm&) final;

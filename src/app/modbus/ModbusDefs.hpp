@@ -4,67 +4,17 @@
 
 namespace app::modbus
 {
-
-enum ModbusErorr
-{
-    NoError = 0,
-    IllegalFunction = 1,
-    IllegalDataAddress = 2,
-    IllegalDataValue = 3,
-    SlaveDeviceFailure = 4,
-    Acknowledge = 5,
-    SlaveDeviceBusy = 6,
-    NegativeAcknowledge = 7,
-    MemoryParityError = 8,
-    GatewayPathUnavailable = 10,
-    GatewayTargetDeviceFailedtoRespond = 11
-};
-
-struct ModbusTcpAdu
-{
-    uint16_t transactionId;
-    uint16_t protocolId;
-    uint16_t pktLen;
-    uint16_t startReg;
-    uint16_t numRegs;
-    uint8_t  slaveAddr;
-    uint8_t  func;
-    uint8_t  err;
-
-    bool     decoded;
-
-    void reset()
-    {
-        decoded = false;
-    }
-    unsigned aduLen() const
-    {
-        return pktLen + 6;
-    }
-    unsigned aduHdrLen() const
-    {
-        return 8;
-    }
-    bool isDecoded() const
-    {
-        return decoded;
-    }
-    bool isValid() const
-    {
-        return pktLen > 2 && pktLen < 256;
-    }
-    bool isRead() const
-    {
-        return func == 0x3 || func == 0x4;
-    }
-};
-
-struct ModbusReq
-{
-    uint8_t  slaveAddr;
-    uint8_t  fc;
-    uint16_t startReg;
-    uint16_t numRegs;
-};
+static constexpr unsigned modbusProtocolId = 0x0;
+static constexpr unsigned numBytesLen = 1;
+static constexpr unsigned pduFuncCodeLen = 1;
+static constexpr unsigned pduMaxDataLen = 252;
+static constexpr unsigned maxPduLen = pduFuncCodeLen + pduMaxDataLen;
+static constexpr unsigned aduTransactIdLen = 2;
+static constexpr unsigned aduProtocolIdLen = 2;
+static constexpr unsigned aduPacketLen = 2;
+static constexpr unsigned aduAddressLen = 1;
+static constexpr unsigned maxAduLen = aduTransactIdLen + aduProtocolIdLen + aduPacketLen + aduAddressLen + maxPduLen;
+static constexpr uint16_t minAddr = 0;
+static constexpr uint16_t maxAddr = 247;
 
 } // namespace app::modbus

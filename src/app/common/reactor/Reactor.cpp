@@ -20,7 +20,7 @@ namespace reactor
 
 Reactor::Reactor(Init const& init)
     : stopped(false)
-    , msgMemStorage(std::make_unique<MsgMemStorage>(maxMsgSize, 128))
+    , msgMemStorage(std::make_unique<MsgMemStorage>(maxMsgSize, 64))
     , epoll(std::make_unique<Epoll>(init.id))
     , event(std::make_unique<Event>(*epoll, *this))
     , acceptorPool(*epoll, "acceptor")
@@ -113,7 +113,7 @@ void Reactor::send(MsgInterface const& msg)
         LM(CTRL, LE, "Can not push msg");
         return;
     }
-    LM(GEN, LD, "Send msgId=%zu", msg.getMsgId());
+    LM(GEN, LD, "Send msgId=%zu size=%zu", msg.getMsgId(), msg.size());
     event->send();
 }
 

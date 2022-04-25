@@ -11,7 +11,7 @@ Modbus::Modbus(Init const& init)
     , servers(init.maxNumServers)
     , clients(init.maxNumClients)
 {
-    LM(MODBUS, LD, "Init maxNumServers: %u, maxNumClients: %u", init.maxNumServers, init.maxNumClients);
+    LM(MODBUS, LD, "Init maxNumServers: %zu, maxNumClients: %zu", init.maxNumServers, init.maxNumClients);
 }
 
 Modbus::~Modbus()
@@ -29,7 +29,7 @@ void Modbus::receive(ModbusConfigReq const& req)
         {
             if (item.id >= servers.size())
             {
-                LM(MODBUS, LE, "Invalid serverId", item.id);
+                LM(MODBUS, LE, "Invalid serverId, %u", item.id);
                 continue;
             }
             ModbusServer::Init init{reactor, item.id};
@@ -41,7 +41,7 @@ void Modbus::receive(ModbusConfigReq const& req)
         {
             if (item.id >= clients.size())
             {
-                LM(MODBUS, LE, "Invalid clientId", item.id);
+                LM(MODBUS, LE, "Invalid clientId, %u", item.id);
                 continue;
             }
             ModbusClient::Init init{reactor, item.id};
@@ -63,26 +63,34 @@ void Modbus::receive(ModbusConfigReq const& req)
     Sender::sendMsg(msgStore);
 }
 
-void Modbus::receive(ModbusClientAduReq const& msg)
+void Modbus::receive(ModbusClientAduReq const& req)
 {
-    if (msg.clientId >= clients.size() || !clients[msg.clientId])
+    for (unsigned i = 0; i < req.numItems; ++i)
     {
-        LM(MODBUS, LE, "Invalid clientId, %u", msg.clientId);
-        return;
+        auto const& item = req.item(i);
+
+        if (item.clientId >= clients.size() || not clients[item.clientId])
+        {
+            LM(MODBUS, LE, "Invalid clientId, %u", item.clientId);
+            reactor::MsgStore<ModbusClientAduRsp> msgStore;
+            ModbusClientAduRsp& rsp = msgStore.getMsg();
+            rsp.clientId = item.clientId;
+            rsp.transactId = item.transactId;
+            rsp.error = ModbusError::noerror;
+            rsp.status = MsgStatus::error;
+            rsp.numBytes = 0;
+            Sender::sendMsg(msgStore);
+            continue;
+        }
+        clients[item.clientId]->receive(item);
     }
-    clients[msg.clientId]->receive(msg);
 }
 
 void Modbus::receive(ModbusAduRsp const& msg)
 {
-    if (msg.serverId >= servers.size())
+    if (msg.serverId >= servers.size() || not servers[msg.serverId])
     {
         LM(MODBUS, LE, "Invalid serverId, %u", msg.serverId);
-        return;
-    }
-    if (not servers[msg.serverId])
-    {
-        LM(MODBUS, LE, "Server-%u is undefined", msg.serverId);
         return;
     }
     servers[msg.serverId]->receive(msg);

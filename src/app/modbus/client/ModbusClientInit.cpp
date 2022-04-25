@@ -9,8 +9,6 @@ namespace app::modbus
 
 void ModbusClientInit::onStart(ModbusClientFsm& fsm)
 {
-    LM(MODBUS, LD, "onStart");
-
     fsm.transit<ModbusClientConnect>();
 }
 

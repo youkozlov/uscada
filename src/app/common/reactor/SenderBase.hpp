@@ -14,7 +14,7 @@ public:
     SenderBase& operator=(SenderBase const&) = delete;
     SenderBase()
     {
-        sender = static_cast<SENDER*>(this);
+        sender = reinterpret_cast<SENDER*>(this);
     }
     virtual ~SenderBase() {}
 
@@ -28,7 +28,6 @@ public:
         }
         sender->send(store.getMsg());
     }
-
 private:
     static SENDER* sender;
 };

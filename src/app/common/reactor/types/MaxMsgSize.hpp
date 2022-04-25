@@ -3,6 +3,6 @@
 namespace reactor
 {
 
-static constexpr unsigned maxMsgSize = 1 << 16;
+static constexpr unsigned maxMsgSize = 1 << 12;
 
 } // namespace reactor
