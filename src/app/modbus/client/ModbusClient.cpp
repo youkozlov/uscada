@@ -3,6 +3,7 @@
 #include "TimerInterface.hpp"
 #include "ModbusCodec.hpp"
 #include "ModbusSender.hpp"
+#include "ModbusReactor.hpp"
 #include "AduRespond.hpp"
 
 #include "Logger.hpp"
@@ -12,10 +13,10 @@ namespace app::modbus
 
 ModbusClient::ModbusClient(Init const& init)
     : uid(init.id)
-    , reactor(init.reactor)
+    , addr(init.addr)
     , fsm(*this)
-    , link(reactor.createLink([this](auto ev){ onLinkEvent(ev); }))
-    , timer(reactor.createTimer([this](){ onTimerEvent(); }))
+    , link(Reactor::get().createLink([this](auto ev){ onLinkEvent(ev); }))
+    , timer(Reactor::get().createTimer([this](){ onTimerEvent(); }))
 {
     pduBuf.reset();
 }
@@ -27,7 +28,6 @@ ModbusClient::~ModbusClient()
 
 void ModbusClient::connect()
 {
-    reactor::LinkAddr addr;
     link->connect(addr);
 }
 

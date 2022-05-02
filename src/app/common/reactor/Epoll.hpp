@@ -4,7 +4,7 @@
 
 #include "EpollInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class FileDescriptorInterface;
@@ -34,4 +34,4 @@ private:
     int epollfd;
 };
 
-} // namespace reactor
+} // namespace app::reactor

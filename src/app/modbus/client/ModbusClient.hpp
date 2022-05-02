@@ -30,8 +30,8 @@ class ModbusClient
 public:
     struct Init
     {
-        reactor::ReactorInterface& reactor;
         app::EntityId id;
+        reactor::LinkAddr const& addr;
     };
     explicit ModbusClient(Init const&);
 
@@ -78,7 +78,7 @@ private:
     void onTimerEvent();
 
     EntityId const uid;
-    reactor::ReactorInterface& reactor;
+    reactor::LinkAddr addr;
     ModbusClientFsm fsm;
     reactor::LinkPtr link;
     reactor::TimerPtr timer;

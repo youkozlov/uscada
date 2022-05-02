@@ -1,6 +1,6 @@
 #pragma once
 
-namespace reactor
+namespace app::reactor
 {
 
 class FileDescriptorInterface
@@ -16,4 +16,4 @@ public:
     virtual void onFileDescriptorEvent(int) = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

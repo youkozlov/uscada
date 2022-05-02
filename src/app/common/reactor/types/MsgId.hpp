@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-namespace reactor
+namespace app::reactor
 {
 
 using MsgId = std::size_t;
 
-} // namespace reactor
+} // namespace app::reactor

@@ -2,9 +2,9 @@
 
 #include <functional>
 
-namespace reactor
+namespace app::reactor
 {
 
 using TimerHandler = std::function<void()>;
 
-} // namespace reactor
+} // namespace app::reactor

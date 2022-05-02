@@ -5,7 +5,7 @@
 
 #include "Queue.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class MsgMemStorage
@@ -37,4 +37,4 @@ private:
     app::Queue<unsigned> busyIds;
 };
 
-} // namespace reactor
+} // namespace app::reactor

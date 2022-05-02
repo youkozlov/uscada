@@ -6,7 +6,7 @@
 #include "String.hpp"
 #include "StatusCode.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct DiagnosticInfo : public StructType<DataTypeId::DiagnosticInfo>
@@ -54,4 +54,4 @@ struct DiagnosticInfo : public StructType<DataTypeId::DiagnosticInfo>
     }
 };
 
-} // namespace ua
+} // namespace app::ua

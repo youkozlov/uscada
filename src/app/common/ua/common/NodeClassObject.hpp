@@ -4,7 +4,7 @@
 #include "EventNotifierType.hpp"
 #include "NodeClassObjectType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class NodeClassObject : public NodeClassBase
@@ -23,4 +23,4 @@ private:
     NodeClassBaseMapPtr    components;
 };
 
-} // namespace ua
+} // namespace app::ua

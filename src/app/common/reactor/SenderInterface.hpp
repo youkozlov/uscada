@@ -1,6 +1,6 @@
 #pragma once
 
-namespace reactor
+namespace app::reactor
 {
 
 struct MsgInterface;
@@ -13,4 +13,4 @@ public:
     virtual void send(MsgInterface const&) = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

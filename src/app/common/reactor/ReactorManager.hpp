@@ -7,7 +7,7 @@
 #include "ComponentId.hpp"
 #include "SenderInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class ReactorInterface;
@@ -35,4 +35,4 @@ private:
     std::map<ComponentId, std::unique_ptr<ComponentInterface>> components;
 };
 
-} // namespace reactor
+} // namespace app::reactor

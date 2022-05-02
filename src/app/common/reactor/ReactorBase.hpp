@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include "ReactorInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 template <typename T>
@@ -29,4 +29,4 @@ private:
 template <typename T>
 ReactorInterface* ReactorBase<T>::reactor = nullptr;
 
-} // namespace reactor
+} // namespace app::reactor

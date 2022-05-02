@@ -10,7 +10,7 @@
 #include "MaxMsgSize.hpp"
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 ReactorManager::ReactorManager()
@@ -66,4 +66,4 @@ void ReactorManager::stop()
 }
 
 
-} // namespace reactor
+} // namespace app::reactor

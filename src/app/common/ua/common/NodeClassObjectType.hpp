@@ -4,7 +4,7 @@
 #include "NodeClassBase.hpp"
 #include "Boolean.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class NodeClassObjectType : public NodeClassBase
@@ -18,4 +18,4 @@ public:
 
 using NodeClassObjectTypePtr = std::shared_ptr<NodeClassObjectType>;
 
-} // namespace ua
+} // namespace app::ua

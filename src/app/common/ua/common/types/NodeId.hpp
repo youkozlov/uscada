@@ -7,7 +7,7 @@
 #include "Guid.hpp"
 #include "Opaque.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct NodeId : public StructType<DataTypeId::NodeId>
@@ -36,4 +36,4 @@ T& emplace(NodeId::Value& value)
 }
 
 
-} // namespace ua
+} // namespace app::ua

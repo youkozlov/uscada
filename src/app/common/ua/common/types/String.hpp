@@ -3,7 +3,7 @@
 #include <string>
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct String : public StringType<DataTypeId::String>
@@ -11,4 +11,4 @@ struct String : public StringType<DataTypeId::String>
     using StringType::StringType;
 };
 
-} // namespace ua
+} // namespace app::ua

@@ -2,7 +2,7 @@
 
 #include "OpcUaBinaryCodec.hpp"
 
-using namespace ua;
+using namespace app::ua;
 
 class OpcUaBinaryCodecTest : public ::testing::Test
 {

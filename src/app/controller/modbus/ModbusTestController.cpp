@@ -1,6 +1,7 @@
 #include "ModbusTestController.hpp"
 
 #include "ControllerSender.hpp"
+#include "ControllerReactor.hpp"
 #include "ModbusInitReq.hpp"
 #include "ModbusInitRsp.hpp"
 #include "ModbusReleaseReq.hpp"
@@ -35,9 +36,9 @@ std::vector<uint8_t> randVector(unsigned len)
 }
 }
 
-ModbusTestController::ModbusTestController(reactor::ReactorInterface& reactor)
+ModbusTestController::ModbusTestController()
     : fsm(*this)
-    , timer(reactor.createTimer([this](){ onTimerEvent(); }))
+    , timer(Reactor::get().createTimer([this](){ onTimerEvent(); }))
     , testCaseCounter(0)
 {
     testCases =
@@ -184,6 +185,12 @@ void ModbusTestController::sendModbusConfigReq()
         ModbusConfig& item = req.items[req.numItems++];
         item.id = id++;
         item.mode = ModbusConfig::Mode::client;
+        item.addr.data[0] = 0x7f;
+        item.addr.data[1] = 0x0;
+        item.addr.data[2] = 0x0;
+        item.addr.data[3] = 0x1;
+        item.addr.data[4] = 0x2f;
+        item.addr.data[5] = 0x71;
     }
     id = 0;
     for (unsigned i = 0; i < 1u; ++i)
@@ -191,6 +198,12 @@ void ModbusTestController::sendModbusConfigReq()
         ModbusConfig& item = req.items[req.numItems++];
         item.id = id++;
         item.mode = ModbusConfig::Mode::server;
+        item.addr.data[0] = 0x7f;
+        item.addr.data[1] = 0x0;
+        item.addr.data[2] = 0x0;
+        item.addr.data[3] = 0x1;
+        item.addr.data[4] = 0x2f;
+        item.addr.data[5] = 0x71;
     }
     Sender::sendMsg(msgStore);
 }

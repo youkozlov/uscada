@@ -1,6 +1,6 @@
 #pragma once
 
-namespace reactor
+namespace app::reactor
 {
 
 class TimerInterface
@@ -15,4 +15,4 @@ public:
     virtual void release() = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

@@ -1,8 +1,8 @@
 #pragma once
 
-namespace reactor
+namespace app::reactor
 {
 
 static constexpr unsigned maxMsgSize = 1 << 12;
 
-} // namespace reactor
+} // namespace app::reactor

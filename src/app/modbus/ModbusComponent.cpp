@@ -38,7 +38,7 @@ void ModbusComponent::receive(ModbusInitReq const& req)
 {
     LM(MODBUS, LD, "ModbusInitReq received");
 
-    Modbus::Init init{getReactor(), req.maxNumServers, req.maxNumClients};
+    Modbus::Init init{req.maxNumServers, req.maxNumClients};
     modbus = std::make_unique<Modbus>(init);
 
     reactor::MsgStore<ModbusInitRsp> msgStore;

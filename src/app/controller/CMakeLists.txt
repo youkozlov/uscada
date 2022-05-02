@@ -5,6 +5,7 @@ add_library(controller
     modbus/ModbusTestConfigure.cpp
     modbus/ModbusTestSetup.cpp
     modbus/ModbusTestRun.cpp
+    ua/OpcUaController.cpp
 
     ControllerComponent.cpp
 )
@@ -12,6 +13,7 @@ add_library(controller
 target_include_directories(controller PUBLIC
     .
     modbus
+    ua
 )
 
 target_link_libraries(controller

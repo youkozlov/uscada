@@ -3,7 +3,7 @@
 #include "TimerInterface.hpp"
 #include "ServerConnectionInit.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 ServerConnection::ServerConnection(reactor::ReactorInterface& reactor)
@@ -160,4 +160,4 @@ void ServerConnection::stopTimer()
     timer->stop();
 }
 
-} // namespace ua
+} // namespace app::ua

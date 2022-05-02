@@ -2,9 +2,9 @@
 
 #include <time.h>
 
-namespace reactor
+namespace app::reactor
 {
 
 using TimerId = int;
 
-} // namespace reactor
+} // namespace app::reactor

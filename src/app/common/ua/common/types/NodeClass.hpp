@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ua
+namespace app::ua
 {
 
 enum class NodeClass
@@ -16,4 +16,4 @@ enum class NodeClass
     , View = 128
 };
 
-} // namespace ua
+} // namespace app::ua

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace reactor
+namespace app::reactor
 {
 
 namespace
@@ -98,4 +98,4 @@ void Thread::start()
     }
 }
 
-} // namespace reactor
+} // namespace app::reactor

@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "FileDescriptorInterface.hpp"
-namespace reactor
+namespace app::reactor
 {
 
 class EpollInterface;
@@ -30,4 +30,4 @@ private:
     int fd;
 };
 
-} // namespace reactor
+} // namespace app::reactor

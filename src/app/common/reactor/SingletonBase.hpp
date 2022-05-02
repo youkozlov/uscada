@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace reactor
+namespace app::reactor
 {
 
 template <typename ENTITY>
@@ -30,4 +30,4 @@ private:
 template <typename ENTITY>
 ENTITY* SingletonBase<ENTITY>::entity = nullptr;
 
-} // namespace reactor
+} // namespace app::reactor

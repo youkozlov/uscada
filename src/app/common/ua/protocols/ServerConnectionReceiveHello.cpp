@@ -3,7 +3,7 @@
 #include "ServerConnectionInit.hpp"
 #include "ServerConnection.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 void ServerConnectionReceiveHello::onEnter(ServerConnection& fsm)
@@ -61,4 +61,4 @@ void ServerConnectionReceiveHello::onExit(ServerConnection& fsm)
     fsm.stopTimer();
 }
 
-} // namespace ua
+} // namespace app::ua

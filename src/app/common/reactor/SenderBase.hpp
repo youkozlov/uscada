@@ -3,7 +3,7 @@
 #include "MsgStore.hpp"
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 template <typename SENDER>
@@ -35,4 +35,4 @@ private:
 template <typename SENDER>
 SENDER* SenderBase<SENDER>::sender = nullptr;
 
-} // namespace reactor
+} // namespace app::reactor

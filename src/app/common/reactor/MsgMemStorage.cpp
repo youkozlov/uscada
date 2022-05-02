@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace reactor
+namespace app::reactor
 {
 
 MsgMemStorage::MsgMemStorage(std::size_t chunkSize_, std::size_t numChunks_)
@@ -66,4 +66,4 @@ void* MsgMemStorage::get(unsigned id)
     return (void*)((uintptr_t)ptr + chunkSize * id);
 }
 
-} // namespace reactor
+} // namespace app::reactor

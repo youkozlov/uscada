@@ -11,7 +11,7 @@ int main(int, char**)
 {
     try
     {
-        reactor::ReactorManager reactorManager;
+        app::reactor::ReactorManager reactorManager;
 
         app::Deployer deployer;
 

@@ -7,7 +7,7 @@ using ::testing::_;
 
 #include "TimerInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class TimerMock : public TimerInterface
@@ -18,4 +18,4 @@ public:
     MOCK_METHOD(void, release, (), (override));
 };
 
-} // namespace reactor
+} // namespace app::reactor

@@ -3,7 +3,7 @@
 #include "UInt32.hpp"
 #include "String.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct HelloMessage
@@ -16,4 +16,4 @@ struct HelloMessage
     String endpointUrl;
 };
 
-} // namespace ua
+} // namespace app::ua

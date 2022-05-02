@@ -2,7 +2,7 @@
 
 #include "FileDescriptorInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class EpollInterface
@@ -18,4 +18,4 @@ public:
     virtual int del(FileDescriptorInterface&) = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

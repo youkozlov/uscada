@@ -10,7 +10,8 @@ using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::SetArrayArgument;
 
-using namespace ua;
+using namespace app;
+using namespace app::ua;
 
 class ServerConnectionTest : public ::testing::Test
 {

@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using SByte = NumericType<DataTypeId::SByte, std::int8_t>;
 
-} // namespace ua
+} // namespace app::ua

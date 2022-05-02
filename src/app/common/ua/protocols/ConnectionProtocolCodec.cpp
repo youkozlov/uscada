@@ -1,6 +1,6 @@
 #include "ConnectionProtocolCodec.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, MessageHeader& val)
@@ -89,4 +89,4 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ReverseHelloMessage const& val
     return s;
 }
 
-} // namespace ua
+} // namespace app::ua

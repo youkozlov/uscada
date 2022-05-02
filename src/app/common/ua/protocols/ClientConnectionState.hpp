@@ -2,7 +2,7 @@
 
 #include "Logger.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class ClientConnection;
@@ -30,4 +30,4 @@ public:
 
 };
 
-} // namespace ua
+} // namespace app::ua

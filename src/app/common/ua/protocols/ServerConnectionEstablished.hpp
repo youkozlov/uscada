@@ -2,7 +2,7 @@
 
 #include "ServerConnectionState.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class ServerConnectionEstablished : public ServerConnectionState
@@ -21,4 +21,4 @@ public:
     void onExit(ServerConnection&) final;
 };
 
-} // namespace ua
+} // namespace app::ua

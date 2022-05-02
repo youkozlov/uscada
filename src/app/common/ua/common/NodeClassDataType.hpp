@@ -3,7 +3,7 @@
 #include "NodeClassBase.hpp"
 #include "Boolean.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class NodeClassDataType : public NodeClassBase
@@ -16,4 +16,4 @@ public:
 
 };
 
-} // namespace ua
+} // namespace app::ua

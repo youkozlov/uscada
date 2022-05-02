@@ -1,8 +1,8 @@
 #pragma once
 
-namespace ua
+namespace app::ua
 {
 
 using StatusCode = NumericType<DataTypeId::StatusCode, std::uint32_t>;
 
-} // namespace ua
+} // namespace app::ua

@@ -3,7 +3,7 @@
 #include "ClientConnectionInit.hpp"
 #include "ClientConnection.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 void ClientConnectionReceiveAck::onEnter(ClientConnection& fsm)
@@ -43,4 +43,4 @@ void ClientConnectionReceiveAck::onExit(ClientConnection& fsm)
     fsm.stopTimer();
 }
 
-} // namespace ua
+} // namespace app::ua

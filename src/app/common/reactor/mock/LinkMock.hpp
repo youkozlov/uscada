@@ -7,7 +7,7 @@ using ::testing::_;
 
 #include "LinkInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class LinkMock : public LinkInterface
@@ -23,4 +23,4 @@ public:
     MOCK_METHOD(int, receive, (std::uint8_t*, std::size_t), (override));
 };
 
-} // namespace reactor
+} // namespace app::reactor

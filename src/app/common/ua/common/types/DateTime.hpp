@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using DateTime = NumericType<DataTypeId::DateTime, std::int64_t>;
 
-} // namespace ua
+} // namespace app::ua

@@ -8,7 +8,7 @@
 #include <variant>
 #include "Logger.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 enum class DataTypeId : std::uint8_t
@@ -104,4 +104,4 @@ using DynamicArray = std::vector<T>;
 template <typename...ARGS>
 using Var = std::variant<ARGS...>;
 
-} // namespace ua
+} // namespace app::ua

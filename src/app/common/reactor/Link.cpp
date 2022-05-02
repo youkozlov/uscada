@@ -11,7 +11,7 @@
 
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 Link::Link(EpollInterface& epoll_)
@@ -37,7 +37,7 @@ void Link::setFileDescriptor(int val)
     fd = val;
 }
 
-void Link::connect(LinkAddr const&)
+void Link::connect(LinkAddr const& address)
 {
     if (-1 != fd)
     {
@@ -56,8 +56,8 @@ void Link::connect(LinkAddr const&)
     }
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(12145);
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    addr.sin_port = htons(ipv4port(address));
+    addr.sin_addr.s_addr = htonl(ipv4addr(address));//INADDR_LOOPBACK
     int rc = ::connect(fd, (struct sockaddr*)&addr, sizeof(addr));
     if (0 != rc && EINPROGRESS != errno)
     {
@@ -164,4 +164,4 @@ int Link::fileDescriptor() const
     return fd;
 }
 
-} // namespace reactor
+} // namespace app::reactor

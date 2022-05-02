@@ -4,7 +4,7 @@
 #include "UInt32.hpp"
 #include "MsgUtils.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 static constexpr std::uint32_t messageHeaderSize = 8;
@@ -34,4 +34,4 @@ inline void setPayloadSizeToHdr(std::uint8_t* msg, std::uint32_t val)
     msg[7] = val >> 24;
 }
 
-} // namespace ua
+} // namespace app::ua

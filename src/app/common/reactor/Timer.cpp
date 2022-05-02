@@ -9,7 +9,7 @@
 
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 Timer::Timer(EpollInterface& epoll_)
@@ -131,4 +131,4 @@ int Timer::fileDescriptor() const
     return fd;
 }
 
-} // namespace reactor
+} // namespace app::reactor

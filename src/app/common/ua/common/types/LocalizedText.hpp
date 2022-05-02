@@ -3,7 +3,7 @@
 #include "StructType.hpp"
 #include "String.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct LocalizedText : public StructType<DataTypeId::LocalizedText>
@@ -28,4 +28,4 @@ struct LocalizedText : public StructType<DataTypeId::LocalizedText>
     }
 };
 
-} // namespace ua
+} // namespace app::ua

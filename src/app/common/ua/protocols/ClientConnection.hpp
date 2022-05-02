@@ -7,7 +7,7 @@
 #include "TimerPtr.hpp"
 #include "ConnectionProtocolCodec.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class ClientConnectionInit;
@@ -66,4 +66,4 @@ private:
     OpcUaBinaryCodec codec;
 };
 
-} // namespace ua
+} // namespace app::ua

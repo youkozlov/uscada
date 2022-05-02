@@ -29,7 +29,7 @@
 #include "DataValue.hpp"
 #include "Variant.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class OpcUaBinaryCodec
@@ -181,4 +181,4 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, DynamicArray<T> const& arr)
     return s;
 }
 
-} // namespace ua
+} // namespace app::ua

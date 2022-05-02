@@ -2,7 +2,7 @@
 
 #include "UInt32.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct AcknowledgeMessage
@@ -14,4 +14,4 @@ struct AcknowledgeMessage
     UInt32 maxChunkCount;
 };
 
-} // namespace ua
+} // namespace app::ua

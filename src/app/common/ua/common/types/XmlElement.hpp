@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using XmlElement = NumericType<DataTypeId::XmlElement, std::uint8_t>;
 
-} // namespace ua
+} // namespace app::ua

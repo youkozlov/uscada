@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using Double = NumericType<DataTypeId::Double, double>;
 
-} // namespace ua
+} // namespace app::ua

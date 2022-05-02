@@ -2,7 +2,7 @@
 #include "ClientConnectionConnecting.hpp"
 #include "ClientConnection.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 void ClientConnectionInit::onConnect(ClientConnection& fsm)
@@ -10,4 +10,4 @@ void ClientConnectionInit::onConnect(ClientConnection& fsm)
     fsm.transit<ClientConnectionConnecting>();
 }
 
-} // namespace ua
+} // namespace app::ua

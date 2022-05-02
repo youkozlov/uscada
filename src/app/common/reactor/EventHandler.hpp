@@ -1,6 +1,6 @@
 #pragma once
 
-namespace reactor
+namespace app::reactor
 {
 
 class EventHandler
@@ -11,4 +11,4 @@ public:
     virtual void onFdEvent(uint64_t) = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

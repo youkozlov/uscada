@@ -15,7 +15,7 @@
 #include "MaxMsgSize.hpp"
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 Reactor::Reactor(Init const& init)
@@ -177,4 +177,4 @@ void Reactor::run()
     }
 }
 
-} // namespace reactor
+} // namespace app::reactor

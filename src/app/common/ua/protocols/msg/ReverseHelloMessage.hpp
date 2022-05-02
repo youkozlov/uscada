@@ -2,7 +2,7 @@
 
 #include "String.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct ReverseHelloMessage
@@ -11,4 +11,4 @@ struct ReverseHelloMessage
     String endpointUrl;
 };
 
-} // namespace ua
+} // namespace app::ua

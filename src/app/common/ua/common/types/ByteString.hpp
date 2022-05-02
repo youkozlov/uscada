@@ -3,7 +3,7 @@
 #include "DataType.hpp"
 #include <string>
 
-namespace ua
+namespace app::ua
 {
 
 struct ByteString : public StringType<DataTypeId::ByteString>
@@ -11,4 +11,4 @@ struct ByteString : public StringType<DataTypeId::ByteString>
     using StringType::StringType;
 };
 
-} // namespace ua
+} // namespace app::ua

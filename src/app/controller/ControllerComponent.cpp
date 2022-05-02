@@ -18,9 +18,10 @@
 namespace app::controller
 {
 
-ControllerComponent::ControllerComponent(reactor::SenderInterface& sender, reactor::ReactorInterface& receiver)
-    : ComponentBase(sender, receiver)
+ControllerComponent::ControllerComponent(reactor::SenderInterface& sender, reactor::ReactorInterface& reactor_)
+    : ComponentBase(sender, reactor_)
     , sender(*this)
+    , reactor(reactor_)
 {
     registerComponent();
 }
@@ -43,8 +44,9 @@ void ControllerComponent::receive(ControllerStartReq const& req)
 {
     LM(CTRL, LD, "ControllerStartReq received");
 
-    modbus = std::make_unique<ModbusTestController>(getReactor());
+    modbus = std::make_unique<ModbusTestController>();
     modbus->receive(req);
+    opcUa = std::make_unique<OpcUaController>();
 }
 
 void ControllerComponent::receive(ControllerStopReq const& req)
@@ -52,6 +54,7 @@ void ControllerComponent::receive(ControllerStopReq const& req)
     LM(CTRL, LD, "ControllerStopReq received");
     modbus->receive(req);
     modbus.reset();
+    opcUa.reset();
 }
 
 void ControllerComponent::receive(ModbusInitRsp const& rsp)

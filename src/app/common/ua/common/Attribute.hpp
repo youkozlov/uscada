@@ -4,7 +4,7 @@
 #include <optional>
 #include <type_traits>
 
-namespace ua
+namespace app::ua
 {
 
 enum class AttributeId
@@ -56,4 +56,4 @@ private:
 template <AttributeId Id, typename DataTypeIn, bool Optional = false>
 using AttributeOpt = Attribute<Id, DataTypeIn, true>;
 
-} // namespace ua
+} // namespace app::ua

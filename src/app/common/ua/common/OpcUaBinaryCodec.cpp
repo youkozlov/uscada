@@ -3,7 +3,7 @@
 
 #include <cstring>
 
-namespace ua
+namespace app::ua
 {
 
 OpcUaBinaryCodec::OpcUaBinaryCodec()
@@ -901,4 +901,4 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, Variant const& variant)
     return s;
 }
 
-} // namespace ua
+} // namespace app::ua

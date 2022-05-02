@@ -2,9 +2,9 @@
 
 #include "ByteString.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using Opaque = ByteString;
 
-} // namespace ua
+} // namespace app::ua

@@ -24,7 +24,7 @@
 #include "LocalizedText.hpp"
 #include "ExtensionObject.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct Variant : public StructType<DataTypeId::Variant>
@@ -109,4 +109,4 @@ struct Variant : public StructType<DataTypeId::Variant>
     }
 };
 
-} // namespace ua
+} // namespace app::ua

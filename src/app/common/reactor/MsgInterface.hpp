@@ -3,7 +3,7 @@
 #include "ComponentId.hpp"
 #include "MsgId.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 struct MsgInterface

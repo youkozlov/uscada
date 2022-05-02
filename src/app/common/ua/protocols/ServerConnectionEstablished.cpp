@@ -2,7 +2,7 @@
 #include "ServerConnectionInit.hpp"
 #include "ServerConnection.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 void ServerConnectionEstablished::onEnter(ServerConnection& fsm)
@@ -25,4 +25,4 @@ void ServerConnectionEstablished::onExit(ServerConnection& fsm)
     fsm.stopTimer();
 }
 
-} // namespace ua
+} // namespace app::ua

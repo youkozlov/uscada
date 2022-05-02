@@ -3,7 +3,7 @@
 #include "CompDefs.hpp"
 #include "MsgDefs.hpp"
 #include "MsgBase.hpp"
-
+#include "LinkAddr.hpp"
 #include "EntityId.hpp"
 
 namespace app
@@ -18,6 +18,7 @@ struct ModbusConfig
     };
     EntityId id;
     Mode     mode;
+    reactor::LinkAddr addr;
 };
 
 struct ModbusConfigReq : public reactor::MsgBase<ModbusConfigReq, CompIds::compModbus, MsgIds::modbusConfigReq>

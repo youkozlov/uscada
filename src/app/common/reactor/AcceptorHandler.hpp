@@ -1,6 +1,6 @@
 #pragma once
 
-namespace reactor
+namespace app::reactor
 {
 
 class AcceptorHandler
@@ -12,4 +12,4 @@ public:
 
 };
 
-} // namespace reactor
+} // namespace app::reactor

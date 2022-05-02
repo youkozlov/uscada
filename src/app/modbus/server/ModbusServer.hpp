@@ -9,6 +9,7 @@
 #include "ModbusSessionHandler.hpp"
 #include "ModbusSessionPool.hpp"
 #include "EntityId.hpp"
+#include "LinkAddr.hpp"
 
 namespace app
 {
@@ -25,8 +26,8 @@ class ModbusServer : public reactor::AcceptorHandler, public ModbusSessionHandle
 public:
     struct Init
     {
-        reactor::ReactorInterface& reactor;
         app::EntityId id;
+        reactor::LinkAddr const& addr;
     };
     explicit ModbusServer(Init const&);
 
@@ -47,7 +48,7 @@ private:
     void onReleaseSession(ModbusSession::Uid) final;
 
     EntityId const id;
-    reactor::ReactorInterface& reactor;
+    reactor::LinkAddr addr;
     reactor::AcceptorPtr acceptor;
     ModbusSessionPool sessionPool;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ua
+namespace app::ua
 {
 
 enum class IdType
@@ -11,4 +11,4 @@ enum class IdType
     , Opaque = 3
 };
 
-} // namespace ua
+} // namespace app::ua

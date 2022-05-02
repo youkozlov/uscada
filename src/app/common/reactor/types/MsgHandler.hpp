@@ -2,11 +2,11 @@
 
 #include <functional>
 
-namespace reactor
+namespace app::reactor
 {
 
 struct MsgInterface;
 
 using MsgHandler = std::function<void(MsgInterface const&)>;
 
-} // namespace reactor
+} // namespace app::reactor

@@ -2,7 +2,7 @@
 
 #include "MsgInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 template <typename MSG_TYPE, ComponentId COMP_ID, MsgId MSG_ID>
@@ -17,4 +17,4 @@ struct MsgBase : public MsgInterface
     std::size_t size() const override { return sizeof(MSG_TYPE); }
 };
 
-} // namespace reactor
+} // namespace app::reactor

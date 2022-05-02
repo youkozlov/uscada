@@ -2,9 +2,9 @@
 
 #include "UInt32.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using AttributeWriteMask = UInt32;
 
-} // namespace ua
+} // namespace app::ua

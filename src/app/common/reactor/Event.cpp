@@ -12,7 +12,7 @@
 
 #include "EpollInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 Event::Event(EpollInterface& epoll_, EventHandler& handler_)
@@ -68,4 +68,4 @@ int Event::fileDescriptor() const
     return fd;
 }
 
-} // namespace reactor
+} // namespace app::reactor

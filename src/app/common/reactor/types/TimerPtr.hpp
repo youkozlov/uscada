@@ -5,9 +5,9 @@
 
 #include "TimerInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 using TimerPtr = std::unique_ptr<TimerInterface, std::function<void(TimerInterface*)>>;
 
-} // namespace reactor
+} // namespace app::reactor

@@ -4,7 +4,7 @@
 
 #include "ComponentId.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 struct Container
@@ -15,4 +15,4 @@ struct Container
 };
 
 
-} // namespace reactor
+} // namespace app::reactor

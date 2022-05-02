@@ -5,9 +5,9 @@
 #include "MsgId.hpp"
 #include "MsgHandler.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 using MsgHandlerVector = std::vector<std::tuple<MsgId, MsgHandler>>;
 
-} // namespace reactor
+} // namespace app::reactor

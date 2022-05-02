@@ -2,7 +2,7 @@
 
 #include "LinkInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class AcceptorInterface
@@ -19,4 +19,4 @@ public:
     virtual void release() = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

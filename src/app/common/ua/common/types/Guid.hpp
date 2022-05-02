@@ -5,7 +5,7 @@
 #include "UInt16.hpp"
 #include "UInt32.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct Guid : public StructType<DataTypeId::Guid>
@@ -24,4 +24,4 @@ struct Guid : public StructType<DataTypeId::Guid>
     }
 };
 
-} // namespace ua
+} // namespace app::ua

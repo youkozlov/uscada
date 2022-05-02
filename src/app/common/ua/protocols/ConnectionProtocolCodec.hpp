@@ -8,7 +8,7 @@
 #include "ErrorMessage.hpp"
 #include "ReverseHelloMessage.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, MessageHeader&);
@@ -22,4 +22,4 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, ErrorMessage const&);
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, ReverseHelloMessage&);
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, ReverseHelloMessage const&);
 
-} // namespace ua
+} // namespace app::ua

@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-namespace ua
+namespace app::ua
 {
 
 template <DataTypeId ID>
@@ -64,4 +64,4 @@ std::uint8_t encodeMaskSizeCheck(ARGS&&...args)
     return result;
 }
 
-} // namespace ua
+} // namespace app::ua

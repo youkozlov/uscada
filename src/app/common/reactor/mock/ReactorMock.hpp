@@ -7,7 +7,7 @@ using ::testing::_;
 
 #include "ReactorInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class ReactorMock : public ReactorInterface
@@ -23,4 +23,4 @@ public:
     MOCK_METHOD(void, stop, (), (override));
 };
 
-} // namespace reactor
+} // namespace app::reactor

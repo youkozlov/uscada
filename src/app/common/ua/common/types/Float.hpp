@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using Float = NumericType<DataTypeId::Float, float>;
 
-} // namespace ua
+} // namespace app::ua

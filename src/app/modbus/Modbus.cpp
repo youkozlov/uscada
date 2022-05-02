@@ -7,8 +7,7 @@ namespace app::modbus
 {
 
 Modbus::Modbus(Init const& init)
-    : reactor(init.reactor)
-    , servers(init.maxNumServers)
+    : servers(init.maxNumServers)
     , clients(init.maxNumClients)
 {
     LM(MODBUS, LD, "Init maxNumServers: %zu, maxNumClients: %zu", init.maxNumServers, init.maxNumClients);
@@ -32,7 +31,7 @@ void Modbus::receive(ModbusConfigReq const& req)
                 LM(MODBUS, LE, "Invalid serverId, %u", item.id);
                 continue;
             }
-            ModbusServer::Init init{reactor, item.id};
+            ModbusServer::Init init{item.id, item.addr};
             servers[item.id] = std::make_unique<ModbusServer>(init);
             servers[item.id]->start();
         }
@@ -44,7 +43,7 @@ void Modbus::receive(ModbusConfigReq const& req)
                 LM(MODBUS, LE, "Invalid clientId, %u", item.id);
                 continue;
             }
-            ModbusClient::Init init{reactor, item.id};
+            ModbusClient::Init init{item.id, item.addr};
             clients[item.id] = std::make_unique<ModbusClient>(init);
             clients[item.id]->start();
         }

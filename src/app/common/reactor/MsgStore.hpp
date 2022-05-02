@@ -2,7 +2,7 @@
 
 #include "MaxMsgSize.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 template <typename MSG_TYPE>

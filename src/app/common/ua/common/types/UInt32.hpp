@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using UInt32 = NumericType<DataTypeId::UInt32, std::uint32_t>;
 
-} // namespace ua
+} // namespace app::ua

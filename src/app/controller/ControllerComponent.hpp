@@ -6,8 +6,9 @@
 #include "CompDefs.hpp"
 #include "ComponentBase.hpp"
 #include "ControllerSender.hpp"
-
+#include "ControllerReactor.hpp"
 #include "ModbusTestController.hpp"
+#include "OpcUaController.hpp"
 
 namespace app
 {
@@ -55,7 +56,9 @@ private:
     };
 
     ControllerSender sender;
+    Reactor reactor;
     std::unique_ptr<ModbusTestController> modbus;
+    std::unique_ptr<OpcUaController> opcUa;
 };
 
 } // namespace app::controller

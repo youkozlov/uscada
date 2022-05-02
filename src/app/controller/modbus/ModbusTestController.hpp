@@ -32,7 +32,7 @@ enum class Result
 class ModbusTestController
 {
 public:
-    explicit ModbusTestController(reactor::ReactorInterface&);
+    explicit ModbusTestController();
 
     void receive(ControllerStartReq const&);
     void receive(ControllerStopReq const&);

@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace reactor
+namespace app::reactor
 {
 
 enum class LinkEvent
@@ -28,4 +28,4 @@ public:
 };
 */
 
-} // namespace reactor
+} // namespace app::reactor

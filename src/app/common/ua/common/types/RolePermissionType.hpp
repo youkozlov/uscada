@@ -2,7 +2,7 @@
 
 #include "NodeId.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using PermissionType = unsigned;
@@ -13,4 +13,4 @@ struct RolePermissionType
     PermissionType permissions;
 };
 
-} // namespace ua
+} // namespace app::ua

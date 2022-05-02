@@ -6,7 +6,7 @@
 #include "Attribute.hpp"
 #include "LocalizedText.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class NodeClassReferenceType : public NodeClassBase
@@ -22,4 +22,4 @@ public:
     
 };
 
-} // namespace ua
+} // namespace app::ua

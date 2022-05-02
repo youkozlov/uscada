@@ -4,14 +4,14 @@
 #include "ModbusSession.hpp"
 #include "ModbusAduRsp.hpp"
 #include "Logger.hpp"
-#include "ReactorInterface.hpp"
+#include "ModbusReactor.hpp"
 
 namespace app::modbus
 {
 
 ModbusServer::ModbusServer(Init const& init)
     : id(init.id)
-    , reactor(init.reactor)
+    , addr(init.addr)
     , sessionPool(*this, maxNumSession)
 {
 }
@@ -25,9 +25,8 @@ void ModbusServer::start()
 {
     LM(MODBUS, LD, "Server-%u, start", id);
 
-    acceptor = reactor.createAcceptor(this);
+    acceptor = Reactor::get().createAcceptor(this);
 
-    reactor::LinkAddr addr;
     acceptor->listen(addr);
 }
 

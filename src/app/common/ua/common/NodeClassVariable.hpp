@@ -3,7 +3,7 @@
 #include "NodeId.hpp"
 #include "NodeClassBase.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class NodeClassVariable : public NodeClassBase
@@ -19,4 +19,4 @@ private:
 
 };
 
-} // namespace ua
+} // namespace app::ua

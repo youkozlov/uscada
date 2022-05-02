@@ -13,7 +13,7 @@
 #include "AttributeWriteMask.hpp"
 #include "RolePermissionType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class NodeClassBase
@@ -36,4 +36,4 @@ public:
 using NodeClassBasePtr = std::shared_ptr<NodeClassBase>;
 using NodeClassBaseMapPtr = std::map<std::string, NodeClassBasePtr>;
 
-} // namespace ua
+} // namespace app::ua

@@ -10,7 +10,7 @@
 #include "AcceptorPtr.hpp"
 #include "AcceptorHandler.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class ReactorInterface

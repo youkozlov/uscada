@@ -8,7 +8,7 @@
 #include "EpollInterface.hpp"
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 template <typename ENTITY>
@@ -58,4 +58,4 @@ private:
     app::Queue<unsigned> ids;
 };
 
-} // namespace reactor
+} // namespace app::reactor

@@ -4,7 +4,7 @@
 #include "ReactorInterface.hpp"
 #include "SenderInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 template<ComponentId COMP_ID>
@@ -27,4 +27,4 @@ private:
     ReactorInterface& reactor;
 };
 
-} // namespace reactor
+} // namespace app::reactor

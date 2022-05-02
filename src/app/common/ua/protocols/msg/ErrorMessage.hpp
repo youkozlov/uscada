@@ -3,7 +3,7 @@
 #include "UInt32.hpp"
 #include "String.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct ErrorMessage
@@ -12,4 +12,4 @@ struct ErrorMessage
     String reason;
 };
 
-} // namespace ua
+} // namespace app::ua

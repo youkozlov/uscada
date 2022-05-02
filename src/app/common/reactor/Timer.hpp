@@ -4,7 +4,7 @@
 #include "TimerHandler.hpp"
 #include "TimerInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class EpollInterface;
@@ -42,4 +42,4 @@ private:
 };
 
 
-} // namespace reactor
+} // namespace app::reactor

@@ -7,7 +7,7 @@
 #include "TimerPtr.hpp"
 #include "ConnectionProtocolCodec.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class ServerConnectionInit;
@@ -69,4 +69,4 @@ private:
 
 };
 
-} // namespace ua
+} // namespace app::ua

@@ -4,7 +4,7 @@
 #include "FileDescriptorInterface.hpp"
 #include "LinkAddr.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class LinkInterface : public FileDescriptorInterface
@@ -23,4 +23,4 @@ public:
     virtual int receive(std::uint8_t*, std::size_t) = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

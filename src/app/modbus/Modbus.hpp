@@ -19,7 +19,6 @@ class Modbus
 public:
     struct Init
     {
-        reactor::ReactorInterface& reactor;
         std::size_t maxNumServers;
         std::size_t maxNumClients;
     };
@@ -33,7 +32,6 @@ public:
     void receive(ModbusAduRsp const&);
 
 private:
-    reactor::ReactorInterface& reactor;
     std::vector<std::unique_ptr<ModbusServer>> servers;
     std::vector<std::unique_ptr<ModbusClient>> clients;
 };

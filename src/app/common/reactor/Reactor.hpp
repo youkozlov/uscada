@@ -13,7 +13,7 @@
 #include "Timer.hpp"
 #include "Acceptor.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class Event;
@@ -69,4 +69,4 @@ private:
     std::map<MsgId, MsgHandler> handlers;
 };
 
-} // namespace reactor
+} // namespace app::reactor

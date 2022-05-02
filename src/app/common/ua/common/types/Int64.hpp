@@ -2,9 +2,9 @@
 
 #include "DataType.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using Int64 = NumericType<DataTypeId::Int64, std::int64_t>;
 
-} // namespace ua
+} // namespace app::ua

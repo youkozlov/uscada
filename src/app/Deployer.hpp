@@ -6,7 +6,7 @@
 #include "ReactorInterface.hpp"
 #include "ComponentInterface.hpp"
 
-namespace reactor { class ReactorManager; }
+namespace app::reactor { class ReactorManager; }
 
 namespace app
 {

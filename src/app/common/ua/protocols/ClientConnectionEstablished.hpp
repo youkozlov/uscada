@@ -2,7 +2,7 @@
 
 #include "ClientConnectionState.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 class ClientConnectionEstablished : public ClientConnectionState
@@ -21,4 +21,4 @@ public:
     void onExit(ClientConnection&) final;
 };
 
-} // namespace ua
+} // namespace app::ua

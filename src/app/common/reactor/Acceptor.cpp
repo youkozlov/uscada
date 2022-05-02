@@ -11,7 +11,7 @@
 #include "EpollInterface.hpp"
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 Acceptor::Acceptor(EpollInterface& epoll_)
@@ -40,7 +40,7 @@ void Acceptor::release()
     setHandler(nullptr);
 }
 
-void Acceptor::listen(LinkAddr const&)
+void Acceptor::listen(LinkAddr const& address)
 {
     if (-1 != sfd)
     {
@@ -53,8 +53,8 @@ void Acceptor::listen(LinkAddr const&)
     }
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(12145);
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    addr.sin_port = htons(ipv4port(address));
+    addr.sin_addr.s_addr = htonl(ipv4addr(address));
     if (-1 == ::bind(sfd, (struct sockaddr*) &addr, sizeof(addr)))
     {
         ::close(sfd);
@@ -139,4 +139,4 @@ void Acceptor::accept(LinkInterface& link)
     }
 }
 
-} // namespace reactor
+} // namespace app::reactor

@@ -8,7 +8,7 @@
 #include "FileDescriptorInterface.hpp"
 #include "Logger.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 Epoll::Epoll(unsigned id_)
@@ -72,4 +72,4 @@ void Epoll::wait()
     }
 }
 
-} // namespace reactor
+} // namespace app::reactor

@@ -10,7 +10,8 @@ using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::SetArrayArgument;
 
-using namespace ua;
+using namespace app;
+using namespace app::ua;
 
 class ClientConnectionTest : public ::testing::Test
 {
@@ -72,7 +73,7 @@ TEST_F(ClientConnectionTest, Connected)
     connected();
 }
 
-TEST_F(ClientConnectionTest, ReceiveHelloTimeout)
+TEST_F(ClientConnectionTest, ReceiveAckTimeout)
 {
     init();
     connect();
@@ -83,7 +84,7 @@ TEST_F(ClientConnectionTest, ReceiveHelloTimeout)
     client->onTimerEvent();
 }
 
-TEST_F(ClientConnectionTest, ReceiveHelloClose)
+TEST_F(ClientConnectionTest, ReceiveAckClose)
 {
     init();
     connect();

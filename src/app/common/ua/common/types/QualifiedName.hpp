@@ -2,7 +2,7 @@
 
 #include "StructType.hpp"
 #include "String.hpp"
-namespace ua
+namespace app::ua
 {
 
 struct QualifiedName : public StructType<DataTypeId::QualifiedName>
@@ -17,4 +17,4 @@ struct QualifiedName : public StructType<DataTypeId::QualifiedName>
     }
 };
 
-} // namespace ua
+} // namespace app::ua

@@ -3,11 +3,11 @@
 #include <memory>
 #include <functional>
 
-namespace reactor
+namespace app::reactor
 {
 
 class LinkInterface;
 
 using LinkPtr = std::unique_ptr<LinkInterface, std::function<void(LinkInterface*)>>;
 
-} // namespace reactor
+} // namespace app::reactor

@@ -4,7 +4,7 @@
 #include "FileDescriptorInterface.hpp"
 #include "LinkInterface.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class EpollInterface;
@@ -40,4 +40,4 @@ private:
     int fd;
 };
 
-} // namespace reactor
+} // namespace app::reactor

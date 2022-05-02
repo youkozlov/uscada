@@ -2,7 +2,7 @@
 
 #include "ComponentId.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class SenderInterface;
@@ -20,4 +20,4 @@ public:
     virtual ReactorInterface& getReactor() = 0;
 };
 
-} // namespace reactor
+} // namespace app::reactor

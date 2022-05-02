@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <functional>
 
-namespace reactor
+namespace app::reactor
 {
 
 class ThreadHandler;
@@ -25,4 +25,4 @@ private:
     pthread_attr_t attr;
 };
 
-} // namespace reactor
+} // namespace app::reactor

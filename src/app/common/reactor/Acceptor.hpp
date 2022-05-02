@@ -5,7 +5,7 @@
 #include "AcceptorInterface.hpp"
 #include "AcceptorHandler.hpp"
 
-namespace reactor
+namespace app::reactor
 {
 
 class EpollInterface;
@@ -39,4 +39,4 @@ private:
     int sfd;
 };
 
-} // namespace reactor
+} // namespace app::reactor

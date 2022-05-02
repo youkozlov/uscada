@@ -2,9 +2,9 @@
 
 #include "Byte.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 using EventNotifierType = Byte;
 
-} // namespace ua
+} // namespace app::ua

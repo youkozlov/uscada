@@ -3,7 +3,7 @@
 #include "StructType.hpp"
 #include "Variant.hpp"
 
-namespace ua
+namespace app::ua
 {
 
 struct DataValue : public StructType<DataTypeId::DataValue>
@@ -38,4 +38,4 @@ struct DataValue : public StructType<DataTypeId::DataValue>
     }
 };
 
-} // namespace ua
+} // namespace app::ua
