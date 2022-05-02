@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LinkInterface.hpp"
+#include "FileDescriptorInterface.hpp"
 #include "AcceptorInterface.hpp"
 #include "AcceptorHandler.hpp"
 
@@ -9,7 +10,7 @@ namespace reactor
 
 class EpollInterface;
 
-class Acceptor : public FdHandler, public AcceptorInterface
+class Acceptor : public FileDescriptorInterface, public AcceptorInterface
 {
 public:
     Acceptor(EpollInterface&);
@@ -17,10 +18,6 @@ public:
     ~Acceptor();
 
     void setHandler(AcceptorHandler*);
-
-    int getFd() const final;
-
-    void onEvent(int) final;
 
     void listen(LinkAddr const&) final;
 
@@ -31,6 +28,12 @@ public:
     void release() final;
 
 private:
+    int fileDescriptor() const final;
+
+    void setFileDescriptor(int) final {}
+
+    void onFileDescriptorEvent(int) final;
+
     EpollInterface& epoll;
     AcceptorHandler* handler;
     int sfd;

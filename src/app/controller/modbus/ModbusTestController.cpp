@@ -37,7 +37,7 @@ std::vector<uint8_t> randVector(unsigned len)
 
 ModbusTestController::ModbusTestController(reactor::ReactorInterface& reactor)
     : fsm(*this)
-    , timer(reactor.createTimer(this))
+    , timer(reactor.createTimer([this](){ onTimerEvent(); }))
     , testCaseCounter(0)
 {
     testCases =
@@ -144,7 +144,7 @@ void ModbusTestController::receive(ModbusAduReq const& req)
     fsm.getState().onModbusAduReqReceive(fsm, req);
 }
 
-void ModbusTestController::onTimer()
+void ModbusTestController::onTimerEvent()
 {
     fsm.getState().onTimer(fsm);
 }

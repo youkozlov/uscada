@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LinkHandler.hpp"
+#include "FileDescriptorInterface.hpp"
 #include "LinkInterface.hpp"
 
 namespace reactor
@@ -15,12 +16,6 @@ public:
 
     ~Link();
 
-    int getFd() const final;
-
-    void onEvent(int) final;
-
-    void assignFd(int) final;
-
     void connect(LinkAddr const&) final;
 
     void close() final;
@@ -29,13 +24,19 @@ public:
 
     int send(void const*, std::size_t) final;
 
-    int receive(void*, std::size_t) final;
+    int receive(std::uint8_t*, std::size_t) final;
 
-    void setHandler(LinkHandler*);
+    void setHandler(LinkHandler);
 
 private:
+    int fileDescriptor() const final;
+
+    void setFileDescriptor(int) final;
+
+    void onFileDescriptorEvent(int) final;
+
     EpollInterface& epoll;
-    LinkHandler* handler;
+    LinkHandler handler;
     int fd;
 };
 

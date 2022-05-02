@@ -10,19 +10,6 @@ namespace ua
 
 struct Guid : public StructType<DataTypeId::Guid>
 {
-   Guid() = default;
-   Guid(std::initializer_list<int> il, UInt32::Type d1, UInt16::Type d2, UInt16::Type d3)
-       : data1(d1)
-       , data2(d2)
-       , data3(d3)
-   {
-        std::size_t counter = 0;
-        for (auto& it : il)
-        {
-            data4[counter++] = it;
-        }
-   }
-
     UInt32 data1;
     UInt16 data2;
     UInt16 data3;

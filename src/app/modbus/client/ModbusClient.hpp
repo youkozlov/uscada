@@ -25,7 +25,7 @@ enum class Status
     , codecError
 };
 
-class ModbusClient : public reactor::LinkHandler, public reactor::TimerHandler
+class ModbusClient
 {
 public:
     struct Init
@@ -73,13 +73,9 @@ private:
 
     void provideRspError(AduRequest const&);
 
-    void onConnected() final;
+    void onLinkEvent(reactor::LinkEvent);
 
-    void onDataReceived() final;
-
-    void onError() final;
-
-    void onTimer() final;
+    void onTimerEvent();
 
     EntityId const uid;
     reactor::ReactorInterface& reactor;

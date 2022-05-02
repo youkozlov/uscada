@@ -39,9 +39,9 @@ public:
 
     void registerHandlers(MsgHandlerVector const&) final;
 
-    TimerPtr createTimer(TimerHandler*) final;
+    TimerPtr createTimer(TimerHandler) final;
 
-    LinkPtr createLink(LinkHandler*) final;
+    LinkPtr createLink(LinkHandler) final;
 
     AcceptorPtr createAcceptor(AcceptorHandler*) final;
 

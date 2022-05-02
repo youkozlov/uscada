@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FdHandler.hpp"
+#include "FileDescriptorInterface.hpp"
 
 namespace reactor
 {
@@ -11,11 +11,11 @@ public:
 
     virtual ~EpollInterface() {}
 
-    virtual int add(FdHandler&, int) = 0;
+    virtual int add(FileDescriptorInterface&, int) = 0;
 
-    virtual int mod(FdHandler&, int) = 0;
+    virtual int mod(FileDescriptorInterface&, int) = 0;
 
-    virtual int del(FdHandler&) = 0;
+    virtual int del(FileDescriptorInterface&) = 0;
 };
 
 } // namespace reactor

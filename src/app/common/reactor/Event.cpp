@@ -53,7 +53,7 @@ void Event::send()
     }
 }
 
-void Event::onEvent(int)
+void Event::onFileDescriptorEvent(int)
 {
     std::uint64_t u;
     if (sizeof(uint64_t) != ::read(fd, &u, sizeof(u)))
@@ -63,7 +63,7 @@ void Event::onEvent(int)
     handler.onFdEvent(u);
 }
 
-int Event::getFd() const
+int Event::fileDescriptor() const
 {
     return fd;
 }

@@ -13,6 +13,7 @@ enum class LogTask
     GEN = 0,
     CTRL,
     MODBUS,
+    UA,
 
     NUM
 };

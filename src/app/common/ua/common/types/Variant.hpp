@@ -1,7 +1,6 @@
 #pragma once
 
 #include "StructType.hpp"
-#include "Undefined.hpp"
 #include "Boolean.hpp"
 #include "SByte.hpp"
 #include "Byte.hpp"
@@ -32,8 +31,8 @@ struct Variant : public StructType<DataTypeId::Variant>
 {
     using Value = Var
     <
-          Undefined
-        , Boolean
+// 0 - 21
+          Boolean
         , SByte
         , Byte
         , Int16
@@ -55,6 +54,7 @@ struct Variant : public StructType<DataTypeId::Variant>
         , QualifiedName
         , LocalizedText
         , ExtensionObject
+// 22 - 
         , DynamicArray<Boolean>
         , DynamicArray<SByte>
         , DynamicArray<Byte>
@@ -62,53 +62,51 @@ struct Variant : public StructType<DataTypeId::Variant>
         , DynamicArray<UInt16>
         , DynamicArray<Int32>
         , DynamicArray<UInt32>
+        , DynamicArray<Int64>
+        , DynamicArray<UInt64>
+        , DynamicArray<Float>
+        , DynamicArray<Double>
+        , DynamicArray<String>
+        , DynamicArray<DateTime>
+        , DynamicArray<Guid>
+        , DynamicArray<ByteString>
+        , DynamicArray<XmlElement>
+        , DynamicArray<NodeId>
+        , DynamicArray<ExpandedNodeId>
+        , DynamicArray<StatusCode>
+        , DynamicArray<QualifiedName>
+        , DynamicArray<LocalizedText>
+        , DynamicArray<ExtensionObject>
     >;
-    Opt<Int32> arrayLength;
-    Value value;
+    Ptr<Value> value;
     Opt<DynamicArray<Int32>> arrayDimensions;
 
     bool operator==(Variant const& rhs) const
     {
-        bool cmpArrayLength{false};
-        if (this->arrayLength && rhs.arrayLength)
+        bool cmpValue;
+        if (this->value && rhs.value)
         {
-            cmpArrayLength = *this->arrayLength == *rhs.arrayLength;
+            cmpValue = *this->value == *rhs.value;
         }
         else
         {
-            cmpArrayLength = true;
+            cmpValue = not (this->value || rhs.value);
         }
-        bool cmpValue = this->value == rhs.value;
-        bool cmpArrayDimensions{false};
-        if (this->arrayDimensions && rhs.arrayDimensions)
-        {
-            cmpArrayDimensions = *this->arrayDimensions == *rhs.arrayDimensions;
-        }
-        else
-        {
-            cmpArrayDimensions = true;
-        }
-        return cmpArrayLength && cmpValue && cmpArrayDimensions;
+        bool cmpArrayDimensions = *this->arrayDimensions == *rhs.arrayDimensions;
+        return cmpValue && cmpArrayDimensions;
     }
     std::uint8_t encodingMask() const
     {
-        return static_cast<std::uint8_t>(value.index());
+        // see type Value
+        auto toDataTypeId = [](auto val) { return val < 22 ? val + 1 : ((val - 21) | 0x80); };
+        return value ? toDataTypeId(value->index()) : 0;
+    }
+    template <typename T, typename...ARGS>
+    T& emplace(ARGS...args)
+    {
+        value = std::make_unique<Variant::Value>();
+        return value->emplace<T>(args...);
     }
 };
-
-template <typename T>
-DynamicArray<T>& emplace(Variant& variant, Int32 arrayLength)
-{
-    auto& arr = variant.value.emplace<DynamicArray<T>>();
-    arr.resize(arrayLength);
-    return arr;
-}
-
-template <typename T>
-T& emplace(Variant& variant)
-{
-    return variant.value.emplace<T>();
-}
-
 
 } // namespace ua

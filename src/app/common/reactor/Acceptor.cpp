@@ -97,12 +97,12 @@ void Acceptor::close()
     sfd = -1;
 }
 
-int Acceptor::getFd() const
+int Acceptor::fileDescriptor() const
 {
     return sfd;
 }
 
-void Acceptor::onEvent(int)
+void Acceptor::onFileDescriptorEvent(int)
 {
     if (nullptr == handler)
     {
@@ -129,12 +129,12 @@ void Acceptor::accept(LinkInterface& link)
         throw std::runtime_error("fcntl");
     }
 
-    link.assignFd(fd);
+    link.setFileDescriptor(fd);
 
     if (-1 == epoll.add(link, EPOLLIN | EPOLLET))
     {
         ::close(fd);
-        link.assignFd(-1);
+        link.setFileDescriptor(-1);
         throw std::runtime_error("fd add");
     }
 }

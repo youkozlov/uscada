@@ -1,6 +1,5 @@
 
 add_library(reactor
-    Pipe.cpp
     Event.cpp
     Epoll.cpp
     Link.cpp
@@ -15,6 +14,7 @@ add_library(reactor
 target_include_directories(reactor PUBLIC
     .
     types
+    mock
 )
 
 target_link_libraries(reactor

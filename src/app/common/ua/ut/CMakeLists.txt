@@ -1,7 +1,9 @@
 add_definitions( -DGTEST_HAS_PTHREAD=1 )
 
 add_executable(ua_test
-    OpcUaBinaryStreamTest.cpp
+    OpcUaBinaryCodecTest.cpp
+    ServerConnectionTest.cpp
+    ClientConnectionTest.cpp
 )
 
 target_link_libraries(ua_test
@@ -9,6 +11,7 @@ target_link_libraries(ua_test
     gmock_main
     gtest
     gtest_main
+    reactor
     common_ua
 )
 

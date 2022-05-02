@@ -14,9 +14,10 @@
 namespace app::modbus
 {
 
-ModbusComponent::ModbusComponent(reactor::SenderInterface& sender, reactor::ReactorInterface& receiver)
-    : ComponentBase(sender, receiver)
+ModbusComponent::ModbusComponent(reactor::SenderInterface& sender, reactor::ReactorInterface& reactor)
+    : ComponentBase(sender, reactor)
     , modbusSender(*this)
+    , modbusReactor(reactor)
 {
     registerComponent();
 }

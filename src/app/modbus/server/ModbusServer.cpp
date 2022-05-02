@@ -53,11 +53,8 @@ void ModbusServer::onAccept()
     }
 
     ModbusSession& session = sessionPool.get(uid);
-    reactor::LinkPtr link = reactor.createLink(&session);
-    acceptor->accept(*link);
-    session.setLink(std::move(link));
-    session.setTimer(reactor.createTimer(&session));
-    session.setServerId(id);
+    session.prepare(id);
+    acceptor->accept(session.getLink());
     session.start();
 }
 

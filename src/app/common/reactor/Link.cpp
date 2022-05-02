@@ -16,7 +16,6 @@ namespace reactor
 
 Link::Link(EpollInterface& epoll_)
     : epoll(epoll_)
-    , handler(nullptr)
     , fd(-1)
 {
 }
@@ -29,7 +28,7 @@ Link::~Link()
     }
 }
 
-void Link::assignFd(int val)
+void Link::setFileDescriptor(int val)
 {
     if (-1 != fd)
     {
@@ -96,7 +95,7 @@ void Link::close()
 void Link::release()
 {
     close();
-    setHandler(nullptr);
+    setHandler({});
 }
 
 int Link::send(void const* data, std::size_t len)
@@ -113,28 +112,28 @@ int Link::send(void const* data, std::size_t len)
     return 1;
 }
 
-int Link::receive(void* data, std::size_t len)
+int Link::receive(std::uint8_t* data, std::size_t len)
 {
     return ::read(fd, data, len);
 }
 
-void Link::setHandler(LinkHandler* val)
+void Link::setHandler(LinkHandler val)
 {
     handler = val;
 }
 
-void Link::onEvent(int events)
+void Link::onFileDescriptorEvent(int events)
 {
-    if (nullptr == handler)
+    if (not handler)
     {
-        LM(GEN, LW, "Handler is undefined");
+        LM(GEN, LE, "Handler is undefined");
         return;
     }
     switch (events)
     {
     case EPOLLIN:
     {
-        handler->onDataReceived();
+        handler(LinkEvent::data);
     }
     break;
     case EPOLLOUT:
@@ -143,24 +142,24 @@ void Link::onEvent(int events)
         {
             LM(GEN, LE, "fd mod");
             close();
-            handler->onError();
+            handler(LinkEvent::error);
         }
         else
         {
-            handler->onConnected();
+            handler(LinkEvent::connected);
         }
     }
     break;
     default:
     {
         close();
-        handler->onError();
+        handler(LinkEvent::error);
     }
     break;
     }
 }
 
-int Link::getFd() const
+int Link::fileDescriptor() const
 {
     return fd;
 }

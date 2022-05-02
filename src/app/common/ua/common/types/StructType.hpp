@@ -10,7 +10,11 @@ namespace ua
 template <DataTypeId ID>
 struct StructType
 {
+    StructType() = default;
+    StructType(StructType const&) = delete;
+    StructType& operator=(StructType const&) = delete;
     static constexpr DataTypeId Id = ID;
+    std::size_t size() const { return 1; }
 };
 
 template<typename...ARGS>

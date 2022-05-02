@@ -39,6 +39,8 @@ char const* toString(LogTask task)
         return "CTRL";
     case LogTask::MODBUS:
         return "MODBUS";
+    case LogTask::UA:
+        return "UA";
     case LogTask::NUM:
         return "Invalid";
     }
@@ -49,7 +51,7 @@ char const* toString(LogTask task)
 
 
 Logger::Logger()
-    : logLevels(numLogTasks, LogLevel::LE)
+    : logLevels(numLogTasks, LogLevel::LD)
 {
 }
 

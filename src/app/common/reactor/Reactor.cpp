@@ -54,7 +54,7 @@ void Reactor::registerHandlers(MsgHandlerVector const& handlerVector)
     }
 }
 
-TimerPtr Reactor::createTimer(TimerHandler* handler)
+TimerPtr Reactor::createTimer(TimerHandler handler)
 {
     unsigned uid;
     if (not timerPool.alloc(uid))
@@ -72,7 +72,7 @@ TimerPtr Reactor::createTimer(TimerHandler* handler)
     return timerPtr;
 }
 
-LinkPtr Reactor::createLink(LinkHandler* handler)
+LinkPtr Reactor::createLink(LinkHandler handler)
 {
     unsigned uid;
     if (not linkPool.alloc(uid))

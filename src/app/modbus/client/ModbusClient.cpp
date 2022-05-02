@@ -14,8 +14,8 @@ ModbusClient::ModbusClient(Init const& init)
     : uid(init.id)
     , reactor(init.reactor)
     , fsm(*this)
-    , link(reactor.createLink(this))
-    , timer(reactor.createTimer(this))
+    , link(reactor.createLink([this](auto ev){ onLinkEvent(ev); }))
+    , timer(reactor.createTimer([this](){ onTimerEvent(); }))
 {
     pduBuf.reset();
 }
@@ -263,22 +263,23 @@ void ModbusClient::receive(ModbusClientAduReqItem const& item)
     fsm.getState().onReceiveTransactionReq(fsm);
 }
 
-void ModbusClient::onConnected()
+void ModbusClient::onLinkEvent(reactor::LinkEvent ev)
 {
-    fsm.getState().onConnected(fsm);
+    switch (ev)
+    {
+    case reactor::LinkEvent::connected:
+        fsm.getState().onConnected(fsm);
+    break;
+    case reactor::LinkEvent::data:
+        fsm.getState().onDataReceived(fsm);
+    break;
+    case reactor::LinkEvent::error:
+        fsm.getState().onError(fsm);
+    break;
+    }
 }
 
-void ModbusClient::onDataReceived()
-{
-    fsm.getState().onDataReceived(fsm);
-}
-
-void ModbusClient::onError()
-{
-    fsm.getState().onError(fsm);
-}
-
-void ModbusClient::onTimer()
+void ModbusClient::onTimerEvent()
 {
     fsm.getState().onTimer(fsm);
 }

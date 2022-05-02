@@ -29,7 +29,7 @@ enum class Result
     , error
 };
 
-class ModbusTestController : public reactor::TimerHandler
+class ModbusTestController
 {
 public:
     explicit ModbusTestController(reactor::ReactorInterface&);
@@ -60,7 +60,7 @@ public:
 
 private:
 
-    void onTimer() final;
+    void onTimerEvent();
 
     ModbusTestFsm fsm;
     reactor::TimerPtr timer;

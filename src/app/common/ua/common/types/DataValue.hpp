@@ -8,7 +8,7 @@ namespace ua
 
 struct DataValue : public StructType<DataTypeId::DataValue>
 {
-    Opt<Variant> value;
+    Variant value;
     Opt<StatusCode> status;
     Opt<DateTime> sourceTimestampt;
     Opt<UInt16> sourcePicoSeconds;
@@ -28,7 +28,7 @@ struct DataValue : public StructType<DataTypeId::DataValue>
     {
         return encodeMask
         (
-              value
+              value.value
             , status
             , sourceTimestampt
             , sourcePicoSeconds

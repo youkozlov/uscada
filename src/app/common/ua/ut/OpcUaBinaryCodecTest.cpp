@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
-#include "OpcUaBinaryStream.hpp"
+#include "OpcUaBinaryCodec.hpp"
 
 using namespace ua;
 
-class OpcUaBinaryStreamTest : public ::testing::Test
+class OpcUaBinaryCodecTest : public ::testing::Test
 {
 public:
 
@@ -18,15 +18,10 @@ public:
     }
 
 private:
-    OpcUaBinaryStream s;
+    OpcUaBinaryCodec s;
 };
 
-TEST_F(OpcUaBinaryStreamTest, Undefined)
-{
-    check(Undefined{});
-}
-
-TEST_F(OpcUaBinaryStreamTest, Boolean)
+TEST_F(OpcUaBinaryCodecTest, Boolean)
 {
     Boolean boolean1{true};
     check(boolean1);
@@ -44,80 +39,80 @@ TEST_F(OpcUaBinaryStreamTest, Boolean)
     check(boolean6);
 }
 
-TEST_F(OpcUaBinaryStreamTest, SByte)
+TEST_F(OpcUaBinaryCodecTest, SByte)
 {
     check(SByte{127});
     check(SByte{-128});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Byte)
+TEST_F(OpcUaBinaryCodecTest, Byte)
 {
     check(Byte{1});
     check(Byte{255});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Int16)
+TEST_F(OpcUaBinaryCodecTest, Int16)
 {
     check(Int16{1});
     check(Int16{-32767});
 }
 
-TEST_F(OpcUaBinaryStreamTest, UInt16)
+TEST_F(OpcUaBinaryCodecTest, UInt16)
 {
     check(UInt16{1});
     check(UInt16{65534});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Int32)
+TEST_F(OpcUaBinaryCodecTest, Int32)
 {
     check(Int32{-1});
     check(Int32{655340});
 }
 
-TEST_F(OpcUaBinaryStreamTest, UInt32)
+TEST_F(OpcUaBinaryCodecTest, UInt32)
 {
     check(UInt32{0});
     check(UInt32{655340});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Int64)
+TEST_F(OpcUaBinaryCodecTest, Int64)
 {
     check(Int64{-1});
     check(Int64{6553400});
 }
 
-TEST_F(OpcUaBinaryStreamTest, UInt64)
+TEST_F(OpcUaBinaryCodecTest, UInt64)
 {
     check(UInt64{1});
     check(UInt64{6553400});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Float)
+TEST_F(OpcUaBinaryCodecTest, Float)
 {
     check(Float{1.0f});
     check(Float{-1.0f});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Double)
+TEST_F(OpcUaBinaryCodecTest, Double)
 {
     check(Double{1.0f});
     check(Double{-1.0f});
 }
 
-TEST_F(OpcUaBinaryStreamTest, String)
+TEST_F(OpcUaBinaryCodecTest, String)
 {
     check(String{"AAAA"});
     check(String{""});
     check(String{});
 }
 
-TEST_F(OpcUaBinaryStreamTest, DateTime)
+TEST_F(OpcUaBinaryCodecTest, DateTime)
 {
     check(DateTime{0});
     check(DateTime{15666});
 }
 
-TEST_F(OpcUaBinaryStreamTest, Guid)
+TEST_F(OpcUaBinaryCodecTest, Guid)
 {
     Guid guid;
     guid.data1 = 1;
@@ -134,13 +129,13 @@ TEST_F(OpcUaBinaryStreamTest, Guid)
     check(guid);
 }
 
-TEST_F(OpcUaBinaryStreamTest, ByteString)
+TEST_F(OpcUaBinaryCodecTest, ByteString)
 {
     ByteString byteString = "AAAAAAA";
     check(byteString);
 }
 
-TEST_F(OpcUaBinaryStreamTest, NodeId)
+TEST_F(OpcUaBinaryCodecTest, NodeId)
 {
     NodeId nodeId1;
     check(nodeId1);
@@ -167,16 +162,16 @@ TEST_F(OpcUaBinaryStreamTest, NodeId)
 
     NodeId nodeId6;
     nodeId6.namespaceIndex = 1;
-    nodeId6.value.emplace<Guid>({0, 1, 2, 3, 4, 5, 6, 7}, 1, 2, 3);
+    nodeId6.value.emplace<Guid>();
     check(nodeId6);
 }
 
-TEST_F(OpcUaBinaryStreamTest, StatusCode)
+TEST_F(OpcUaBinaryCodecTest, StatusCode)
 {
     check(StatusCode{3333});
 }
 
-TEST_F(OpcUaBinaryStreamTest, QualifiedName)
+TEST_F(OpcUaBinaryCodecTest, QualifiedName)
 {
     QualifiedName qn;
     qn.namespaceIndex = 33;
@@ -184,7 +179,7 @@ TEST_F(OpcUaBinaryStreamTest, QualifiedName)
     check(qn);
 }
 
-TEST_F(OpcUaBinaryStreamTest, LocalizedText)
+TEST_F(OpcUaBinaryCodecTest, LocalizedText)
 {
     LocalizedText lz1;
     check(lz1);
@@ -207,13 +202,13 @@ TEST_F(OpcUaBinaryStreamTest, LocalizedText)
     check(lz5);
 }
 
-TEST_F(OpcUaBinaryStreamTest, DataValue)
+TEST_F(OpcUaBinaryCodecTest, DataValue)
 {
     DataValue data1;
     check(data1);
 
     DataValue data2;
-    data2.value.emplace().value.emplace<UInt16>(0xFFAA);
+    data2.value.emplace<UInt16>(0xFFAA);
     check(data2);
 
     DataValue data3;
@@ -237,25 +232,30 @@ TEST_F(OpcUaBinaryStreamTest, DataValue)
     check(data7);
 }
 
-TEST_F(OpcUaBinaryStreamTest, Variant)
+TEST_F(OpcUaBinaryCodecTest, Variant)
 {
     Variant var1;
     check(var1);
 
     Variant var2;
-    var2.value.emplace<UInt32>(0xFFFF);
+    var2.emplace<UInt32>(0xFFFF);
     check(var2);
 
     Variant var3;
-    var3.value.emplace<Guid>({0, 1, 2, 3, 4, 5, 6, 7}, 1, 2, 3);
+    var3.emplace<Guid>();
     check(var3);
 
     Variant var4;
-    var4.value.emplace<String>("String");
+    var4.emplace<String>("String");
     check(var4);
+
+    Variant var5;
+    auto& arr = var5.emplace<DynamicArray<UInt32>>(10);
+    for (auto &&i : arr) { i = 0xAA; }
+    check(var5);
 }
 
-TEST_F(OpcUaBinaryStreamTest, DiagnosticInfo)
+TEST_F(OpcUaBinaryCodecTest, DiagnosticInfo)
 {
     DiagnosticInfo diag1;
     check(diag1);

@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "FdHandler.hpp"
+#include "FileDescriptorInterface.hpp"
 #include "Logger.hpp"
 
 namespace reactor
@@ -26,28 +26,28 @@ Epoll::~Epoll()
     ::close(epollfd);
 }
 
-int Epoll::add(FdHandler& handler, int events)
+int Epoll::add(FileDescriptorInterface& fd, int events)
 {
     struct epoll_event ev;
     ev.events = events;
-    ev.data.ptr = &handler;
-    return ::epoll_ctl(epollfd, EPOLL_CTL_ADD, handler.getFd(), &ev);
+    ev.data.ptr = &fd;
+    return ::epoll_ctl(epollfd, EPOLL_CTL_ADD, fd.fileDescriptor(), &ev);
 }
 
-int Epoll::mod(FdHandler& handler, int events)
+int Epoll::mod(FileDescriptorInterface& fd, int events)
 {
     struct epoll_event ev;
     ev.events = events;
-    ev.data.ptr = &handler;
-    return ::epoll_ctl(epollfd, EPOLL_CTL_MOD, handler.getFd(), &ev);
+    ev.data.ptr = &fd;
+    return ::epoll_ctl(epollfd, EPOLL_CTL_MOD, fd.fileDescriptor(), &ev);
 }
 
-int Epoll::del(FdHandler& handler)
+int Epoll::del(FileDescriptorInterface& fd)
 {
     struct epoll_event ev;
     ev.events = 0;
-    ev.data.ptr = &handler;
-    return ::epoll_ctl(epollfd, EPOLL_CTL_DEL, handler.getFd(), &ev);
+    ev.data.ptr = &fd;
+    return ::epoll_ctl(epollfd, EPOLL_CTL_DEL, fd.fileDescriptor(), &ev);
 }
 
 void Epoll::wait()
@@ -67,8 +67,8 @@ void Epoll::wait()
         {
             throw std::runtime_error("invalid ptr");
         }
-        FdHandler& handler = *static_cast<FdHandler*>(events[n].data.ptr);
-        handler.onEvent(events[n].events);
+        FileDescriptorInterface& fd = *static_cast<FileDescriptorInterface*>(events[n].data.ptr);
+        fd.onFileDescriptorEvent(events[n].events);
     }
 }
 

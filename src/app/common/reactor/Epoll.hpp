@@ -7,7 +7,7 @@
 namespace reactor
 {
 
-class FdHandler;
+class FileDescriptorInterface;
 
 class Epoll : public EpollInterface
 {
@@ -22,11 +22,11 @@ private:
 
     unsigned const id;
 
-    int add(FdHandler&, int) final;
+    int add(FileDescriptorInterface&, int) final;
 
-    int mod(FdHandler&, int) final;
+    int mod(FileDescriptorInterface&, int) final;
 
-    int del(FdHandler&) final;
+    int del(FileDescriptorInterface&) final;
 
     static constexpr int MAX_EVENTS = 10;
     static constexpr int DEFAULT_TIMEOUT = 1000;

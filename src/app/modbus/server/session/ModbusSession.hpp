@@ -26,7 +26,7 @@ enum class Result
 
 class ModbusSessionHandler;
 
-class ModbusSession : public reactor::LinkHandler, public reactor::TimerHandler
+class ModbusSession
 {
 public:
 
@@ -36,11 +36,9 @@ public:
 
     ~ModbusSession();
 
-    void setLink(reactor::LinkPtr);
+    void prepare(EntityId);
 
-    void setTimer(reactor::TimerPtr);
-
-    void setServerId(EntityId);
+    reactor::LinkInterface& getLink();
 
     void start();
 
@@ -65,13 +63,9 @@ public:
 
 private:
 
-    void onConnected() final {}
+    void onLinkEvent(reactor::LinkEvent);
 
-    void onDataReceived() final;
-
-    void onError() final {}
-
-    void onTimer() final;
+    void onTimerEvent();
 
     Uid const uid;
     EntityId serverId;

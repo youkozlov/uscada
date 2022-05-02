@@ -1,8 +1,20 @@
 #pragma once
 
+#include <functional>
+
 namespace reactor
 {
 
+enum class LinkEvent
+{
+      connected
+    , data
+    , error
+};
+
+using LinkHandler = std::function<void(LinkEvent)>;
+
+/*
 class LinkHandler
 {
 public:
@@ -14,5 +26,6 @@ public:
 
     virtual void onError() = 0;
 };
+*/
 
 } // namespace reactor

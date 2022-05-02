@@ -12,13 +12,15 @@ namespace ua
 
 struct NodeId : public StructType<DataTypeId::NodeId>
 {
+    using Value = Var
+    <
+      UInt32
+    , String
+    , Guid
+    , Opaque
+    >;
     UInt16 namespaceIndex;
-    Var<
-          UInt32
-        , String
-        , Guid
-        , Opaque
-    > value;
+    Value value;
 
     bool operator==(NodeId const& rhs) const
     {
@@ -26,5 +28,12 @@ struct NodeId : public StructType<DataTypeId::NodeId>
             && this->value == rhs.value;
     }
 };
+
+template <typename T>
+T& emplace(NodeId::Value& value)
+{
+    return value.emplace<T>();
+}
+
 
 } // namespace ua

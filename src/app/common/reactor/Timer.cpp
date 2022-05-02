@@ -63,7 +63,7 @@ void Timer::close()
     fd = -1;
 }
 
-void Timer::setHandler(TimerHandler* handler_)
+void Timer::setHandler(TimerHandler handler_)
 {
     handler = handler_;
 }
@@ -105,15 +105,14 @@ void Timer::release()
 {
     stop();
     close();
-    handler = nullptr;
+    handler = {};
 }
 
-void Timer::onEvent(int)
+void Timer::onFileDescriptorEvent(int)
 {
-    if (nullptr == handler)
+    if (not handler)
     {
-        LM(GEN, LW, "Handler is undefined");
-        return;
+        LM(GEN, LE, "Handler is undefined");
     }
     uint64_t exp;
     int rc = ::read(fd, &exp, sizeof(uint64_t));
@@ -121,10 +120,13 @@ void Timer::onEvent(int)
     {
         throw std::runtime_error("read");
     }
-    handler->onTimer();
+    if (handler)
+    {
+        handler();
+    }
 }
 
-int Timer::getFd() const
+int Timer::fileDescriptor() const
 {
     return fd;
 }

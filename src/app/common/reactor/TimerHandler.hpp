@@ -1,14 +1,10 @@
 #pragma once
 
+#include <functional>
+
 namespace reactor
 {
 
-class TimerHandler
-{
-public:
-    virtual ~TimerHandler() {}
-
-    virtual void onTimer() = 0;
-};
+using TimerHandler = std::function<void()>;
 
 } // namespace reactor

@@ -13,8 +13,7 @@ namespace ua
 
 enum class DataTypeId : std::uint8_t
 {
-      Undefined = 0
-    , Boolean = 1
+      Boolean = 1
     , SByte = 2
     , Byte = 3
     , Int16 = 4
@@ -62,6 +61,7 @@ public:
         this->val = other;
         return *this;
     }
+    std::size_t size() const { return 0; }
     operator Type&() { return val; }
     operator Type() const { return val; }
 private:

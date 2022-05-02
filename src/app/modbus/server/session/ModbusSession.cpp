@@ -4,6 +4,7 @@
 #include "ModbusCodec.hpp"
 #include "AduRespond.hpp"
 #include "ModbusSender.hpp"
+#include "ModbusReactor.hpp"
 
 #include "Logger.hpp"
 
@@ -22,19 +23,16 @@ ModbusSession::~ModbusSession()
 {
 }
 
-void ModbusSession::setLink(reactor::LinkPtr link_)
-{
-    link = std::move(link_);
-}
-
-void ModbusSession::setTimer(reactor::TimerPtr timer_)
-{
-    timer = std::move(timer_);
-}
-
-void ModbusSession::setServerId(EntityId val)
+void ModbusSession::prepare(EntityId val)
 {
     serverId = val;
+    timer = Reactor::get().createTimer([this](){ onTimerEvent(); });
+    link = Reactor::get().createLink([this](auto ev){ onLinkEvent(ev); });
+}
+
+reactor::LinkInterface& ModbusSession::getLink()
+{
+    return *link;
 }
 
 void ModbusSession::start()
@@ -42,17 +40,26 @@ void ModbusSession::start()
     fsm.getState().onStart(fsm);
 }
 
-void ModbusSession::onDataReceived()
-{
-    fsm.getState().onDataReceived(fsm);
-}
-
 void ModbusSession::receive(ModbusAduRsp const& rsp)
 {
     fsm.getState().onModbusAduRspReceive(fsm, rsp);
 }
 
-void ModbusSession::onTimer()
+void ModbusSession::onLinkEvent(reactor::LinkEvent ev)
+{
+    switch (ev)
+    {
+    case reactor::LinkEvent::data:
+        fsm.getState().onDataReceived(fsm);
+    break;
+    case reactor::LinkEvent::connected:
+    case reactor::LinkEvent::error:
+        LM(MODBUS, LE, "Session-%u, unexpected", uid);
+    break;
+    }
+}
+
+void ModbusSession::onTimerEvent()
 {
     fsm.getState().onTimer(fsm);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FdHandler.hpp"
+#include "FileDescriptorInterface.hpp"
 #include "TimerHandler.hpp"
 #include "TimerInterface.hpp"
 
@@ -9,7 +9,7 @@ namespace reactor
 
 class EpollInterface;
 
-class Timer : public FdHandler, public TimerInterface
+class Timer : public FileDescriptorInterface, public TimerInterface
 {
 public:
     explicit Timer(EpollInterface&);
@@ -20,7 +20,7 @@ public:
 
     void close();
 
-    void setHandler(TimerHandler*);
+    void setHandler(TimerHandler);
 
 private:
 
@@ -28,14 +28,16 @@ private:
 
     void stop() final;
 
-    int getFd() const final;
+    int fileDescriptor() const final;
 
-    void onEvent(int) final;
+    void setFileDescriptor(int) final {}
+
+    void onFileDescriptorEvent(int) final;
 
     void release() final;
 
     EpollInterface& epoll;
-    TimerHandler* handler;
+    TimerHandler handler;
     int fd;
 };
 

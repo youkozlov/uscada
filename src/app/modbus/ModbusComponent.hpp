@@ -3,6 +3,7 @@
 #include "CompDefs.hpp"
 #include "ComponentBase.hpp"
 #include "ModbusSender.hpp"
+#include "ModbusReactor.hpp"
 #include <vector>
 #include <memory>
 
@@ -52,7 +53,7 @@ private:
     };
 
     ModbusSender modbusSender;
-
+    Reactor modbusReactor;
     std::unique_ptr<Modbus> modbus;
 };
 

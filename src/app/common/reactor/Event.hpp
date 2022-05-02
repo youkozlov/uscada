@@ -2,14 +2,14 @@
 
 #include <cstdint>
 
-#include "FdHandler.hpp"
+#include "FileDescriptorInterface.hpp"
 namespace reactor
 {
 
 class EpollInterface;
 class EventHandler;
 
-class Event : public FdHandler
+class Event : public FileDescriptorInterface
 {
 public:
     explicit Event(EpollInterface&, EventHandler&);
@@ -18,11 +18,13 @@ public:
 
     void send();
 
-    int getFd() const final;
-
-    void onEvent(int) final;
-
 private:
+    int fileDescriptor() const final;
+
+    void setFileDescriptor(int) final {}
+
+    void onFileDescriptorEvent(int) final;
+
     EpollInterface& epoll;
     EventHandler& handler;
     int fd;
