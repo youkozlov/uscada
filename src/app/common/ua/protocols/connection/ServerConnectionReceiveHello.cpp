@@ -1,5 +1,5 @@
 #include "ServerConnectionReceiveHello.hpp"
-#include "ServerConnectionEstablished.hpp"
+#include "ServerConnectionConnected.hpp"
 #include "ServerConnectionInit.hpp"
 #include "ServerConnection.hpp"
 
@@ -16,24 +16,25 @@ void ServerConnectionReceiveHello::onDataReceived(ServerConnection& fsm)
 {
     switch (fsm.receiveHello())
     {
-    case ServerConnection::Result::noerror:
+    case OpcUaConnection::Result::noerror:
     break;
-    case ServerConnection::Result::done:
+    case OpcUaConnection::Result::done:
     {
         switch (fsm.sendAcknowledge())
         {
-        case ServerConnection::Result::noerror:
+        case OpcUaConnection::Result::noerror:
         {
             LM(UA, LE, "Unexpected");
         }
         break;
-        case ServerConnection::Result::done:
+        case OpcUaConnection::Result::done:
         {
-            fsm.transit<ServerConnectionEstablished>();
+            fsm.transit<ServerConnectionConnected>();
         }
         break;
-        case ServerConnection::Result::error:
+        case OpcUaConnection::Result::error:
         {
+            fsm.notifyError();
             fsm.closeLink();
             fsm.transit<ServerConnectionInit>();
         }
@@ -41,8 +42,9 @@ void ServerConnectionReceiveHello::onDataReceived(ServerConnection& fsm)
         }
     }
     break;
-    case ServerConnection::Result::error:
+    case OpcUaConnection::Result::error:
     {
+        fsm.notifyError();
         fsm.closeLink();
         fsm.transit<ServerConnectionInit>();
     }
@@ -52,6 +54,8 @@ void ServerConnectionReceiveHello::onDataReceived(ServerConnection& fsm)
 
 void ServerConnectionReceiveHello::onTimer(ServerConnection& fsm)
 {
+    LM(UA, LW, "onTimer");
+    fsm.notifyError();
     fsm.closeLink();
     fsm.transit<ServerConnectionInit>();
 }

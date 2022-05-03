@@ -2,11 +2,10 @@
 
 #include <memory>
 #include <functional>
+#include "AcceptorInterface.hpp"
 
 namespace app::reactor
 {
-
-class AcceptorInterface;
 
 using AcceptorPtr = std::unique_ptr<AcceptorInterface, std::function<void(AcceptorInterface*)>>;
 

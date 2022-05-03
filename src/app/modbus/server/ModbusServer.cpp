@@ -25,7 +25,7 @@ void ModbusServer::start()
 {
     LM(MODBUS, LD, "Server-%u, start", id);
 
-    acceptor = Reactor::get().createAcceptor(this);
+    acceptor = Reactor::get().createAcceptor([this](){ onAcceptEvent(); });
 
     acceptor->listen(addr);
 }
@@ -42,7 +42,7 @@ void ModbusServer::receive(ModbusAduRsp const& rsp)
     sessionPool.get(rsp.sessionId).receive(rsp);
 }
 
-void ModbusServer::onAccept()
+void ModbusServer::onAcceptEvent()
 {
     ModbusSession::Uid uid;
     if (not sessionPool.alloc(uid))

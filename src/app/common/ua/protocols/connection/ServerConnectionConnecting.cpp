@@ -16,18 +16,19 @@ void ServerConnectionConnecting::onConnected(ServerConnection& fsm)
 {
     switch (fsm.sendReverseHello())
     {
-    case ServerConnection::Result::noerror:
+    case OpcUaConnection::Result::noerror:
     {
         LM(UA, LE, "Unexpected");
     }
     break;
-    case ServerConnection::Result::done:
+    case OpcUaConnection::Result::done:
     {
         fsm.transit<ServerConnectionReceiveHello>();
     }
     break;
-    case ServerConnection::Result::error:
+    case OpcUaConnection::Result::error:
     {
+        fsm.notifyError();
         fsm.closeLink();
         fsm.transit<ServerConnectionInit>();
     }
@@ -38,12 +39,14 @@ void ServerConnectionConnecting::onConnected(ServerConnection& fsm)
 void ServerConnectionConnecting::onError(ServerConnection& fsm)
 {
     LM(UA, LW, "onError");
+    fsm.notifyError();
     fsm.transit<ServerConnectionInit>();
 }
 
 void ServerConnectionConnecting::onTimer(ServerConnection& fsm)
 {
     LM(UA, LW, "onTimer");
+    fsm.notifyError();
     fsm.closeLink();
     fsm.transit<ServerConnectionInit>();
 }

@@ -6,9 +6,8 @@
 namespace app::ua
 {
 
-OpcUaBinaryCodec::OpcUaBinaryCodec()
-    : tail(0)
-    , head(0)
+OpcUaBinaryCodec::OpcUaBinaryCodec(OpcUaSduBuffer& b)
+    : buffer(b)
 {
 }
 
@@ -18,56 +17,12 @@ OpcUaBinaryCodec::~OpcUaBinaryCodec()
 
 void OpcUaBinaryCodec::write(std::uint8_t val)
 {
-    LM(GEN, LE, "end: %u, wr: %d", head, (int)val);
-    packet[head++] = val;
+    buffer.write(val);
 }
 
 std::uint8_t OpcUaBinaryCodec::read()
 {
-    auto const& rd = packet[tail];
-    LM(GEN, LE, "tail: %u, rd: %d", tail, (int)rd);
-    tail++;
-    return rd;
-}
-
-std::uint8_t const* OpcUaBinaryCodec::begin() const
-{
-    return &packet[tail];
-}
-
-std::uint8_t* OpcUaBinaryCodec::begin()
-{
-    return &packet[tail];
-}
-
-std::uint8_t* OpcUaBinaryCodec::end()
-{
-    return &packet[head];
-}
-
-std::uint8_t const* OpcUaBinaryCodec::end() const
-{
-    return &packet[head];
-}
-
-std::uint32_t OpcUaBinaryCodec::size() const
-{
-    return head;
-}
-
-std::uint32_t OpcUaBinaryCodec::capacity() const
-{
-    return maxPacketLen - head;
-}
-
-void OpcUaBinaryCodec::seek(std::uint32_t val)
-{
-    head += val;
-}
-
-void OpcUaBinaryCodec::reset()
-{
-    tail = head = 0;
+    return buffer.read();
 }
 
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, Boolean& val)

@@ -89,7 +89,7 @@ LinkPtr Reactor::createLink(LinkHandler handler)
     return linkPtr;
 }
 
-AcceptorPtr Reactor::createAcceptor(AcceptorHandler* handler)
+AcceptorPtr Reactor::createAcceptor(AcceptorHandler handler)
 {
     unsigned uid;
     if (not acceptorPool.alloc(uid))

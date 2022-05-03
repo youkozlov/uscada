@@ -16,17 +16,17 @@ void ClientConnectionConnecting::onConnected(ClientConnection& fsm)
 {
     switch (fsm.sendHello())
     {
-    case ClientConnection::Result::noerror:
+    case OpcUaConnection::Result::noerror:
     {
         LM(UA, LE, "Unexpected");
     }
     break;
-    case ClientConnection::Result::done:
+    case OpcUaConnection::Result::done:
     {
         fsm.transit<ClientConnectionReceiveAck>();
     }
     break;
-    case ClientConnection::Result::error:
+    case OpcUaConnection::Result::error:
     {
         fsm.closeLink();
         fsm.transit<ClientConnectionInit>();

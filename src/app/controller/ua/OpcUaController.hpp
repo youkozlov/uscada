@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ServerConnection.hpp"
+#include "ClientConnection.hpp"
+
 namespace app::controller
 {
 
@@ -10,8 +13,11 @@ public:
 
     ~OpcUaController();
 
+    void start();
+
+    void connect();
+
 private:
-    /* data */
 };
 
 } // namespace app::controller

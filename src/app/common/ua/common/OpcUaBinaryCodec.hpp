@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <array>
-
+#include "OpcUaSduBuffer.hpp"
 #include "Boolean.hpp"
 #include "SByte.hpp"
 #include "Byte.hpp"
@@ -35,7 +33,7 @@ namespace app::ua
 class OpcUaBinaryCodec
 {
 public:
-    explicit OpcUaBinaryCodec();
+    explicit OpcUaBinaryCodec(OpcUaSduBuffer&);
 
     ~OpcUaBinaryCodec();
 
@@ -43,29 +41,8 @@ public:
 
     std::uint8_t read();
 
-    std::uint8_t const* begin() const;
-
-    std::uint8_t* begin();
-
-    std::uint8_t* end();
-
-    std::uint8_t const* end() const;
-
-    std::uint32_t size() const;
-
-    std::uint32_t capacity() const;
-
-    void seek(std::uint32_t);
-
-    void reset();
-
 private:
-    static constexpr unsigned maxPacketLen = 4096;
-
-    unsigned tail;
-    unsigned head;
-    unsigned len;
-    std::array<std::uint8_t, maxPacketLen> packet;
+    OpcUaSduBuffer& buffer;
 };
 
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, Boolean&);

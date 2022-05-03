@@ -87,11 +87,15 @@ Status ModbusClient::receive()
         return Status::done;
     }
 
-    int rc = link->receive(pduBuf.end(), pduBuf.capacity());
-
-    if (rc <= 0)
+    auto const& result = link->receive(pduBuf.end(), pduBuf.capacity());
+    switch (result.status)
     {
-        LM(MODBUS, LI, "Client-%u, receive return: %d", uid, rc);
+    case reactor::LinkResult::ok:
+    break;
+    case reactor::LinkResult::na:
+        return Status::noerror;
+    case reactor::LinkResult::closed:
+    case reactor::LinkResult::error:
         return Status::error;
     }
 
@@ -101,7 +105,7 @@ Status ModbusClient::receive()
         return Status::done;
     }
 
-    pduBuf.seek(rc);
+    pduBuf.seek(result.len);
 
     ModbusCodec codec(pduBuf);
 

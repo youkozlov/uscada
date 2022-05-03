@@ -43,7 +43,7 @@ public:
 
     LinkPtr createLink(LinkHandler) final;
 
-    AcceptorPtr createAcceptor(AcceptorHandler*) final;
+    AcceptorPtr createAcceptor(AcceptorHandler) final;
 
     void send(MsgInterface const&) final;
 

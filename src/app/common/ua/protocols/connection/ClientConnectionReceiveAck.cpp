@@ -1,5 +1,5 @@
 #include "ClientConnectionReceiveAck.hpp"
-#include "ClientConnectionEstablished.hpp"
+#include "ClientConnectionConnected.hpp"
 #include "ClientConnectionInit.hpp"
 #include "ClientConnection.hpp"
 
@@ -16,14 +16,14 @@ void ClientConnectionReceiveAck::onDataReceived(ClientConnection& fsm)
 {
     switch (fsm.receiveAck())
     {
-    case ClientConnection::Result::noerror:
+    case OpcUaConnection::Result::noerror:
     break;
-    case ClientConnection::Result::done:
+    case OpcUaConnection::Result::done:
     {
-        fsm.transit<ClientConnectionEstablished>();
+        fsm.transit<ClientConnectionConnected>();
     }
     break;
-    case ClientConnection::Result::error:
+    case OpcUaConnection::Result::error:
     {
         fsm.closeLink();
         fsm.transit<ClientConnectionInit>();

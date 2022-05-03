@@ -26,7 +26,7 @@ public:
 
     virtual LinkPtr createLink(LinkHandler) = 0;
 
-    virtual AcceptorPtr createAcceptor(AcceptorHandler*) = 0;
+    virtual AcceptorPtr createAcceptor(AcceptorHandler) = 0;
 
     virtual void send(MsgInterface const&) = 0;
 

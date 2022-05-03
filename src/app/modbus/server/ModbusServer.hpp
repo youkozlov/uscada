@@ -43,7 +43,7 @@ private:
 
     static constexpr unsigned maxNumSession = 256;
 
-    void onAccept() final;
+    void onAcceptEvent();
 
     void onReleaseSession(ModbusSession::Uid) final;
 

@@ -18,7 +18,8 @@ public:
     }
 
 private:
-    OpcUaBinaryCodec s;
+    OpcUaSduBuffer rx;
+    OpcUaBinaryCodec s{rx};
 };
 
 TEST_F(OpcUaBinaryCodecTest, Boolean)

@@ -58,7 +58,7 @@ void Event::onFileDescriptorEvent(int)
     std::uint64_t u;
     if (sizeof(uint64_t) != ::read(fd, &u, sizeof(u)))
     {
-        throw std::runtime_error("read");
+        throw std::runtime_error("event read");
     }
     handler.onFdEvent(u);
 }

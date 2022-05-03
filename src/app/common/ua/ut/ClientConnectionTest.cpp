@@ -18,15 +18,16 @@ class ClientConnectionTest : public ::testing::Test
 public:
     void init()
     {
-        EXPECT_CALL(reactorMock, createLink(_)).WillOnce(Return(ByMove(reactor::LinkPtr(&linkMock, [](auto){}))));
-        EXPECT_CALL(reactorMock, createTimer(_)).WillOnce(Return(ByMove(reactor::TimerPtr(&timerMock, [](auto){}))));
         client = std::make_unique<ClientConnection>(reactorMock);
     }
     void connect()
     {
+        EXPECT_CALL(reactorMock, createLink(_)).WillOnce(Return(ByMove(reactor::LinkPtr(&linkMock, [](auto){}))));
+        EXPECT_CALL(reactorMock, createTimer(_)).WillOnce(Return(ByMove(reactor::TimerPtr(&timerMock, [](auto){}))));
         EXPECT_CALL(timerMock, start(_));
         EXPECT_CALL(linkMock, connect(_));
-        client->connect();
+        reactor::LinkAddr addr;
+        client->connect(addr);
     }
     void connected()
     {
@@ -37,8 +38,9 @@ public:
     }
     void receiveAck()
     {
-        std::uint8_t values[28] = {0, 0, 0, 0, 20};
-        EXPECT_CALL(linkMock, receive(_,_)).WillOnce(DoAll(SetArrayArgument<0>(values, values + 28), Return(28)));
+        reactor::LinkResult result{reactor::LinkResult::ok, 28};
+        std::uint8_t values[28] = {'A', 'C', 'K', 'F', 28};
+        EXPECT_CALL(linkMock, receive(_,_)).WillOnce(DoAll(SetArrayArgument<0>(values, values + 28), Return(result)));
         EXPECT_CALL(timerMock, stop());
         EXPECT_CALL(timerMock, start(_));
         client->onLinkEvent(reactor::LinkEvent::data);
@@ -90,7 +92,8 @@ TEST_F(ClientConnectionTest, ReceiveAckClose)
     connect();
     connected();
 
-    EXPECT_CALL(linkMock, receive(_,_)).WillOnce(Return(0));
+    reactor::LinkResult result{reactor::LinkResult::error, 0};
+    EXPECT_CALL(linkMock, receive(_,_)).WillOnce(Return(result));
     EXPECT_CALL(linkMock, close());
     EXPECT_CALL(timerMock, stop());
     client->onLinkEvent(reactor::LinkEvent::data);

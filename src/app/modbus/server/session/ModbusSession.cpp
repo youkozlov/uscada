@@ -89,15 +89,19 @@ Result ModbusSession::receive()
         return Result::done;
     }
 
-    int rc = link->receive(pduBuf.end(), pduBuf.capacity());
-
-    if (rc <= 0)
+    auto const& result = link->receive(pduBuf.end(), pduBuf.capacity());
+    switch (result.status)
     {
-        LM(MODBUS, LI, "Session-%u, receive return: %d", uid, rc);
+    case reactor::LinkResult::ok:
+    break;
+    case reactor::LinkResult::na:
+        return Result::noerror;
+    case reactor::LinkResult::closed:
+    case reactor::LinkResult::error:
         return Result::error;
     }
 
-    pduBuf.seek(rc);
+    pduBuf.seek(result.len);
 
     ModbusCodec codec(pduBuf);
 

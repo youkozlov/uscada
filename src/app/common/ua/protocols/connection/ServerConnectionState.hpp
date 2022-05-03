@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Logger.hpp"
+#include "LinkAddr.hpp"
+#include "LinkPtr.hpp"
 
 namespace app::ua
 {
@@ -14,7 +16,11 @@ public:
 
     virtual char const* name() const = 0;
 
-    virtual void onConnect(ServerConnection&) { LM(UA, LE, "Unexpected"); }
+    virtual void onConnect(ServerConnection&, reactor::LinkAddr const&) { LM(UA, LE, "Unexpected"); }
+
+    virtual void onAccept(ServerConnection&, reactor::LinkPtr&) { LM(UA, LE, "Unexpected"); }
+
+    virtual void onClose(ServerConnection&) { LM(UA, LE, "Unexpected"); }
 
     virtual void onConnected(ServerConnection&) { LM(UA, LE, "Unexpected"); }
 

@@ -17,7 +17,7 @@ public:
     MOCK_METHOD(void, registerHandlers, (MsgHandlerVector const&), (override));
     MOCK_METHOD(TimerPtr, createTimer, (TimerHandler), (override));
     MOCK_METHOD(LinkPtr, createLink, (LinkHandler), (override));
-    MOCK_METHOD(AcceptorPtr, createAcceptor, (AcceptorHandler*), (override));
+    MOCK_METHOD(AcceptorPtr, createAcceptor, (AcceptorHandler), (override));
     MOCK_METHOD(void, send, (MsgInterface const&), (override));
     MOCK_METHOD(void, start, (), (override));
     MOCK_METHOD(void, stop, (), (override));

@@ -24,10 +24,10 @@ public:
         auto* newState = &getSingleton<NewState>();
         if (newState == state)
         {
-            LM(GEN, LE, "FSM %s: Invalid transition", getEntity().name());
+            LM(GEN, LE, "FSM %s: invalid transition", getEntity().name());
             return;
         }
-        LM(GEN, LD, "FSM %s: Transit: %s -> %s", getEntity().name(), state->name(), newState->name());
+        LM(GEN, LD, "FSM %s: transit %s -> %s", getEntity().name(), state->name(), newState->name());
         state->onExit(getEntity());
         state = newState;
         state->onEnter(getEntity());

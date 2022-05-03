@@ -5,12 +5,12 @@
 namespace app::ua
 {
 
-class ClientConnectionEstablished : public ClientConnectionState
+class ClientConnectionConnected : public ClientConnectionState
 {
 public:
-    ClientConnectionEstablished() {}
+    ClientConnectionConnected() {}
 
-    char const* name() const final { return "ClientConnectionEstablished"; };
+    char const* name() const final { return "ClientConnectionConnected"; };
 
     void onEnter(ClientConnection&) final;
 

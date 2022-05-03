@@ -24,7 +24,7 @@ public:
 
     int send(void const*, std::size_t) final;
 
-    int receive(std::uint8_t*, std::size_t) final;
+    LinkResult receive(std::uint8_t*, std::size_t) final;
 
     void setHandler(LinkHandler);
 

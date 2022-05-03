@@ -7,6 +7,18 @@
 namespace app::reactor
 {
 
+struct LinkResult
+{
+    enum
+    {
+          na = -2
+        , error = -1
+        , closed = 0
+        , ok = 1
+    } status;
+    int len;
+};
+
 class LinkInterface : public FileDescriptorInterface
 {
 public:
@@ -20,7 +32,7 @@ public:
 
     virtual int send(void const*, std::size_t) = 0;
 
-    virtual int receive(std::uint8_t*, std::size_t) = 0;
+    virtual LinkResult receive(std::uint8_t*, std::size_t) = 0;
 };
 
 } // namespace app::reactor

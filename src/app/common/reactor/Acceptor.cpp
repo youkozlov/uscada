@@ -16,7 +16,6 @@ namespace app::reactor
 
 Acceptor::Acceptor(EpollInterface& epoll_)
     : epoll(epoll_)
-    , handler(nullptr)
     , sfd(-1)
 {
 }
@@ -29,7 +28,7 @@ Acceptor::~Acceptor()
     }
 }
 
-void Acceptor::setHandler(AcceptorHandler* handler_)
+void Acceptor::setHandler(AcceptorHandler handler_)
 {
     handler = handler_;
 }
@@ -37,7 +36,7 @@ void Acceptor::setHandler(AcceptorHandler* handler_)
 void Acceptor::release()
 {
     close();
-    setHandler(nullptr);
+    setHandler({});
 }
 
 void Acceptor::listen(LinkAddr const& address)
@@ -104,12 +103,12 @@ int Acceptor::fileDescriptor() const
 
 void Acceptor::onFileDescriptorEvent(int)
 {
-    if (nullptr == handler)
+    if (not handler)
     {
         LM(GEN, LW, "Handler is undefined");
         return;
     }
-    handler->onAccept();
+    handler();
 }
 
 void Acceptor::accept(LinkInterface& link)

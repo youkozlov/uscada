@@ -20,7 +20,7 @@ public:
     MOCK_METHOD(void, close, (), (override));
     MOCK_METHOD(void, release, (), (override));
     MOCK_METHOD(int, send, (void const*, std::size_t), (override));
-    MOCK_METHOD(int, receive, (std::uint8_t*, std::size_t), (override));
+    MOCK_METHOD(LinkResult, receive, (std::uint8_t*, std::size_t), (override));
 };
 
 } // namespace app::reactor

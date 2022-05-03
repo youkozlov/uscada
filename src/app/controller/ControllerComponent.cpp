@@ -46,7 +46,9 @@ void ControllerComponent::receive(ControllerStartReq const& req)
 
     modbus = std::make_unique<ModbusTestController>();
     modbus->receive(req);
+
     opcUa = std::make_unique<OpcUaController>();
+    opcUa->start();
 }
 
 void ControllerComponent::receive(ControllerStopReq const& req)
@@ -73,6 +75,8 @@ void ControllerComponent::receive(ModbusReleaseRsp const& rsp)
 
 void ControllerComponent::receive(ModbusConfigRsp const& rsp)
 {
+    opcUa->connect();
+
     LM(CTRL, LD, "ModbusConfigRsp received");
     if (modbus)
         modbus->receive(rsp);

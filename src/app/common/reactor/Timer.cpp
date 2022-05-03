@@ -116,9 +116,15 @@ void Timer::onFileDescriptorEvent(int)
     }
     uint64_t exp;
     int rc = ::read(fd, &exp, sizeof(uint64_t));
-    if (rc != sizeof(uint64_t))
+    if (-1 == rc && EAGAIN == errno)
     {
-        throw std::runtime_error("read");
+        LM(GEN, LI, "Timer(%d) EAGAIN", fd);
+        return;
+    }
+    else if (rc != sizeof(uint64_t))
+    {
+        LM(GEN, LE, "Timer(%d) read rc: %d, errno: %d", fd, rc, errno);
+        throw std::runtime_error("timer read");
     }
     if (handler)
     {

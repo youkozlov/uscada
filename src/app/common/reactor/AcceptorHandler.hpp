@@ -1,15 +1,10 @@
 #pragma once
 
+#include <functional>
+
 namespace app::reactor
 {
 
-class AcceptorHandler
-{
-public:
-    virtual ~AcceptorHandler() {}
-
-    virtual void onAccept() = 0;
-
-};
+using AcceptorHandler = std::function<void()>;
 
 } // namespace app::reactor

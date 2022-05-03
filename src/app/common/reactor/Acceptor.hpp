@@ -17,7 +17,7 @@ public:
 
     ~Acceptor();
 
-    void setHandler(AcceptorHandler*);
+    void setHandler(AcceptorHandler);
 
     void listen(LinkAddr const&) final;
 
@@ -35,7 +35,7 @@ private:
     void onFileDescriptorEvent(int) final;
 
     EpollInterface& epoll;
-    AcceptorHandler* handler;
+    AcceptorHandler handler;
     int sfd;
 };
 

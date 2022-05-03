@@ -77,7 +77,7 @@ void Link::close()
 {
     if (-1 == fd)
     {
-        LM(GEN, LW, "fd is invalid");
+        LM(GEN, LI, "fd is closed");
         return;
     }
     LM(GEN, LD, "Close fd=%d", fd);
@@ -112,9 +112,24 @@ int Link::send(void const* data, std::size_t len)
     return 1;
 }
 
-int Link::receive(std::uint8_t* data, std::size_t len)
+LinkResult Link::receive(std::uint8_t* data, std::size_t len)
 {
-    return ::read(fd, data, len);
+    if (-1 == fd)
+    {
+        return {LinkResult::error, 0};
+    }
+    int rc = ::read(fd, data, len);
+    if (-1 == rc && EAGAIN == errno)
+    {
+        LM(GEN, LI, "Link(%d) read EAGAIN", fd);
+        return {LinkResult::na, 0};
+    }
+    else if (-1 == rc)
+    {
+        LM(GEN, LI, "Link(%d) read rc: %d errno: %d", fd, rc, errno);
+        return {LinkResult::error, 0};
+    }
+    return {LinkResult::ok, rc};
 }
 
 void Link::setHandler(LinkHandler val)
