@@ -15,6 +15,18 @@ add_library(common_ua
     protocols/connection/ClientConnectionConnecting.cpp
     protocols/connection/ClientConnectionConnected.cpp
     protocols/connection/ClientConnectionReceiveAck.cpp
+    protocols/secure/OpcUaSecureChannelCodec.cpp
+    protocols/secure/OpcUaSecureChannel.cpp
+    protocols/secure/OpcUaServerSecureChannel.cpp
+    protocols/secure/OpcUaServerSecureChannelEstablished.cpp
+    protocols/secure/OpcUaServerSecureChannelInit.cpp
+    protocols/secure/OpcUaServerSecureChannelReceiveOpenReq.cpp
+    protocols/secure/OpcUaClientSecureChannel.cpp
+    protocols/secure/OpcUaClientSecureChannelEstablished.cpp
+    protocols/secure/OpcUaClientSecureChannelInit.cpp
+    protocols/secure/OpcUaClientSecureChannelReceiveOpenRsp.cpp
+    services/OpcUaServer.cpp
+    services/OpcUaClient.cpp
 )
 
 target_include_directories(common_ua PUBLIC
@@ -22,7 +34,10 @@ target_include_directories(common_ua PUBLIC
     common/types
     protocols
     protocols/msg
+    protocols/msg/types
     protocols/connection
+    protocols/secure
+    services
 )
 
 target_link_libraries(common_ua

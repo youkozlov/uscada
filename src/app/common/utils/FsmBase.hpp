@@ -27,7 +27,7 @@ public:
             LM(GEN, LE, "FSM %s: invalid transition", getEntity().name());
             return;
         }
-        LM(GEN, LD, "FSM %s: transit %s -> %s", getEntity().name(), state->name(), newState->name());
+        LM(GEN, LI, "FSM %s: transit %s -> %s", getEntity().name(), state->name(), newState->name());
         state->onExit(getEntity());
         state = newState;
         state->onEnter(getEntity());

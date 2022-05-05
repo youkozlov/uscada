@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "LinkPtr.hpp"
 #include "TimerPtr.hpp"
 #include "LinkInterface.hpp"
@@ -9,7 +11,7 @@
 
 namespace app::ua
 {
-
+/*
 enum class OpcUaConnectionEvent
 {
       connected
@@ -17,8 +19,23 @@ enum class OpcUaConnectionEvent
     , closed
     , error
 };
+*/
+class OpcUaConnection;
 
-using OpcUaConnectionHandler = std::function<void(OpcUaConnectionEvent)>;
+struct OpcUaConnectionEvent
+{
+    enum Type
+    {
+          connected
+        , data
+        , closed
+        , error
+    };
+    Type type;
+    OpcUaConnection& connection;
+};
+
+using OpcUaConnectionHandler = std::function<void(OpcUaConnectionEvent const&)>;
 
 class OpcUaConnection
 {
@@ -34,15 +51,17 @@ public:
 
     virtual ~OpcUaConnection();
 
+    Result send(OpcUaSduBuffer const&);
+
     OpcUaSduBuffer& getRxBuffer() { return rx; }
+
+    void setHandler(OpcUaConnectionHandler);
 
 protected:
 
     virtual void onLinkEvent(reactor::LinkEvent) = 0;
 
     virtual void onTimerEvent() = 0;
-
-    void setHandler(OpcUaConnectionHandler);
 
     void setLinkAddr(reactor::LinkAddr const&);
 
@@ -57,8 +76,6 @@ protected:
     void connectLink();
 
     void closeLink();
-
-    Result send(OpcUaSduBuffer const&);
 
     void receivePreaction();
 

@@ -53,12 +53,20 @@ char const* toString(LogTask task)
 Logger::Logger()
     : logLevels(numLogTasks, LogLevel::LD)
 {
+//    setTaskLogLevel(LogTask::GEN, LogLevel::LI);
+//    setTaskLogLevel(LogTask::MODBUS, LogLevel::NA);
+//    setTaskLogLevel(LogTask::CTRL, LogLevel::NA);
 }
 
 Logger& Logger::getInst()
 {
     static Logger inst;
     return inst;
+}
+
+void Logger::setTaskLogLevel(LogTask task, LogLevel lvl)
+{
+    logLevels[static_cast<int>(task)] = static_cast<LogLevel>(lvl);
 }
 
 LogLevel Logger::getTaskLogLevel(LogTask task) const

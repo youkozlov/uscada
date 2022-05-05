@@ -10,7 +10,7 @@ namespace app::ua
 class OpcUaServer
 {
 public:
-    OpcUaServer();
+    OpcUaServer(reactor::ReactorInterface&);
 
     ~OpcUaServer();
 
@@ -18,11 +18,10 @@ public:
 
     void onAcceptEvent();
 
-    void onConnectionEvent(OpcUaConnectionEvent);
-
-    void onSecureChannelEvent(SecureChannelEvent);
+    void onSecureChannelEvent(OpcUaSecureChannelEvent);
 
 private:
+    reactor::ReactorInterface& reactor;
     reactor::AcceptorPtr acceptor;
     ServerConnection connection;
     OpcUaServerSecureChannel channel;

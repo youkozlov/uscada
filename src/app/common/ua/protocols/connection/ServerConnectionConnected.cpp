@@ -26,12 +26,18 @@ void ServerConnectionConnected::onDataReceived(ServerConnection& fsm)
     break;
     case OpcUaConnection::Result::error:
     {
-        fsm.notifyError();
         fsm.closeLink();
+        fsm.notifyError();
         fsm.transit<ServerConnectionInit>();
     }
     break;
     }
+}
+
+void ServerConnectionConnected::onClose(ServerConnection& fsm)
+{
+    fsm.closeLink();
+    fsm.transit<ServerConnectionInit>();
 }
 
 void ServerConnectionConnected::onTimer(ServerConnection& fsm)

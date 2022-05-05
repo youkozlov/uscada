@@ -19,6 +19,7 @@ void ClientConnectionConnecting::onConnected(ClientConnection& fsm)
     case OpcUaConnection::Result::noerror:
     {
         LM(UA, LE, "Unexpected");
+        fsm.notifyError();
     }
     break;
     case OpcUaConnection::Result::done:
@@ -29,6 +30,7 @@ void ClientConnectionConnecting::onConnected(ClientConnection& fsm)
     case OpcUaConnection::Result::error:
     {
         fsm.closeLink();
+        fsm.notifyError();
         fsm.transit<ClientConnectionInit>();
     }
     break;
@@ -38,6 +40,7 @@ void ClientConnectionConnecting::onConnected(ClientConnection& fsm)
 void ClientConnectionConnecting::onError(ClientConnection& fsm)
 {
     LM(UA, LW, "onError");
+    fsm.notifyError();
     fsm.transit<ClientConnectionInit>();
 }
 
@@ -45,6 +48,7 @@ void ClientConnectionConnecting::onTimer(ClientConnection& fsm)
 {
     LM(UA, LW, "onTimer");
     fsm.closeLink();
+    fsm.notifyError();
     fsm.transit<ClientConnectionInit>();
 }
 

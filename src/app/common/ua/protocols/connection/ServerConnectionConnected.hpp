@@ -16,6 +16,8 @@ public:
 
     void onDataReceived(ServerConnection&) final;
 
+    void onClose(ServerConnection&) final;
+
     void onTimer(ServerConnection&) final;
 
     void onExit(ServerConnection&) final;

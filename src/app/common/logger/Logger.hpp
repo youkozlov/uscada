@@ -43,6 +43,8 @@ public:
 
     static app::Logger& getInst();
 
+    void setTaskLogLevel(LogTask, LogLevel);
+
     app::LogLevel getTaskLogLevel(app::LogTask) const;
 
     void dispatch(char const*, app::LogLevel, app::LogTask, char const*, int);
@@ -52,7 +54,7 @@ private:
 
     std::mutex mutex;
     static constexpr int numLogTasks = static_cast<int>(app::LogTask::NUM);
-    std::vector<app::LogLevel> const logLevels;
+    std::vector<app::LogLevel> logLevels;
 };
 
 } // namespace app

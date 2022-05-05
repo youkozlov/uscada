@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClientConnection.hpp"
+#include "OpcUaClientSecureChannel.hpp"
 
 namespace app::ua
 {
@@ -8,15 +9,13 @@ namespace app::ua
 class OpcUaClient
 {
 public:
-    OpcUaClient();
+    OpcUaClient(reactor::ReactorInterface&);
 
     ~OpcUaClient();
 
     void connect(reactor::LinkAddr&);
 
-    void onConnectionEvent(OpcUaConnectionEvent);
-
-    void onSecureChannelEvent(SecureChannelEvent);
+    void onSecureChannelEvent(OpcUaSecureChannelEvent);
 
 private:
     ClientConnection connection;

@@ -12,7 +12,7 @@ static constexpr std::uint32_t messageHeaderSize = 8;
 struct MessageHeader
 {
     StaticArray<Byte, 3> messageType;
-    StaticArray<Byte, 1> reserved;
+    Byte                 isFinal;
     UInt32 messageSize;
 };
 

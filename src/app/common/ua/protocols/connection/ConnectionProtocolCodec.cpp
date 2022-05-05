@@ -6,7 +6,7 @@ namespace app::ua
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, MessageHeader& val)
 {
     s   >> val.messageType
-        >> val.reserved
+        >> val.isFinal
         >> val.messageSize;
     return s;
 }
@@ -14,7 +14,7 @@ OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, MessageHeader& val)
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, MessageHeader const& val)
 {
     s   << val.messageType
-        << val.reserved
+        << val.isFinal
         << val.messageSize;
     return s;
 }

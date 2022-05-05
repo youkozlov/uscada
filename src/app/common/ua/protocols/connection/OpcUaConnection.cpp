@@ -126,25 +126,25 @@ void OpcUaConnection::stopTimer()
 void OpcUaConnection::notifyConnected()
 {
     if (handler)
-        handler(OpcUaConnectionEvent::connected);
+        handler({OpcUaConnectionEvent::connected, *this});
 }
 
 void OpcUaConnection::notifyDataReceived()
 {
     if (handler)
-        handler(OpcUaConnectionEvent::data);
+        handler({OpcUaConnectionEvent::data, *this});
 }
 
 void OpcUaConnection::notifyClosed()
 {
     if (handler)
-        handler(OpcUaConnectionEvent::closed);
+        handler({OpcUaConnectionEvent::closed, *this});
 }
 
 void OpcUaConnection::notifyError()
 {
     if (handler)
-        handler(OpcUaConnectionEvent::error);
+        handler({OpcUaConnectionEvent::error, *this});
 }
 
 } // namespace app::ua

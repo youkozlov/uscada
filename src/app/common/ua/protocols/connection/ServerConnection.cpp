@@ -4,6 +4,7 @@
 #include "TimerInterface.hpp"
 #include "ServerConnectionInit.hpp"
 #include "ServerConnectionReceiveHello.hpp"
+#include "OpcUaProtocolDefs.hpp"
 
 namespace app::ua
 {
@@ -63,7 +64,7 @@ ServerConnection::Result ServerConnection::sendReverseHello()
     hdr.messageType[0] = 'R';
     hdr.messageType[1] = 'H';
     hdr.messageType[2] = 'E';
-    hdr.reserved[0] = 'F';
+    hdr.isFinal = 'F';
     ReverseHelloMessage revHello;
     codec << hdr << revHello;
 
@@ -114,13 +115,16 @@ OpcUaConnection::Result ServerConnection::sendAcknowledge()
     OpcUaSduBuffer tx;
     OpcUaBinaryCodec codec(tx);
 
-    AcknowledgeMessage ack;
     MessageHeader hdr;
     hdr.messageType[0] = 'A';
     hdr.messageType[1] = 'C';
     hdr.messageType[2] = 'K';
-    hdr.reserved[0] = 'F';
-    codec << hdr << ack;
+    hdr.isFinal = 'F';
+    codec << hdr;
+
+    AcknowledgeMessage ack;
+    ack.protocolVersion = opcUaProtocolVersion;
+    codec << ack;
 
     setPayloadSizeToHdr(tx.begin(), tx.size());
 

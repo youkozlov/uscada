@@ -3,6 +3,7 @@
 #include "LinkInterface.hpp"
 #include "TimerInterface.hpp"
 #include "ClientConnectionInit.hpp"
+#include "OpcUaProtocolDefs.hpp"
 
 namespace app::ua
 {
@@ -89,13 +90,16 @@ ClientConnection::Result ClientConnection::sendHello()
     OpcUaSduBuffer tx;
     OpcUaBinaryCodec codec(tx);
 
-    HelloMessage ack;
     MessageHeader hdr;
     hdr.messageType[0] = 'H';
     hdr.messageType[1] = 'E';
     hdr.messageType[2] = 'L';
-    hdr.reserved[0] = 'F';
-    codec << hdr << ack;
+    hdr.isFinal = 'F';
+    codec << hdr;
+
+    HelloMessage sync;
+    sync.protocolVersion = opcUaProtocolVersion;
+    codec << sync;
 
     setPayloadSizeToHdr(tx.begin(), tx.size());
 

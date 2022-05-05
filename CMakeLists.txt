@@ -11,6 +11,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEBUG -O0 -g -ggdb -Wextra -Wall -fno-o
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEBUG -O0 -g -ggdb -Wextra -Wall -fno-omit-frame-pointer -fasynchronous-unwind-tables -fpie -fpic -fstack-protector -pipe -Werror=format-security -fsanitize=address -static-libasan")
 
 enable_testing()
-
 add_subdirectory(src)
 add_subdirectory(ext)

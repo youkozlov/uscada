@@ -4,7 +4,8 @@
 namespace app::ua
 {
 
-OpcUaClient::OpcUaClient()
+OpcUaClient::OpcUaClient(reactor::ReactorInterface& reactor)
+    : connection(reactor)
 {
 }
 
@@ -14,37 +15,26 @@ OpcUaClient::~OpcUaClient()
 
 void OpcUaClient::connect(reactor::LinkAddr& addr)
 {
-    //channel.setHandler([this](auto ev){ onSecureChannelEvent(ev); });
-    connection.setHandler([this](auto ev){ onConnectionEvent(ev); });
+    channel.setHandler([this](auto ev){ onSecureChannelEvent(ev); });
+    connection.setHandler([&channel = channel](auto& ev){ channel.onConnectionEvent(ev); });
     connection.connect(addr);
 }
 
-void OpcUaClient::onConnectionEvent(OpcUaConnectionEvent ev)
+void OpcUaClient::onSecureChannelEvent(OpcUaSecureChannelEvent ev)
 {
     switch (ev)
     {
-    case OpcUaConnectionEvent::connected:
-        //channel.open(connection);
+    case OpcUaSecureChannelEvent::established:
+        LM(UA, LD, "onSecureChannelEvent, established");
     break;
-    case OpcUaConnectionEvent::data:
-        //channel.processData(connection);
+    case OpcUaSecureChannelEvent::data:
+        LM(UA, LD, "onSecureChannelEvent, data");
     break;
-    case OpcUaConnectionEvent::error:
+    case OpcUaSecureChannelEvent::closed:
+        LM(UA, LD, "onSecureChannelEvent, closed");
     break;
-    case OpcUaConnectionEvent::closed:
-    break;
-    }
-}
-
-void OpcUaClient::onSecureChannelEvent(SecureChannelEvent ev)
-{
-    switch (ev)
-    {
-    case SecureChannelEvent::established:
-    break;
-    case SecureChannelEvent::data:
-    break;
-    case SecureChannelEvent::error:
+    case OpcUaSecureChannelEvent::error:
+        LM(UA, LD, "onSecureChannelEvent, error");
     break;
     }
 }

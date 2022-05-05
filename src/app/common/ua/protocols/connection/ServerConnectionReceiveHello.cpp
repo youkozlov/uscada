@@ -34,8 +34,8 @@ void ServerConnectionReceiveHello::onDataReceived(ServerConnection& fsm)
         break;
         case OpcUaConnection::Result::error:
         {
-            fsm.notifyError();
             fsm.closeLink();
+            fsm.notifyError();
             fsm.transit<ServerConnectionInit>();
         }
         break;
@@ -44,8 +44,8 @@ void ServerConnectionReceiveHello::onDataReceived(ServerConnection& fsm)
     break;
     case OpcUaConnection::Result::error:
     {
-        fsm.notifyError();
         fsm.closeLink();
+        fsm.notifyError();
         fsm.transit<ServerConnectionInit>();
     }
     break;
@@ -55,8 +55,8 @@ void ServerConnectionReceiveHello::onDataReceived(ServerConnection& fsm)
 void ServerConnectionReceiveHello::onTimer(ServerConnection& fsm)
 {
     LM(UA, LW, "onTimer");
-    fsm.notifyError();
     fsm.closeLink();
+    fsm.notifyError();
     fsm.transit<ServerConnectionInit>();
 }
 

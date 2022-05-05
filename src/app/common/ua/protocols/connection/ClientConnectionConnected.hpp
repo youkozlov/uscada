@@ -16,6 +16,8 @@ public:
 
     void onDataReceived(ClientConnection&) final;
 
+    void onClose(ClientConnection&) final;
+
     void onTimer(ClientConnection&) final;
 
     void onExit(ClientConnection&) final;

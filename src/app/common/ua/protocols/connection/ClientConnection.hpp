@@ -28,11 +28,11 @@ public:
 
     void connect(reactor::LinkAddr const&);
 
-    void close();
-
     void onLinkEvent(reactor::LinkEvent) final;
 
     void onTimerEvent() final;
+
+    void close();
 
 private:
     static constexpr long connectTimeout = 3000000;

@@ -26,6 +26,7 @@ void ClientConnectionReceiveAck::onDataReceived(ClientConnection& fsm)
     case OpcUaConnection::Result::error:
     {
         fsm.closeLink();
+        fsm.notifyError();
         fsm.transit<ClientConnectionInit>();
     }
     break;
@@ -35,6 +36,7 @@ void ClientConnectionReceiveAck::onDataReceived(ClientConnection& fsm)
 void ClientConnectionReceiveAck::onTimer(ClientConnection& fsm)
 {
     fsm.closeLink();
+    fsm.notifyError();
     fsm.transit<ClientConnectionInit>();
 }
 
