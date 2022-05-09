@@ -3,6 +3,7 @@
 #include "ReactorMock.hpp"
 #include "TimerMock.hpp"
 #include "LinkMock.hpp"
+#include "OpcUaConnectionHandlerMock.hpp"
 #include "ServerConnection.hpp"
 
 using ::testing::Return;
@@ -18,7 +19,7 @@ class ServerConnectionTest : public ::testing::Test
 public:
     void init()
     {
-        server = std::make_unique<ServerConnection>(reactorMock);
+        server = std::make_unique<ServerConnection>(reactorMock, handlerMock);
     }
     void connect()
     {
@@ -51,6 +52,7 @@ protected:
     reactor::ReactorMock reactorMock;
     reactor::TimerMock timerMock;
     reactor::LinkMock linkMock;
+    ua::OpcUaConnectionHandlerMock handlerMock;
     std::unique_ptr<ServerConnection> server;
 };
 

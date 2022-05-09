@@ -3,7 +3,6 @@ add_subdirectory(ut)
 add_library(common_ua
     common/OpcUaSduBuffer.cpp
     common/OpcUaBinaryCodec.cpp
-    protocols/connection/ConnectionProtocolCodec.cpp
     protocols/connection/OpcUaConnection.cpp
     protocols/connection/ServerConnection.cpp
     protocols/connection/ServerConnectionInit.cpp
@@ -15,32 +14,48 @@ add_library(common_ua
     protocols/connection/ClientConnectionConnecting.cpp
     protocols/connection/ClientConnectionConnected.cpp
     protocols/connection/ClientConnectionReceiveAck.cpp
-    protocols/secure/OpcUaSecureChannelCodec.cpp
     protocols/secure/OpcUaSecureChannel.cpp
     protocols/secure/OpcUaServerSecureChannel.cpp
     protocols/secure/OpcUaServerSecureChannelEstablished.cpp
-    protocols/secure/OpcUaServerSecureChannelInit.cpp
     protocols/secure/OpcUaServerSecureChannelReceiveOpenReq.cpp
+    protocols/secure/OpcUaServerSecureChannelConnecting.cpp
+    protocols/secure/OpcUaServerSecureChannelInit.cpp
     protocols/secure/OpcUaClientSecureChannel.cpp
     protocols/secure/OpcUaClientSecureChannelEstablished.cpp
-    protocols/secure/OpcUaClientSecureChannelInit.cpp
     protocols/secure/OpcUaClientSecureChannelReceiveOpenRsp.cpp
+    protocols/secure/OpcUaClientSecureChannelConnecting.cpp
+    protocols/secure/OpcUaClientSecureChannelInit.cpp
     services/OpcUaServer.cpp
     services/OpcUaClient.cpp
+    services/UaGetEndpoints.cpp
+    services/session/UaSession.cpp
+    services/session/UaSessionInit.cpp
+    services/session/UaSessionCreated.cpp
+    services/session/UaSessionActivated.cpp
+    services/session/UaCreateSession.cpp
+    services/session/UaCloseSession.cpp
+    services/session/UaActivateSession.cpp
+    services/session/UaSessionController.cpp
+    services/attribute/UaRead.cpp
+    services/attribute/UaAttributeController.cpp
 )
 
 target_include_directories(common_ua PUBLIC
     common
+    common/msg
     common/types
     protocols
-    protocols/msg
-    protocols/msg/types
     protocols/connection
     protocols/secure
+    protocols/mock
     services
+    services/common
+    services/session
+    services/attribute
 )
 
 target_link_libraries(common_ua
+    common
     logger
     utils
     reactor

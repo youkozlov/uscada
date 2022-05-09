@@ -10,8 +10,9 @@ template <typename Entity, typename State>
 class FsmBase
 {
 public:
-    explicit FsmBase(State* s)
+    explicit FsmBase(State* s, const char* n)
         : state(s)
+        , name(n)
     {}
 
     State& getState() { return *state; }
@@ -24,16 +25,17 @@ public:
         auto* newState = &getSingleton<NewState>();
         if (newState == state)
         {
-            LM(GEN, LE, "FSM %s: invalid transition", getEntity().name());
+            LM(GEN, LE, "FSM %s: invalid transition", name);
             return;
         }
-        LM(GEN, LI, "FSM %s: transit %s -> %s", getEntity().name(), state->name(), newState->name());
+        LM(GEN, LI, "FSM %s: transit %s -> %s", name, state->name(), newState->name());
         state->onExit(getEntity());
         state = newState;
         state->onEnter(getEntity());
     }
 private:
     State* state;
+    const char* name;
 };
 
 } // namespace app

@@ -5,18 +5,14 @@
 namespace app::ua
 {
 
-OpcUaConnection::OpcUaConnection(reactor::ReactorInterface& reactor_)
+OpcUaConnection::OpcUaConnection(reactor::ReactorInterface& reactor_, OpcUaConnectionHandler& handler_)
     : reactor(reactor_)
+    , handler(handler_)
 {
 }
 
 OpcUaConnection::~OpcUaConnection()
 {
-}
-
-void OpcUaConnection::setHandler(OpcUaConnectionHandler handler_)
-{
-    handler = handler_;
 }
 
 void OpcUaConnection::setLinkAddr(reactor::LinkAddr const& addr_)
@@ -27,6 +23,7 @@ void OpcUaConnection::setLinkAddr(reactor::LinkAddr const& addr_)
 void OpcUaConnection::setLink(reactor::LinkPtr& link_)
 {
     link = std::move(link_);
+    link->setHandler([this](auto ev){ onLinkEvent(ev); });
 }
 
 void OpcUaConnection::allocLink()
@@ -125,26 +122,22 @@ void OpcUaConnection::stopTimer()
 
 void OpcUaConnection::notifyConnected()
 {
-    if (handler)
-        handler({OpcUaConnectionEvent::connected, *this});
+    handler.onConnectionConnectedEvent();
 }
 
 void OpcUaConnection::notifyDataReceived()
 {
-    if (handler)
-        handler({OpcUaConnectionEvent::data, *this});
+    handler.onConnectionDataReceivedEvent();
 }
 
 void OpcUaConnection::notifyClosed()
 {
-    if (handler)
-        handler({OpcUaConnectionEvent::closed, *this});
+    handler.onConnectionClosedEvent();
 }
 
 void OpcUaConnection::notifyError()
 {
-    if (handler)
-        handler({OpcUaConnectionEvent::error, *this});
+    handler.onConnectionErrorEvent();
 }
 
 } // namespace app::ua

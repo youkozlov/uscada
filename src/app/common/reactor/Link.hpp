@@ -26,7 +26,7 @@ public:
 
     LinkResult receive(std::uint8_t*, std::size_t) final;
 
-    void setHandler(LinkHandler);
+    void setHandler(LinkHandler) final;
 
 private:
     int fileDescriptor() const final;

@@ -21,22 +21,22 @@ void OpcUaController::start()
     addr.data[1] = 0x0;
     addr.data[2] = 0x0;
     addr.data[3] = 0x1;
-    addr.data[4] = 0x2f;
-    addr.data[5] = 0x70;
+    addr.data[4] = 0x11;
+    addr.data[5] = 0x11;
     server.listen(addr);
 }
 
 void OpcUaController::connect()
 {
-    reactor::LinkAddr addr;
-    addr.data[0] = 0x7f;
-    addr.data[1] = 0x0;
-    addr.data[2] = 0x0;
-    addr.data[3] = 0x1;
-    addr.data[4] = 0x2f;
-    addr.data[5] = 0x70;
+//    reactor::LinkAddr addr;
+//    addr.data[0] = 0x7f;
+//    addr.data[1] = 0x0;
+//    addr.data[2] = 0x0;
+//    addr.data[3] = 0x1;
+//    addr.data[4] = 0x2f;
+//    addr.data[5] = 0x70;
 
-    client.connect(addr);
+//    client.connect(addr);
 }
 
 

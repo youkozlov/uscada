@@ -17,9 +17,15 @@ public:
 
     virtual void onConnected(OpcUaServerSecureChannel&) { LM(UA, LE, "Unexpected"); }
 
+    virtual void onOpen(OpcUaServerSecureChannel&, reactor::LinkPtr&) { LM(UA, LE, "Unexpected"); }
+
     virtual void onClosed(OpcUaServerSecureChannel&) { LM(UA, LE, "Unexpected"); }
 
-    virtual void onDataReceived(OpcUaServerSecureChannel&, OpcUaConnection&) { LM(UA, LE, "Unexpected"); }
+    virtual void onOpenSecureChannelReq(OpcUaServerSecureChannel&) { LM(UA, LE, "Unexpected"); }
+
+    virtual void onCloseSecureChannelReq(OpcUaServerSecureChannel&) { LM(UA, LE, "Unexpected"); }
+
+    virtual void onSecureChannelReq(OpcUaServerSecureChannel&) { LM(UA, LE, "Unexpected"); }
 
     virtual void onError(OpcUaServerSecureChannel&) { LM(UA, LE, "Unexpected"); }
 

@@ -1,23 +1,14 @@
 #include "OpcUaServerSecureChannelInit.hpp"
-#include "OpcUaServerSecureChannelReceiveOpenReq.hpp"
+#include "OpcUaServerSecureChannelConnecting.hpp"
 #include "OpcUaServerSecureChannel.hpp"
 
 namespace app::ua
 {
 
-void OpcUaServerSecureChannelInit::onConnected(OpcUaServerSecureChannel& fsm)
+void OpcUaServerSecureChannelInit::onOpen(OpcUaServerSecureChannel& fsm, reactor::LinkPtr& link)
 {
-    fsm.transit<OpcUaServerSecureChannelReceiveOpenReq>();
-}
-
-void OpcUaServerSecureChannelInit::onClosed(OpcUaServerSecureChannel& fsm)
-{
-    fsm.notifyClosed();
-}
-
-void OpcUaServerSecureChannelInit::onError(OpcUaServerSecureChannel& fsm)
-{
-    fsm.notifyError();
+    fsm.acceptConnection(link);
+    fsm.transit<OpcUaServerSecureChannelConnecting>();
 }
 
 } // namespace app::ua

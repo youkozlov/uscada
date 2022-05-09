@@ -5,7 +5,7 @@ namespace app::ua
 {
 
 OpcUaClient::OpcUaClient(reactor::ReactorInterface& reactor)
-    : connection(reactor)
+    : channel(0, reactor)
 {
 }
 
@@ -15,20 +15,24 @@ OpcUaClient::~OpcUaClient()
 
 void OpcUaClient::connect(reactor::LinkAddr& addr)
 {
-    channel.setHandler([this](auto ev){ onSecureChannelEvent(ev); });
-    connection.setHandler([&channel = channel](auto& ev){ channel.onConnectionEvent(ev); });
-    connection.connect(addr);
+    channel.setHandler([this](auto const& ev){ onSecureChannelEvent(ev); });
+    channel.open(addr);
 }
 
-void OpcUaClient::onSecureChannelEvent(OpcUaSecureChannelEvent ev)
+void OpcUaClient::close()
 {
-    switch (ev)
+    channel.close();
+}
+
+void OpcUaClient::onSecureChannelEvent(OpcUaSecureChannelEvent const& ev)
+{
+    switch (ev.type)
     {
     case OpcUaSecureChannelEvent::established:
         LM(UA, LD, "onSecureChannelEvent, established");
     break;
-    case OpcUaSecureChannelEvent::data:
-        LM(UA, LD, "onSecureChannelEvent, data");
+    case OpcUaSecureChannelEvent::request:
+        LM(UA, LD, "onSecureChannelEvent, request");
     break;
     case OpcUaSecureChannelEvent::closed:
         LM(UA, LD, "onSecureChannelEvent, closed");

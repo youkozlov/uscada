@@ -11,17 +11,9 @@
 
 namespace app::ua
 {
-/*
-enum class OpcUaConnectionEvent
-{
-      connected
-    , data
-    , closed
-    , error
-};
-*/
-class OpcUaConnection;
 
+class OpcUaConnection;
+/*
 struct OpcUaConnectionEvent
 {
     enum Type
@@ -36,6 +28,21 @@ struct OpcUaConnectionEvent
 };
 
 using OpcUaConnectionHandler = std::function<void(OpcUaConnectionEvent const&)>;
+*/
+
+class OpcUaConnectionHandler
+{
+public:
+    virtual ~OpcUaConnectionHandler() {}
+
+    virtual void onConnectionConnectedEvent() = 0;
+
+    virtual void onConnectionDataReceivedEvent() = 0;
+
+    virtual void onConnectionErrorEvent() = 0;
+
+    virtual void onConnectionClosedEvent() = 0;
+};
 
 class OpcUaConnection
 {
@@ -47,15 +54,13 @@ public:
         , error
     };
 
-    explicit OpcUaConnection(reactor::ReactorInterface&);
+    explicit OpcUaConnection(reactor::ReactorInterface&, OpcUaConnectionHandler&);
 
     virtual ~OpcUaConnection();
 
     Result send(OpcUaSduBuffer const&);
 
     OpcUaSduBuffer& getRxBuffer() { return rx; }
-
-    void setHandler(OpcUaConnectionHandler);
 
 protected:
 
@@ -99,7 +104,7 @@ private:
     reactor::LinkPtr link;
     reactor::TimerPtr timer;
     OpcUaSduBuffer rx;
-    OpcUaConnectionHandler handler;
+    OpcUaConnectionHandler& handler;
 };
 
 } // namespace app::ua

@@ -1,5 +1,5 @@
 #include "ServerConnection.hpp"
-#include "ConnectionProtocolCodec.hpp"
+#include "OpcUaBinaryCodec.hpp"
 #include "LinkInterface.hpp"
 #include "TimerInterface.hpp"
 #include "ServerConnectionInit.hpp"
@@ -9,9 +9,9 @@
 namespace app::ua
 {
 
-ServerConnection::ServerConnection(reactor::ReactorInterface& reactor_)
-    : FsmBase(&app::getSingleton<ServerConnectionInit>())
-    , OpcUaConnection(reactor_)
+ServerConnection::ServerConnection(reactor::ReactorInterface& reactor_, OpcUaConnectionHandler& handler_)
+    : FsmBase(&app::getSingleton<ServerConnectionInit>(), "ServerConnection")
+    , OpcUaConnection(reactor_, handler_)
 {
 }
 
@@ -105,8 +105,6 @@ OpcUaConnection::Result ServerConnection::receiveHello()
     HelloMessage hello;
     codec >> hdr >> hello;
 
-    LM(UA, LD, "ServerConnection-0, received HelloMessage");
-
     return OpcUaConnection::Result::done;
 }
 
@@ -124,6 +122,11 @@ OpcUaConnection::Result ServerConnection::sendAcknowledge()
 
     AcknowledgeMessage ack;
     ack.protocolVersion = opcUaProtocolVersion;
+    ack.sendBufferSize = opcUaSendBufferSize;
+    ack.receiveBufferSize = opcUaReceiveBufferSize;
+    ack.maxMessageSize = opcUaMaxChunkCount * opcUaReceiveBufferSize;
+    ack.maxChunkCount = opcUaMaxChunkCount;
+
     codec << ack;
 
     setPayloadSizeToHdr(tx.begin(), tx.size());

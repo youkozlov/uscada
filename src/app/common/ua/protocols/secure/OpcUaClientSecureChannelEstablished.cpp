@@ -9,7 +9,7 @@ void OpcUaClientSecureChannelEstablished::onEnter(OpcUaClientSecureChannel&)
 {
 }
 
-void OpcUaClientSecureChannelEstablished::onDataReceived(OpcUaClientSecureChannel&, OpcUaConnection&)
+void OpcUaClientSecureChannelEstablished::onDataReceived(OpcUaClientSecureChannel&)
 {
 }
 

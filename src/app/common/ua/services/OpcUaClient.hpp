@@ -15,10 +15,11 @@ public:
 
     void connect(reactor::LinkAddr&);
 
-    void onSecureChannelEvent(OpcUaSecureChannelEvent);
+    void close();
+
+    void onSecureChannelEvent(OpcUaSecureChannelEvent const&);
 
 private:
-    ClientConnection connection;
     OpcUaClientSecureChannel channel;
 };
 

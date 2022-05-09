@@ -165,6 +165,11 @@ TEST_F(OpcUaBinaryCodecTest, NodeId)
     nodeId6.namespaceIndex = 1;
     nodeId6.value.emplace<Guid>();
     check(nodeId6);
+
+    NodeId nodeId7;
+    nodeId7.namespaceIndex = 0;
+    nodeId7.value.emplace<UInt32>(0xFFF);
+    check(nodeId7);
 }
 
 TEST_F(OpcUaBinaryCodecTest, StatusCode)
@@ -201,6 +206,63 @@ TEST_F(OpcUaBinaryCodecTest, LocalizedText)
     LocalizedText lz5;
     lz5.text.emplace();
     check(lz5);
+}
+
+TEST_F(OpcUaBinaryCodecTest, ExpandedNodeId)
+{
+    ExpandedNodeId eNodeId1;
+    check(eNodeId1);
+
+    ExpandedNodeId eNodeId2;
+    eNodeId2.nodeId.namespaceIndex = 0;
+    eNodeId2.nodeId.value.emplace<UInt32>(0xFF);
+    check(eNodeId2);
+
+    ExpandedNodeId eNodeId3;
+    eNodeId3.nodeId.namespaceIndex = 0;
+    eNodeId3.nodeId.value.emplace<UInt32>(0xFFF);
+    check(eNodeId3);
+
+    ExpandedNodeId eNodeId4;
+    eNodeId4.nodeId.namespaceIndex = 0;
+    eNodeId4.nodeId.value.emplace<UInt32>(0xFFF);
+    eNodeId4.namespaceUri.emplace("AAA");
+    check(eNodeId4);
+
+    ExpandedNodeId eNodeId5;
+    eNodeId5.nodeId.namespaceIndex = 0;
+    eNodeId5.nodeId.value.emplace<UInt32>(0xFFF);
+    eNodeId5.serverIndex.emplace(0xAFAF);
+    check(eNodeId5);
+
+    ExpandedNodeId eNodeId6;
+    eNodeId6.nodeId.namespaceIndex = 0;
+    eNodeId6.namespaceUri.emplace("AAA");
+    eNodeId6.nodeId.value.emplace<UInt32>(0xFFF);
+    eNodeId6.serverIndex.emplace(0xAFAF);
+    check(eNodeId6);
+}
+
+TEST_F(OpcUaBinaryCodecTest, ExtensionObject)
+{
+    ExtensionObject eObj1;
+    check(eObj1);
+
+    ExtensionObject eObj2;
+    eObj2.nodeId.namespaceIndex = 0;
+    eObj2.nodeId.value.emplace<UInt32>(0xFF);
+    check(eObj2);
+
+    ExtensionObject eObj3;
+    eObj3.nodeId.namespaceIndex = 0;
+    eObj3.nodeId.value.emplace<UInt32>(0xFFF);
+    check(eObj3);
+
+    ExtensionObject eObj4;
+    eObj4.nodeId.namespaceIndex = 0;
+    eObj4.nodeId.value.emplace<UInt32>(0xFFF);
+    eObj4.byteString.emplace("BABABA");
+    check(eObj4);
 }
 
 TEST_F(OpcUaBinaryCodecTest, DataValue)
@@ -294,4 +356,15 @@ TEST_F(OpcUaBinaryCodecTest, DiagnosticInfo)
     diag9.innerDiagnosticInfo->symbolicId.emplace(0xAAAA);
     diag9.innerDiagnosticInfo->additionalInfo.emplace("0xAAAA");
     check(diag9);
+}
+
+TEST_F(OpcUaBinaryCodecTest, DynamicArrayUInt32)
+{
+    DynamicArray<UInt32> arr1;
+    check(arr1);
+
+    DynamicArray<UInt32> arr2;
+    arr2.emplace_back(0xFAFA);
+    arr2.emplace_back(0xFAFA);
+    check(arr2);
 }

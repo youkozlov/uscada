@@ -27,6 +27,32 @@
 #include "DataValue.hpp"
 #include "Variant.hpp"
 
+#include "MessageHeader.hpp"
+#include "HelloMessage.hpp"
+#include "AcknowledgeMessage.hpp"
+#include "ErrorMessage.hpp"
+#include "ReverseHelloMessage.hpp"
+
+#include "UaMessageHeader.hpp"
+#include "UaSecurityHeader.hpp"
+#include "UaSequenceHeader.hpp"
+#include "UaRequestHeader.hpp"
+#include "UaChannelSecurityToken.hpp"
+#include "UaOpenSecureChannelReq.hpp"
+#include "UaOpenSecureChannelRsp.hpp"
+#include "UaGetEndpointsReq.hpp"
+#include "UaGetEndpointsRsp.hpp"
+#include "UaEndpointDescription.hpp"
+#include "UaCreateSessionReq.hpp"
+#include "UaCreateSessionRsp.hpp"
+#include "UaCloseSessionReq.hpp"
+#include "UaCloseSessionRsp.hpp"
+#include "UaActivateSessionReq.hpp"
+#include "UaActivateSessionRsp.hpp"
+#include "UaReadReq.hpp"
+#include "UaReadRsp.hpp"
+#include "ReadValueId.hpp"
+
 namespace app::ua
 {
 
@@ -40,6 +66,10 @@ public:
     void write(std::uint8_t);
 
     std::uint8_t read();
+
+    OpcUaSduBuffer& buf();
+
+    OpcUaSduBuffer const& buf() const;
 
 private:
     OpcUaSduBuffer& buffer;
@@ -95,6 +125,67 @@ OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, DataValue&);
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, DataValue const&);
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, Variant&);
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, Variant const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, MessageHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, MessageHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, HelloMessage&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, HelloMessage const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, AcknowledgeMessage&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, AcknowledgeMessage const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, ErrorMessage&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, ErrorMessage const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, ReverseHelloMessage&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, ReverseHelloMessage const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaMessageHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaMessageHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaSecurityHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaSecurityHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaSecurityTokenHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaSecurityTokenHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaSequenceHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaSequenceHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaRequestHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaRequestHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaOpenSecureChannelReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaOpenSecureChannelReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaChannelSecurityToken&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaChannelSecurityToken const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaResponseHeader&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaResponseHeader const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaOpenSecureChannelRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaOpenSecureChannelRsp const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaGetEndpointsReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaGetEndpointsReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaGetEndpointsRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaGetEndpointsRsp const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaEndpointDescription&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaEndpointDescription const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaApplicationDescription&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaApplicationDescription const&);
+//OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaApplicationInstanceCertificate&);
+//OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaApplicationInstanceCertificate const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaUserTokenPolicy&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaUserTokenPolicy const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaCreateSessionReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaCreateSessionReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaSignatureData&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaSignatureData const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaCreateSessionRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaCreateSessionRsp const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaCloseSessionReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaCloseSessionReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaCloseSessionRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaCloseSessionRsp const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaActivateSessionReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaActivateSessionReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaActivateSessionRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaActivateSessionRsp const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, ReadValueId&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, ReadValueId const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaReadReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaReadReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaReadRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaReadRsp const&);
+
 template <typename T>
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, Opt<T>& val)
 {
@@ -142,6 +233,9 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, StaticArray<T, SIZE> const& ar
 template <typename T>
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, DynamicArray<T>& arr)
 {
+    Int32 arrayLength;
+    s >> arrayLength;
+    arr.resize(arrayLength);
     for (auto& it : arr)
     {
         s >> it;
@@ -151,11 +245,38 @@ OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, DynamicArray<T>& arr)
 template <typename T>
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, DynamicArray<T> const& arr)
 {
+    Int32 arrayLength{arr.size()};
+    s << arrayLength;
     for (auto& it : arr)
     {
         s << it;
     }
     return s;
 }
-
+template <typename...T>
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, std::tuple<T...>& tup)
+{
+    std::apply([&s = s](auto&... args) {(( s >> args ), ...);}, tup);
+    return s;
+}
+template <typename...T>
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, std::tuple<T...> const& tup)
+{
+    std::apply([&s = s](auto const&... args) {(( s << args ), ...);}, tup);
+    return s;
+}
+template <typename DataType, DataTypeId Id>
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaMsgCont<DataType, Id>& data)
+{
+    s >> data.eNodeId
+      >> data.msg;
+    return s;
+}
+template <typename DataType, DataTypeId Id>
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaMsgCont<DataType, Id> const& data)
+{
+    s << data.eNodeId
+      << data.msg;
+    return s;
+}
 } // namespace app::ua

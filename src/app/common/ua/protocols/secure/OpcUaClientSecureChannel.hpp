@@ -3,43 +3,52 @@
 #include "FsmBase.hpp"
 #include "OpcUaClientSecureChannelState.hpp"
 #include "OpcUaSecureChannel.hpp"
+#include "ClientConnection.hpp"
 
 namespace app::ua
 {
 
 class OpcUaClientSecureChannelInit;
+class OpcUaClientSecureChannelConnecting;
 class OpcUaClientSecureChannelReceiveOpenRsp;
 class OpcUaClientSecureChannelEstablished;
 
 class OpcUaClientSecureChannel : public app::FsmBase<OpcUaClientSecureChannel, OpcUaClientSecureChannelState>
                                , public OpcUaSecureChannel
+                               , public OpcUaConnectionHandler
 {
 public:
     using SecureChannelHandler = std::function<void()>;
 
-    OpcUaClientSecureChannel();
+    OpcUaClientSecureChannel(EntityId, reactor::ReactorInterface&);
 
     ~OpcUaClientSecureChannel();
 
-    char const* name() const { return "OpcUaClientSecureChannel"; }
+    void open(reactor::LinkAddr& addr);
 
-    void onConnected(OpcUaConnection&) final;
+    void close() final;
 
-    void onDataReceived(OpcUaConnection&) final;
+    OpcUaSduBuffer& getRxBuffer() final;
 
-    void onError() final;
-
-    void onClosed() final;
+    void send(OpcUaSduBuffer const&) final;
 
 private:
     friend OpcUaClientSecureChannelInit;
+    friend OpcUaClientSecureChannelConnecting;
     friend OpcUaClientSecureChannelReceiveOpenRsp;
     friend OpcUaClientSecureChannelEstablished;
 
-    Result sendOpenSecureChannelReq(OpcUaConnection&);
-    Result receiveOpenSecureChannelRsp(OpcUaConnection&);
+    void onConnectionConnectedEvent() final;
+    void onConnectionDataReceivedEvent() final;
+    void onConnectionErrorEvent() final;
+    void onConnectionClosedEvent() final;
+
+    void connectLink(reactor::LinkAddr&);
+    Result sendOpenSecureChannelReq();
+    Result receiveOpenSecureChannelRsp();
 
     OpcUaSecureChannelHandler handler;
+    ClientConnection          connection;
 };
 
 } // namespace app::ua

@@ -15,11 +15,13 @@ public:
 
     virtual char const* name() const = 0;
 
-    virtual void onConnected(OpcUaClientSecureChannel&, OpcUaConnection&) { LM(UA, LE, "Unexpected"); }
+    virtual void onConnected(OpcUaClientSecureChannel&) { LM(UA, LE, "Unexpected"); }
+
+    virtual void onOpen(OpcUaClientSecureChannel&, reactor::LinkAddr&) { LM(UA, LE, "Unexpected"); }
 
     virtual void onClosed(OpcUaClientSecureChannel&) { LM(UA, LE, "Unexpected"); }
 
-    virtual void onDataReceived(OpcUaClientSecureChannel&, OpcUaConnection&) { LM(UA, LE, "Unexpected"); }
+    virtual void onDataReceived(OpcUaClientSecureChannel&) { LM(UA, LE, "Unexpected"); }
 
     virtual void onError(OpcUaClientSecureChannel&) { LM(UA, LE, "Unexpected"); }
 

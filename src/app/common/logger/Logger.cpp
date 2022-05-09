@@ -54,8 +54,8 @@ Logger::Logger()
     : logLevels(numLogTasks, LogLevel::LD)
 {
 //    setTaskLogLevel(LogTask::GEN, LogLevel::LI);
-//    setTaskLogLevel(LogTask::MODBUS, LogLevel::NA);
-//    setTaskLogLevel(LogTask::CTRL, LogLevel::NA);
+    setTaskLogLevel(LogTask::MODBUS, LogLevel::NA);
+    setTaskLogLevel(LogTask::CTRL, LogLevel::NA);
 }
 
 Logger& Logger::getInst()
@@ -84,7 +84,7 @@ void Logger::dispatch(char const* msg, LogLevel lvl, LogTask task, char const* f
     struct tm* timeinfo;
     gettimeofday(&tv, NULL);
 
-    timeinfo = localtime(&tv.tv_sec);
+    timeinfo = ::localtime(&tv.tv_sec);
     strftime(strTimeInfo, sizeof(strTimeInfo),"%d-%m-%Y %H:%M:%S",timeinfo);
     char const* filePart = strrchr(file, '/');
     char const* fileToLog = filePart ? filePart + 1 : file;

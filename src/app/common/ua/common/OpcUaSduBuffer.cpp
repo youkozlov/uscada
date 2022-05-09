@@ -16,14 +16,14 @@ OpcUaSduBuffer::~OpcUaSduBuffer()
 
 void OpcUaSduBuffer::write(std::uint8_t val)
 {
-    LM(GEN, LE, "end: %u, wr: %d", head, (int)val);
+    //LM(GEN, LE, "end: %u, wr: %d", head, (int)val);
     packet[head++] = val;
 }
 
 std::uint8_t OpcUaSduBuffer::read()
 {
     auto const& rd = packet[tail];
-    LM(GEN, LE, "tail: %u, rd: %d", tail, (int)rd);
+    //LM(GEN, LE, "tail: %u, rd: %d", tail, (int)rd);
     tail++;
     return rd;
 }

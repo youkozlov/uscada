@@ -14,7 +14,7 @@ public:
 
     void onEnter(OpcUaClientSecureChannel&) final;
 
-    void onDataReceived(OpcUaClientSecureChannel&, OpcUaConnection&) final;
+    void onDataReceived(OpcUaClientSecureChannel&) final;
 
     void onClosed(OpcUaClientSecureChannel&) final;
 

@@ -25,6 +25,16 @@ std::uint8_t OpcUaBinaryCodec::read()
     return buffer.read();
 }
 
+OpcUaSduBuffer& OpcUaBinaryCodec::buf()
+{
+    return buffer;
+}
+
+OpcUaSduBuffer const& OpcUaBinaryCodec::buf() const
+{
+    return buffer;
+}
+
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, Boolean& val)
 {
     val = s.read() ? true : false;
@@ -347,10 +357,12 @@ OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, NodeId& nodeId)
 {
     Byte encByte;
     s >> encByte;
-    switch (encByte)
+    switch (encByte & 0xF)
     {
     case 0:
     {
+        LM(GEN, LD, "NodeId 2 bytes");
+
         Byte identifier;
         s >> identifier;
         emplace<UInt32>(nodeId.value) = identifier;
@@ -575,23 +587,77 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, XmlElement const&)
     return s;
 }
 
-OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ExpandedNodeId&)
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ExpandedNodeId& data)
 {
+    uint8_t const& encodingMask = *s.buf().begin();
+    s >> data.nodeId;
+    if (encodingMask & 0x80)
+    {
+        s >> data.namespaceUri;
+    }
+    if (encodingMask & 0x40)
+    {
+        s >> data.serverIndex;
+    }
     return s;
 }
 
-OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ExpandedNodeId const&)
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ExpandedNodeId const& data)
 {
+    uint8_t& encodingMask = *s.buf().begin();
+    s << data.nodeId;
+    if (data.encodingMask() & 0x1)
+    {
+        encodingMask |= 0x80;
+        s << data.namespaceUri;
+    }
+    if (data.encodingMask() & 0x2)
+    {
+        encodingMask |= 0x40;
+        s << data.serverIndex;
+    }
     return s;
 }
 
-OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ExtensionObject&)
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ExtensionObject& data)
 {
+    Byte encodingMask;
+    s >> data.nodeId >> encodingMask;
+    switch (encodingMask)
+    {
+    case 0:
+    break;
+    case 1:
+        s >> data.byteString;
+    break;
+    case 2:
+        s >> data.byteString;
+    break;
+    default:
+        LM(GEN, LE, "Unexpected, %u", (int)encodingMask);
+        break;
+    }
     return s;
 }
 
-OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ExtensionObject const&)
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ExtensionObject const& data)
 {
+    Byte encodingMask{data.encodingMask()};
+    s << data.nodeId << encodingMask;
+    switch (encodingMask)
+    {
+    case 0:
+    break;
+    case 1:
+        s << data.byteString;
+    break;
+    case 2:
+        s << data.byteString;
+    break;
+    default:
+        LM(GEN, LE, "Unexpected");
+        break;
+    }
     return s;
 }
 
@@ -668,43 +734,41 @@ OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, Variant& variant)
     DataTypeId const typeId = static_cast<DataTypeId>(encodingMask & 0b111111);
     if (encodingMask & 0x80)
     {
-        Int32 arrayLength;
-        s >> arrayLength;
         switch (typeId)
         {
         case DataTypeId::Boolean:
         {
-            s >> variant.emplace<DynamicArray<Boolean>>(arrayLength);
+            s >> variant.emplace<DynamicArray<Boolean>>();
         }
         break;
         case DataTypeId::SByte:
         {
-            s >> variant.emplace<DynamicArray<SByte>>(arrayLength);
+            s >> variant.emplace<DynamicArray<SByte>>();
         }
         break;
         case DataTypeId::Byte:
         {
-            s >> variant.emplace<DynamicArray<Byte>>(arrayLength);
+            s >> variant.emplace<DynamicArray<Byte>>();
         }
         break;
         case DataTypeId::Int16:
         {
-            s >> variant.emplace<DynamicArray<Int16>>(arrayLength);
+            s >> variant.emplace<DynamicArray<Int16>>();
         }
         break;
         case DataTypeId::UInt16:
         {
-            s >> variant.emplace<DynamicArray<UInt16>>(arrayLength);
+            s >> variant.emplace<DynamicArray<UInt16>>();
         }
         break;
         case DataTypeId::Int32:
         {
-            s >> variant.emplace<DynamicArray<Int32>>(arrayLength);
+            s >> variant.emplace<DynamicArray<Int32>>();
         }
         break;
         case DataTypeId::UInt32:
         {
-            s >> variant.emplace<DynamicArray<UInt32>>(arrayLength);
+            s >> variant.emplace<DynamicArray<UInt32>>();
         }
         break;
         default:
@@ -846,14 +910,656 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, Variant const& variant)
     }
     std::visit([&s, &encodingMask](auto&& arg)
     {
-        if (encodingMask & 0x80)
-        {
-            Int32 arrayLength{arg.size()};
-            s << arrayLength;
-        }
         s << arg;
     }, *variant.value);
     return s;
 }
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, MessageHeader& val)
+{
+    s   >> val.messageType
+        >> val.isFinal
+        >> val.messageSize;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, MessageHeader const& val)
+{
+    s   << val.messageType
+        << val.isFinal
+        << val.messageSize;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, HelloMessage& val)
+{
+    s   >> val.protocolVersion
+        >> val.receiveBufferSize 
+        >> val.sendBufferSize
+        >> val.maxMessageSize
+        >> val.maxChunkCount
+        >> val.endpointUrl;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, HelloMessage const& val)
+{
+    s   << val.protocolVersion
+        << val.receiveBufferSize 
+        << val.sendBufferSize
+        << val.maxMessageSize
+        << val.maxChunkCount
+        << val.endpointUrl;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, AcknowledgeMessage& val)
+{
+    s   >> val.protocolVersion
+        >> val.receiveBufferSize 
+        >> val.sendBufferSize
+        >> val.maxMessageSize
+        >> val.maxChunkCount;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, AcknowledgeMessage const& val)
+{
+    s   << val.protocolVersion
+        << val.receiveBufferSize 
+        << val.sendBufferSize
+        << val.maxMessageSize
+        << val.maxChunkCount;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ErrorMessage& val)
+{
+    s   >> val.error
+        >> val.reason;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ErrorMessage const& val)
+{
+    s   << val.error
+        << val.reason;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ReverseHelloMessage& val)
+{
+    s   >> val.serverUri
+        >> val.endpointUrl;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ReverseHelloMessage const& val)
+{
+    s   << val.serverUri
+        << val.endpointUrl;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaMessageHeader& val)
+{
+    LM(UA, LD, "UaMessageHeader>>");
+
+    s   >> val.messageType
+        >> val.isFinal
+        >> val.messageSize
+        >> val.secureChannelId;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaMessageHeader const& val)
+{
+    LM(UA, LD, "UaMessageHeader<<");
+
+    s   << val.messageType
+        << val.isFinal
+        << val.messageSize
+        << val.secureChannelId;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaSecurityHeader& val)
+{
+    LM(UA, LD, "UaSecurityHeader>>");
+
+    s   >> val.securityPolicyUri
+        >> val.senderCertificate
+        >> val.receiverCertificateThumbprint;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaSecurityHeader const& val)
+{
+    LM(UA, LD, "UaSecurityHeader<<");
+
+    s   << val.securityPolicyUri
+        << val.senderCertificate
+        << val.receiverCertificateThumbprint;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaSecurityTokenHeader& val)
+{
+    LM(UA, LD, "UaSecurityTokenHeader>>");
+
+    s   >> val.tokenId;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaSecurityTokenHeader const& val)
+{
+    LM(UA, LD, "UaSecurityTokenHeader<<");
+
+    s   << val.tokenId;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaSequenceHeader& val)
+{
+    LM(UA, LD, "UaSequenceHeader>>");
+
+    s   >> val.sequenceNumber
+        >> val.requestId;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaSequenceHeader const& val)
+{
+    LM(UA, LD, "UaSequenceHeader<<");
+
+    s   << val.sequenceNumber
+        << val.requestId;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaRequestHeader& val)
+{
+    LM(UA, LD, "UaRequestHeader>>");
+
+    s   >> val.authentificationToken
+        >> val.timestamp
+        >> val.requestHandle
+        >> val.returnDignostics
+        >> val.auditEntityId
+        >> val.timeoutHint
+        >> val.additionalHeader;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaRequestHeader const& val)
+{
+    LM(UA, LD, "UaRequestHeader<<");
+
+    s   << val.authentificationToken
+        << val.timestamp
+        << val.requestHandle
+        << val.returnDignostics
+        << val.auditEntityId
+        << val.timeoutHint
+        << val.additionalHeader;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaOpenSecureChannelReq& val)
+{
+    LM(UA, LD, "UaOpenSecureChannelReq>>");
+
+    s   >> val.requestHdr
+        >> val.clientProtocolVer
+        >> val.securityTokenRequestType
+        >> val.securityMode
+        >> val.clientNonce
+        >> val.requestLifetime;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaOpenSecureChannelReq const& val)
+{
+    LM(UA, LD, "UaOpenSecureChannelReq<<");
+
+    s   << val.requestHdr
+        << val.clientProtocolVer
+        << val.securityTokenRequestType
+        << val.securityMode
+        << val.clientNonce
+        << val.requestLifetime;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaChannelSecurityToken& val)
+{
+    LM(UA, LD, "UaChannelSecurityToken>>");
+
+    s   >> val.secureChannelId
+        >> val.tokenId
+        >> val.createdAt
+        >> val.revisedLifetime;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaChannelSecurityToken const& val)
+{
+    LM(UA, LD, "UaChannelSecurityToken<<");
+
+    s   << val.secureChannelId
+        << val.tokenId
+        << val.createdAt
+        << val.revisedLifetime;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaResponseHeader& val)
+{
+    LM(UA, LD, "UaResponseHeader>>");
+
+    s   >> val.timestamp
+        >> val.requestHandle
+        >> val.serviceResult
+        >> val.serviceDiagnostics
+        >> val.stringTable
+        >> val.additionalHeader;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaResponseHeader const& val)
+{
+    LM(UA, LD, "UaResponseHeader<<");
+
+    s   << val.timestamp
+        << val.requestHandle
+        << val.serviceResult
+        << val.serviceDiagnostics
+        << val.stringTable
+        << val.additionalHeader;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaOpenSecureChannelRsp& val)
+{
+    LM(UA, LD, "UaOpenSecureChannelRsp>>");
+
+    s   >> val.responseHdr
+        >> val.serverProtocolVer
+        >> val.securityToken
+        >> val.serverNonce;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaOpenSecureChannelRsp const& val)
+{
+    LM(UA, LD, "UaOpenSecureChannelRsp<<");
+
+    s   << val.responseHdr
+        << val.serverProtocolVer
+        << val.securityToken
+        << val.serverNonce;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaGetEndpointsReq& val)
+{
+    LM(UA, LD, "UaGetEndpointsReq>>");
+    s   >> val.requestHdr
+        >> val.endpointUrl
+        >> val.localeIds
+        >> val.profileUris;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaGetEndpointsReq const& val)
+{
+    LM(UA, LD, "UaGetEndpointsReq<<");
+    s   << val.requestHdr
+        << val.endpointUrl
+        << val.localeIds
+        << val.profileUris;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaGetEndpointsRsp& val)
+{
+    LM(UA, LD, "UaGetEndpointsRsp>>");
+    s   >> val.responseHdr
+        >> val.endpointDescription;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaGetEndpointsRsp const& val)
+{
+    LM(UA, LD, "UaGetEndpointsRsp<<");
+    s   << val.responseHdr
+        << val.endpointDescription;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaEndpointDescription& val)
+{
+    LM(UA, LD, "UaEndpointDescription>>");
+    s   >> val.endpointUrl
+        >> val.server
+        >> val.serverCertificate
+        >> val.securityMode
+        >> val.securityPolicyUri
+        >> val.userIdentityTokens
+        >> val.transportProfileUri
+        >> val.securityLevel;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaEndpointDescription const& val)
+{
+    LM(UA, LD, "UaEndpointDescription<<");
+    s   << val.endpointUrl
+        << val.server
+        << val.serverCertificate
+        << val.securityMode
+        << val.securityPolicyUri
+        << val.userIdentityTokens
+        << val.transportProfileUri
+        << val.securityLevel;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaApplicationDescription& val)
+{
+    LM(UA, LD, "UaApplicationDescription>>");
+    s   >> val.applicationUri
+        >> val.productUri
+        >> val.applicationName
+        >> val.applicationType
+        >> val.gatewayServerUri
+        >> val.discoveryProfileUri
+        >> val.discoveryUrls;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaApplicationDescription const& val)
+{
+    LM(UA, LD, "UaApplicationDescription<<");
+    s   << val.applicationUri
+        << val.productUri
+        << val.applicationName
+        << val.applicationType
+        << val.gatewayServerUri
+        << val.discoveryProfileUri
+        << val.discoveryUrls;
+    return s;
+}
+
+/*
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaApplicationInstanceCertificate& val)
+{
+    LM(UA, LD, "UaApplicationInstanceCertificate>>");
+    s   >> val.version
+        >> val.serialNumber
+        >> val.signatureAlgorithm
+        >> val.signature
+        >> val.issuer
+        >> val.validFrom
+        >> val.validTo
+        >> val.subject
+        >> val.applicationUri
+        >> val.hostnames
+        >> val.publicKey
+        >> val.keyUsage;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaApplicationInstanceCertificate const& val)
+{
+    LM(UA, LD, "UaApplicationInstanceCertificate<<");
+    s   << val.version
+        << val.serialNumber
+        << val.signatureAlgorithm
+        << val.signature
+        << val.issuer
+        << val.validFrom
+        << val.validTo
+        << val.subject
+        << val.applicationUri
+        << val.hostnames
+        << val.publicKey
+        << val.keyUsage;
+    return s;
+}
+*/
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaUserTokenPolicy& val)
+{
+    LM(UA, LD, "UaUserTokenPolicy>>");
+    s   >> val.policyId
+        >> val.tokenType
+        >> val.issuedTokenType
+        >> val.issuerEndpointUrl
+        >> val.securityPolicyUri;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaUserTokenPolicy const& val)
+{
+    LM(UA, LD, "UaUserTokenPolicy<<");
+    s   << val.policyId
+        << val.tokenType
+        << val.issuedTokenType
+        << val.issuerEndpointUrl
+        << val.securityPolicyUri;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaCreateSessionReq& val)
+{
+    LM(UA, LD, "UaCreateSessionReq>>");
+    s   >> val.requestHdr
+        >> val.clientDescription
+        >> val.serverUri
+        >> val.endpointUrl
+        >> val.sessionName
+        >> val.clientNonce
+        >> val.clientCertificate
+        >> val.requestedSessionTimeout
+        >> val.maxResponseMessageSize;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaCreateSessionReq const& val)
+{
+    LM(UA, LD, "UaCreateSessionReq<<");
+    s   << val.requestHdr
+        << val.clientDescription
+        << val.serverUri
+        << val.endpointUrl
+        << val.sessionName
+        << val.clientNonce
+        << val.clientCertificate
+        << val.requestedSessionTimeout
+        << val.maxResponseMessageSize;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaSignatureData& val)
+{
+    LM(UA, LD, "UaSignatureData>>");
+    s   >> val.algorithm
+        >> val.signature;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaSignatureData const& val)
+{
+    LM(UA, LD, "UaSignatureData<<");
+    s   << val.algorithm
+        << val.signature;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaCreateSessionRsp& val)
+{
+    LM(UA, LD, "UaCreateSessionRsp>>");
+    s   >> val.responseHdr
+        >> val.sessionId
+        >> val.authenticationToken
+        >> val.revisedSessionTimeout
+        >> val.serverNonce
+        >> val.serverCertificate
+        >> val.serverEndpoints
+        >> val.signedSoftwareCertificate
+        >> val.serverSignature
+        >> val.maxRequestMessageSize;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaCreateSessionRsp const& val)
+{
+    LM(UA, LD, "UaCreateSessionRsp<<");
+    s   << val.responseHdr
+        << val.sessionId
+        << val.authenticationToken
+        << val.revisedSessionTimeout
+        << val.serverNonce
+        << val.serverCertificate
+        << val.serverEndpoints
+        << val.signedSoftwareCertificate
+        << val.serverSignature
+        << val.maxRequestMessageSize;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaCloseSessionReq& val)
+{
+    LM(UA, LD, "UaCloseSessionReq>>");
+    s   >> val.requestHdr
+        >> val.deleteSubscriptions;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaCloseSessionReq const& val)
+{
+    LM(UA, LD, "UaCloseSessionReq<<");
+    s   << val.requestHdr
+        << val.deleteSubscriptions;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaCloseSessionRsp& val)
+{
+    LM(UA, LD, "UaCloseSessionRsp>>");
+    s   >> val.responseHdr;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaCloseSessionRsp const& val)
+{
+    LM(UA, LD, "UaCloseSessionRsp<<");
+    s   << val.responseHdr;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaActivateSessionReq& val)
+{
+    LM(UA, LD, "UaActivateSessionReq>>");
+    s   >> val.requestHdr
+        >> val.clientSignature
+        >> val.clientSoftwareCertificates
+        >> val.localeIds
+        >> val.userIdentityToken
+        >> val.userTokenSignature;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaActivateSessionReq const& val)
+{
+    LM(UA, LD, "UaActivateSessionReq<<");
+    s   << val.requestHdr
+        << val.clientSignature
+        << val.clientSoftwareCertificates
+        << val.localeIds
+        << val.userIdentityToken
+        << val.userTokenSignature;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaActivateSessionRsp& val)
+{
+    LM(UA, LD, "UaActivateSessionRsp>>");
+    s   >> val.responseHdr
+        >> val.serverNonce
+        >> val.results
+        >> val.diagnosticInfos;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaActivateSessionRsp const& val)
+{
+    LM(UA, LD, "UaActivateSessionRsp<<");
+    s   << val.responseHdr
+        << val.serverNonce
+        << val.results
+        << val.diagnosticInfos;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, ReadValueId& val)
+{
+    LM(UA, LD, "ReadeValueId>>");
+    s   >> val.nodeId
+        >> val.attributeId
+        >> val.indexRange
+        >> val.dataEncoding;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, ReadValueId const& val)
+{
+    LM(UA, LD, "ReadeValueId<<");
+    s   << val.nodeId
+        << val.attributeId
+        << val.indexRange
+        << val.dataEncoding;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaReadReq& val)
+{
+    LM(UA, LD, "UaReadReq>>");
+    s   >> val.requestHdr
+        >> val.maxAge
+        >> val.timestampsToReturn
+        >> val.nodesToRead;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaReadReq const& val)
+{
+    LM(UA, LD, "UaReadReq<<");
+    s   << val.requestHdr
+        << val.maxAge
+        << val.timestampsToReturn
+        << val.nodesToRead;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaReadRsp& val)
+{
+    LM(UA, LD, "UaReadRsp>>");
+    s   >> val.responseHdr
+        >> val.results
+        >> val.diagnosticInfos;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaReadRsp const& val)
+{
+    LM(UA, LD, "UaReadRsp<<");
+    s   << val.responseHdr
+        << val.results
+        << val.diagnosticInfos;
+    return s;
+}
+
 
 } // namespace app::ua

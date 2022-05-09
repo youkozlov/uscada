@@ -1,41 +1,14 @@
 #include "OpcUaClientSecureChannelInit.hpp"
-#include "OpcUaClientSecureChannelReceiveOpenRsp.hpp"
+#include "OpcUaClientSecureChannelConnecting.hpp"
 #include "OpcUaClientSecureChannel.hpp"
 
 namespace app::ua
 {
 
-void OpcUaClientSecureChannelInit::onConnected(OpcUaClientSecureChannel& fsm, OpcUaConnection& connection)
+void OpcUaClientSecureChannelInit::onOpen(OpcUaClientSecureChannel& fsm, reactor::LinkAddr& addr)
 {
-    switch (fsm.sendOpenSecureChannelReq(connection))
-    {
-    case OpcUaSecureChannel::Result::noerror:
-    {
-        LM(UA, LE, "Unexpected");
-        fsm.notifyError();
-    }
-    break;
-    case OpcUaSecureChannel::Result::done:
-    {
-        fsm.transit<OpcUaClientSecureChannelReceiveOpenRsp>();
-    }
-    break;
-    case OpcUaSecureChannel::Result::error:
-    {
-        fsm.notifyError();
-    }
-    break;
-    }
-}
-
-void OpcUaClientSecureChannelInit::onClosed(OpcUaClientSecureChannel& fsm)
-{
-    fsm.notifyClosed();
-}
-
-void OpcUaClientSecureChannelInit::onError(OpcUaClientSecureChannel& fsm)
-{
-    fsm.notifyError();
+    fsm.connectLink(addr);
+    fsm.transit<OpcUaClientSecureChannelConnecting>();
 }
 
 } // namespace app::ua

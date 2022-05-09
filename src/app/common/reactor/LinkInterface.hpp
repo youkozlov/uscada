@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "FileDescriptorInterface.hpp"
 #include "LinkAddr.hpp"
+#include "LinkHandler.hpp"
 
 namespace app::reactor
 {
@@ -33,6 +34,8 @@ public:
     virtual int send(void const*, std::size_t) = 0;
 
     virtual LinkResult receive(std::uint8_t*, std::size_t) = 0;
+
+    virtual void setHandler(LinkHandler) = 0;
 };
 
 } // namespace app::reactor

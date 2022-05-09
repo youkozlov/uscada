@@ -12,9 +12,11 @@ public:
 
     char const* name() const final { return "OpcUaServerSecureChannelEstablished"; }
 
-    void onEnter(OpcUaServerSecureChannel&) final;
+    void onOpenSecureChannelReq(OpcUaServerSecureChannel&) final;
 
-    void onDataReceived(OpcUaServerSecureChannel&, OpcUaConnection&) final;
+    void onCloseSecureChannelReq(OpcUaServerSecureChannel&) final;
+
+    void onSecureChannelReq(OpcUaServerSecureChannel&) final;
 
     void onClosed(OpcUaServerSecureChannel&) final;
 

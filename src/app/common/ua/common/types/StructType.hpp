@@ -10,9 +10,9 @@ namespace app::ua
 template <DataTypeId ID>
 struct StructType
 {
-    StructType() = default;
-    StructType(StructType const&) = delete;
-    StructType& operator=(StructType const&) = delete;
+//    StructType() = default;
+//    StructType(StructType const&) = delete;
+//    StructType& operator=(StructType const&) = delete;
     static constexpr DataTypeId Id = ID;
     std::size_t size() const { return 1; }
 };

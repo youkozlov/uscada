@@ -6,29 +6,26 @@
 namespace app::ua
 {
 
-void OpcUaServerSecureChannelReceiveOpenReq::onDataReceived(OpcUaServerSecureChannel& fsm, OpcUaConnection& connection)
+void OpcUaServerSecureChannelReceiveOpenReq::onOpenSecureChannelReq(OpcUaServerSecureChannel& fsm)
 {
-    switch (fsm.receiveOpenSecureChannelReq(connection))
+    switch (fsm.receiveOpenSecureChannelReq())
     {
     case OpcUaSecureChannel::Result::noerror:
     break;
     case OpcUaSecureChannel::Result::done:
     {
-        switch (fsm.sendOpenSecureChannelRsp(connection))
+        switch (fsm.sendOpenSecureChannelRsp())
         {
-        case OpcUaSecureChannel::Result::noerror:
-        {
-            LM(UA, LE, "Unexpected");
-        }
-        break;
         case OpcUaSecureChannel::Result::done:
         {
             fsm.transit<OpcUaServerSecureChannelEstablished>();
         }
         break;
+        case OpcUaSecureChannel::Result::noerror:
         case OpcUaSecureChannel::Result::error:
         {
             fsm.notifyError();
+            fsm.closeConnection();
             fsm.transit<OpcUaServerSecureChannelInit>();
         }
         break;
@@ -38,6 +35,7 @@ void OpcUaServerSecureChannelReceiveOpenReq::onDataReceived(OpcUaServerSecureCha
     case OpcUaSecureChannel::Result::error:
     {
         fsm.notifyError();
+        fsm.closeConnection();
         fsm.transit<OpcUaServerSecureChannelInit>();
     }
     break;
@@ -47,11 +45,13 @@ void OpcUaServerSecureChannelReceiveOpenReq::onDataReceived(OpcUaServerSecureCha
 void OpcUaServerSecureChannelReceiveOpenReq::onClosed(OpcUaServerSecureChannel& fsm)
 {
     fsm.notifyClosed();
+    fsm.transit<OpcUaServerSecureChannelInit>();
 }
 
 void OpcUaServerSecureChannelReceiveOpenReq::onError(OpcUaServerSecureChannel& fsm)
 {
     fsm.notifyError();
+    fsm.transit<OpcUaServerSecureChannelInit>();
 }
 
 } // namespace app::ua

@@ -3,7 +3,8 @@
 namespace app::ua
 {
 
-OpcUaSecureChannel::OpcUaSecureChannel()
+OpcUaSecureChannel::OpcUaSecureChannel(EntityId uid_)
+    : uid(uid_)
 {
 }
 
@@ -16,47 +17,28 @@ void OpcUaSecureChannel::setHandler(OpcUaSecureChannelHandler handler_)
     handler = handler_;
 }
 
-void OpcUaSecureChannel::onConnectionEvent(OpcUaConnectionEvent const& ev)
-{
-    switch (ev.type)
-    {
-    case OpcUaConnectionEvent::connected:
-        onConnected(ev.connection);
-    break;
-    case OpcUaConnectionEvent::data:
-        onDataReceived(ev.connection);
-    break;
-    case OpcUaConnectionEvent::error:
-        onError();
-    break;
-    case OpcUaConnectionEvent::closed:
-        onClosed();
-    break;
-    }
-}
-
 void OpcUaSecureChannel::notifyEstablished()
 {
     if (handler)
-        handler(OpcUaSecureChannelEvent::established);
+        handler({OpcUaSecureChannelEvent::established, *this});
 }
 
 void OpcUaSecureChannel::notifyDataReceived()
 {
     if (handler)
-        handler(OpcUaSecureChannelEvent::data);
+        handler({OpcUaSecureChannelEvent::request, *this});
 }
 
 void OpcUaSecureChannel::notifyClosed()
 {
     if (handler)
-        handler(OpcUaSecureChannelEvent::closed);
+        handler({OpcUaSecureChannelEvent::closed, *this});
 }
 
 void OpcUaSecureChannel::notifyError()
 {
     if (handler)
-        handler(OpcUaSecureChannelEvent::error);
+        handler({OpcUaSecureChannelEvent::error, *this});
 }
 
 } // namespace app::ua

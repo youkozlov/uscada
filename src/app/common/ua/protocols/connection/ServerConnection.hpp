@@ -20,21 +20,19 @@ class ServerConnection : public app::FsmBase<ServerConnection, ServerConnectionS
                        , public OpcUaConnection
 {
 public:
-    explicit ServerConnection(reactor::ReactorInterface&);
+    explicit ServerConnection(reactor::ReactorInterface&, OpcUaConnectionHandler&);
 
     ~ServerConnection();
-
-    char const* name() const { return "OpcUaServerConnection"; }
 
     void connect(reactor::LinkAddr const&);
 
     void accept(reactor::LinkPtr&);
 
+    void close();
+
     void onLinkEvent(reactor::LinkEvent) final;
 
     void onTimerEvent() final;
-
-    void close();
 
 private:
     static constexpr long connectTimeout = 3000000;

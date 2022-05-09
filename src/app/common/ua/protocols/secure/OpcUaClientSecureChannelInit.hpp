@@ -12,11 +12,8 @@ public:
 
     char const* name() const final { return "OpcUaClientSecureChannelInit"; }
 
-    void onConnected(OpcUaClientSecureChannel&, OpcUaConnection&) final;
+    void onOpen(OpcUaClientSecureChannel&, reactor::LinkAddr&) final;
 
-    void onClosed(OpcUaClientSecureChannel&) final;
-
-    void onError(OpcUaClientSecureChannel&) final;
 };
 
 } // namespace app::ua

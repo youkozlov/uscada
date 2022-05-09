@@ -6,9 +6,9 @@
 namespace app::ua
 {
 
-void OpcUaClientSecureChannelReceiveOpenRsp::onDataReceived(OpcUaClientSecureChannel& fsm, OpcUaConnection& connection)
+void OpcUaClientSecureChannelReceiveOpenRsp::onDataReceived(OpcUaClientSecureChannel& fsm)
 {
-    switch (fsm.receiveOpenSecureChannelRsp(connection))
+    switch (fsm.receiveOpenSecureChannelRsp())
     {
     case OpcUaSecureChannel::Result::noerror:
     break;

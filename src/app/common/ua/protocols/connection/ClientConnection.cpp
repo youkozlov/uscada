@@ -1,5 +1,5 @@
 #include "ClientConnection.hpp"
-#include "ConnectionProtocolCodec.hpp"
+#include "OpcUaBinaryCodec.hpp"
 #include "LinkInterface.hpp"
 #include "TimerInterface.hpp"
 #include "ClientConnectionInit.hpp"
@@ -8,9 +8,9 @@
 namespace app::ua
 {
 
-ClientConnection::ClientConnection(reactor::ReactorInterface& reactor_)
-    : FsmBase(&app::getSingleton<ClientConnectionInit>())
-    , OpcUaConnection(reactor_)
+ClientConnection::ClientConnection(reactor::ReactorInterface& reactor_, OpcUaConnectionHandler& handler_)
+    : FsmBase(&app::getSingleton<ClientConnectionInit>(), "OpcUaClientConnection")
+    , OpcUaConnection(reactor_, handler_)
 {
 }
 
@@ -97,9 +97,13 @@ ClientConnection::Result ClientConnection::sendHello()
     hdr.isFinal = 'F';
     codec << hdr;
 
-    HelloMessage sync;
-    sync.protocolVersion = opcUaProtocolVersion;
-    codec << sync;
+    HelloMessage hello;
+    hello.protocolVersion = opcUaProtocolVersion;
+    hello.sendBufferSize = opcUaSendBufferSize;
+    hello.receiveBufferSize = opcUaReceiveBufferSize;
+    hello.maxMessageSize = opcUaReceiveBufferSize;
+    hello.maxChunkCount = opcUaMaxChunkCount;
+    codec << hello;
 
     setPayloadSizeToHdr(tx.begin(), tx.size());
 

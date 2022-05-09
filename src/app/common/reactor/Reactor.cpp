@@ -113,7 +113,7 @@ void Reactor::send(MsgInterface const& msg)
         LM(CTRL, LE, "Can not push msg");
         return;
     }
-    LM(GEN, LD, "Send msgId=%zu size=%zu", msg.getMsgId(), msg.size());
+    //LM(GEN, LD, "Send msgId=%zu size=%zu", msg.getMsgId(), msg.size());
     event->send();
 }
 
@@ -148,7 +148,7 @@ void Reactor::onFdEvent(uint64_t val)
 
         MsgInterface const& msg = *reinterpret_cast<MsgInterface const*>(&localBuf[0]);
 
-        LM(GEN, LD, "Receive msgId=%zu", msg.getMsgId());
+        //LM(GEN, LD, "Receive msgId=%zu", msg.getMsgId());
 
         MsgHandler& handler = handlers[msg.getMsgId()];
         if (handler)

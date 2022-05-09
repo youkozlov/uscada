@@ -1,13 +1,15 @@
 #include "OpcUaClientSecureChannel.hpp"
 #include "OpcUaClientSecureChannelInit.hpp"
-#include "OpcUaSecureChannelCodec.hpp"
+#include "OpcUaBinaryCodec.hpp"
 #include "OpcUaProtocolDefs.hpp"
 
 namespace app::ua
 {
 
-OpcUaClientSecureChannel::OpcUaClientSecureChannel()
-    : FsmBase(&app::getSingleton<OpcUaClientSecureChannelInit>())
+OpcUaClientSecureChannel::OpcUaClientSecureChannel(EntityId uid, reactor::ReactorInterface& reactor_)
+    : FsmBase(&app::getSingleton<OpcUaClientSecureChannelInit>(), "OpcUaClientSecureChannel")
+    , OpcUaSecureChannel(uid)
+    , connection(reactor_, *this)
 {
 }
 
@@ -15,31 +17,55 @@ OpcUaClientSecureChannel::~OpcUaClientSecureChannel()
 {
 }
 
-void OpcUaClientSecureChannel::onConnected(OpcUaConnection& connection)
+void OpcUaClientSecureChannel::onConnectionConnectedEvent()
 {
-    getState().onConnected(*this, connection);
+    getState().onConnected(*this);
 }
 
-void OpcUaClientSecureChannel::onDataReceived(OpcUaConnection& connection)
+void OpcUaClientSecureChannel::onConnectionDataReceivedEvent()
 {
-    getState().onDataReceived(*this, connection);
+    getState().onDataReceived(*this);
 }
 
-void OpcUaClientSecureChannel::onError()
+void OpcUaClientSecureChannel::onConnectionErrorEvent()
 {
     getState().onError(*this);
 }
 
-void OpcUaClientSecureChannel::onClosed()
+void OpcUaClientSecureChannel::onConnectionClosedEvent()
 {
     getState().onClosed(*this);
 }
 
-OpcUaSecureChannel::Result OpcUaClientSecureChannel::sendOpenSecureChannelReq(OpcUaConnection& connection)
+void OpcUaClientSecureChannel::open(reactor::LinkAddr& addr)
+{
+    getState().onOpen(*this, addr);
+}
+
+void OpcUaClientSecureChannel::close()
+{
+}
+
+OpcUaSduBuffer& OpcUaClientSecureChannel::getRxBuffer()
+{
+    return connection.getRxBuffer();
+}
+
+void OpcUaClientSecureChannel::send(OpcUaSduBuffer const&)
+{
+}
+
+void OpcUaClientSecureChannel::connectLink(reactor::LinkAddr& addr)
+{
+    connection.connect(addr);
+}
+
+OpcUaSecureChannel::Result OpcUaClientSecureChannel::sendOpenSecureChannelReq()
 {
     OpcUaSduBuffer tx;
     OpcUaBinaryCodec codec(tx);
-    UascMessageHeader hdr;
+
+    UaMessageHeader hdr;
     hdr.messageType[0] = 'O';
     hdr.messageType[1] = 'P';
     hdr.messageType[2] = 'N';
@@ -47,24 +73,24 @@ OpcUaSecureChannel::Result OpcUaClientSecureChannel::sendOpenSecureChannelReq(Op
     hdr.secureChannelId = 0;
     codec << hdr;
 
-    UascSecurityHeader secHdr;
+    UaSecurityHeader secHdr;
     codec << secHdr;
 
-    UascSequenceHeader seqHdr;
+    UaSequenceHeader seqHdr;
     codec << seqHdr;
 
-    UascOpenSecureChannelReq req;
-    req.clientProtocolVer = opcUaProtocolVersion;
+    UaOpenSecureChannelReqCont req;
+    req.msg.clientProtocolVer = opcUaProtocolVersion;
     codec << req;
 
     setPayloadSizeToHdr(tx.begin(), tx.size());
-    LM(UA, LD, "OpcUaClientSecureChannel-0, send UascOpenSecureChannelReq, pkt size(%u)", tx.size());
+    LM(UA, LD, "OpcUaClientSecureChannel-0, send UaOpenSecureChannelReq, pkt size(%u)", tx.size());
 
     connection.send(tx);
     return OpcUaSecureChannel::Result::done;
 }
 
-OpcUaSecureChannel::Result OpcUaClientSecureChannel::receiveOpenSecureChannelRsp(OpcUaConnection& connection)
+OpcUaSecureChannel::Result OpcUaClientSecureChannel::receiveOpenSecureChannelRsp()
 {
     if (not isOpnMsg(connection.getRxBuffer().begin()))
     {
@@ -73,16 +99,16 @@ OpcUaSecureChannel::Result OpcUaClientSecureChannel::receiveOpenSecureChannelRsp
     }
 
     OpcUaBinaryCodec codec(connection.getRxBuffer());
-    UascMessageHeader hdr;
+    UaMessageHeader hdr;
     codec >> hdr;
 
-    UascSecurityHeader secHdr;
+    UaSecurityHeader secHdr;
     codec >> secHdr;
 
-    UascSequenceHeader seqHdr;
+    UaSequenceHeader seqHdr;
     codec >> seqHdr;
 
-    UascOpenSecureChannelRsp rsp;
+    UaOpenSecureChannelRsp rsp;
     codec >> rsp;
 
     return OpcUaSecureChannel::Result::done;

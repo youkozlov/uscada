@@ -2,19 +2,27 @@
 
 #include <functional>
 #include "OpcUaConnection.hpp"
+#include "EntityId.hpp"
 
 namespace app::ua
 {
 
-enum class OpcUaSecureChannelEvent
+class OpcUaSecureChannel;
+
+struct OpcUaSecureChannelEvent
 {
-      established
-    , data
-    , closed
-    , error
+    enum Type
+    {
+          established
+        , request
+        , closed
+        , error
+    };
+    Type type;
+    OpcUaSecureChannel& channel;
 };
 
-using OpcUaSecureChannelHandler = std::function<void(OpcUaSecureChannelEvent)>;
+using OpcUaSecureChannelHandler = std::function<void(OpcUaSecureChannelEvent const&)>;
 
 class OpcUaSecureChannel
 {
@@ -25,23 +33,21 @@ public:
         , done
         , error
     };
-    OpcUaSecureChannel();
+    OpcUaSecureChannel(EntityId);
 
     ~OpcUaSecureChannel();
 
     void setHandler(OpcUaSecureChannelHandler);
 
-    void onConnectionEvent(OpcUaConnectionEvent const&);
+    virtual void close() = 0;
+
+    virtual OpcUaSduBuffer& getRxBuffer() = 0;
+
+    virtual void send(OpcUaSduBuffer const&) = 0;
+
+    EntityId getUid() const { return uid; }
 
 protected:
-
-    virtual void onConnected(OpcUaConnection&) = 0;
-
-    virtual void onDataReceived(OpcUaConnection&) = 0;
-
-    virtual void onError() = 0;
-
-    virtual void onClosed() = 0;
 
     void notifyEstablished();
 
@@ -52,6 +58,7 @@ protected:
     void notifyError();
 
 private:
+    EntityId const uid;
     OpcUaSecureChannelHandler handler;
 };
 
