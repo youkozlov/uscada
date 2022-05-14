@@ -4,18 +4,14 @@
 #include "MsgDefs.hpp"
 #include "MsgBase.hpp"
 
-#include "UaConnectionId.hpp"
-#include "UaSecureChannelId.hpp"
-#include "UaSessionId.hpp"
+#include "UaEncodedMessageHdr.hpp"
 
 namespace app
 {
 
 struct MsgUaAssociateSecureChannelReq : public reactor::MsgBase<MsgUaAssociateSecureChannelReq, CompIds::compUaSecChannel, MsgIds::uaAssociateSecureChannelReq>
 {
-    UaConnectionId      connectionId;
-    UaSecureChannelId   secureChannelId;
-    UaSessionId         sessionId;
+    UaEncodedMessageHdr hdr;
 };
 
 } // namespace app

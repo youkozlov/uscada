@@ -1,14 +1,15 @@
 #include "UaRead.hpp"
 #include "OpcUaBinaryCodec.hpp"
 #include "UaAttributeService.hpp"
+#include "UaSessionService.hpp"
 #include "UaReadReq.hpp"
-#include "UaReadRsp.hpp"
 
 namespace app::ua::service
 {
 
-UaRead::UaRead(UaAttributeService& attributeService_)
+UaRead::UaRead(UaAttributeService& attributeService_, UaSessionService& sessionService_)
     : attributeService(attributeService_)
+    , sessionService(sessionService_)
 {
 }
 
@@ -22,7 +23,10 @@ void UaRead::receive(UaEncodedMessageHdr const& hdr, OpcUaSduBuffer& rx)
     UaReadReq req;
     codec >> req;
 
-    attributeService.receive(hdr, req);
+    sessionService.receive(hdr, [&]()
+    {
+        attributeService.receive(hdr, req);
+    });
 }
 
 } // namespace app::ua::service

@@ -71,5 +71,16 @@ void UaSessionService::receive(UaEncodedMessageHdr const& hdr, UaCloseSessionReq
     }
 }
 
+void UaSessionService::receive(UaEncodedMessageHdr const& hdr, UaServiceHandler const& handler)
+{
+    if (invalidSuid == hdr.sessionId)
+    {
+        LM(UASRV, LE, "Unexpected sessionId");
+        return;
+    }
+    auto& session = sessionPool.get(hdr.sessionId);
+    session.getState().onReceive(session, hdr, handler);
+}
+
 
 } // namespace app::ua::service

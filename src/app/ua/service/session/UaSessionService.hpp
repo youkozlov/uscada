@@ -26,6 +26,7 @@ public:
     void receive(UaEncodedMessageHdr const&, UaCreateSessionReq const&);
     void receive(UaEncodedMessageHdr const&, UaActivateSessionReq const&);
     void receive(UaEncodedMessageHdr const&, UaCloseSessionReq const&);
+    void receive(UaEncodedMessageHdr const&, UaServiceHandler const&);
 
 private:
     void release(UaSessionId) final;

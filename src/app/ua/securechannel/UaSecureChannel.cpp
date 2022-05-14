@@ -43,7 +43,7 @@ void UaSecureChannel::receive(MsgUaCloseSecureChannelReq const& msg)
 
 void UaSecureChannel::receive(MsgUaAssociateSecureChannelReq const& msg)
 {
-    auto& channel = serverSecureChannelPool.get(msg.secureChannelId);
+    auto& channel = serverSecureChannelPool.get(msg.hdr.secureChannelId);
     channel.getState().onReceive(channel, msg);
 }
 

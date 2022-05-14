@@ -156,13 +156,13 @@ UaServerSecureChannel::Result UaServerSecureChannel::receive(MsgUaCloseSecureCha
 
 UaServerSecureChannel::Result UaServerSecureChannel::receive(MsgUaAssociateSecureChannelReq const& msgReq)
 {
-    if (not connectionId || *connectionId != msgReq.connectionId)
+    if (not connectionId || *connectionId != msgReq.hdr.connectionId)
     {
         LM(UASC, LE, "Uid-%u, unexpected connectionId", secureChannelId);
         return Result::error;
     }
 
-    sessionId = msgReq.sessionId;
+    sessionId = msgReq.hdr.sessionId;
     return Result::done;
 }
 
@@ -204,6 +204,7 @@ UaServerSecureChannel::Result UaServerSecureChannel::receive(MsgUaSecuredMessage
     msgRsp.hdr.connectionId = msgReq.connectionId;
     msgRsp.hdr.secureChannelId = secureChannelId;
     msgRsp.hdr.requestId = rxSeqHdr.requestId;
+    msgRsp.hdr.sessionId = sessionId ? *sessionId : invalidSuid;
     msgRsp.length = rx.size();
     std::memcpy(&msgRsp.data[0], rx.begin(), rx.size());
     Sender::sendMsg(msgStore);
@@ -216,6 +217,11 @@ UaServerSecureChannel::Result UaServerSecureChannel::receive(MsgUaEncodedMessage
     if (not connectionId || *connectionId != msgReq.hdr.connectionId)
     {
         LM(UASC, LE, "Uid-%u, unexpected connectionId", secureChannelId);
+        return Result::error;
+    }
+    if (sessionId && *sessionId != msgReq.hdr.sessionId)
+    {
+        LM(UASC, LE, "Uid-%u, unexpected sessionId", secureChannelId);
         return Result::error;
     }
 

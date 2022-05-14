@@ -16,4 +16,9 @@ void UaSessionActivated::onReceive(UaSession& fsm, UaEncodedMessageHdr const& hd
     fsm.transit<UaSessionInit>();
 }
 
+void UaSessionActivated::onReceive(UaSession& fsm, UaEncodedMessageHdr const& hdr, UaServiceHandler const& handler)
+{
+    fsm.receive(hdr, handler);
+}
+
 } // namespace app::ua::service

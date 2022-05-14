@@ -61,7 +61,14 @@ UaSession::Result UaSession::receive(UaEncodedMessageHdr const& hdr, UaActivateS
     rsp.msg.responseHdr.timestamp = utils::getCurrentDateTime();
     rsp.msg.responseHdr.requestHandle = req.requestHdr.requestHandle;
 
-    secureChannelId = hdr.secureChannelId;
+    {
+        secureChannelId = hdr.secureChannelId;
+        reactor::MsgStore<MsgUaAssociateSecureChannelReq> msgStore;
+        auto& msgRsp = msgStore.getMsg();
+        msgRsp.hdr = hdr;
+        msgRsp.hdr.sessionId = sessionId;
+        Sender::sendMsg(msgStore);
+    }
 
     OpcUaSduBuffer tx;
     OpcUaBinaryCodec codec(tx);
@@ -70,6 +77,7 @@ UaSession::Result UaSession::receive(UaEncodedMessageHdr const& hdr, UaActivateS
     reactor::MsgStore<MsgUaEncodedMessageSendReq> msgStore;
     auto& msgRsp = msgStore.getMsg();
     msgRsp.hdr = hdr;
+    msgRsp.hdr.sessionId = sessionId;
     msgRsp.length = tx.size();
     std::memcpy(&msgRsp.data[0], tx.begin(), tx.size());
     Sender::sendMsg(msgStore);
@@ -92,6 +100,17 @@ UaSession::Result UaSession::receive(UaEncodedMessageHdr const& hdr, UaCloseSess
     msgRsp.length = tx.size();
     std::memcpy(&msgRsp.data[0], tx.begin(), tx.size());
     Sender::sendMsg(msgStore);
+    return Result::sucess;
+}
+
+UaSession::Result UaSession::receive(UaEncodedMessageHdr const& hdr, UaServiceHandler const& handler)
+{
+    if (not secureChannelId || *secureChannelId != hdr.secureChannelId)
+    {
+        LM(UASRV, LE, "Uid=%u, unexpected secure channel Id", sessionId);
+        return Result::fail;
+    }
+    handler();
     return Result::sucess;
 }
 

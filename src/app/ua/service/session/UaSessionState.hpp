@@ -5,6 +5,7 @@
 #include "UaCloseSessionReq.hpp"
 #include "UaActivateSessionReq.hpp"
 #include "UaServiceInterface.hpp"
+#include "UaServiceHandler.hpp"
 
 namespace app::ua::service
 {
@@ -23,6 +24,8 @@ public:
     virtual void onReceive(UaSession&, UaEncodedMessageHdr const&, UaCloseSessionReq const&) { LM(UASRV, LE, "Unexpected"); }
 
     virtual void onReceive(UaSession&, UaEncodedMessageHdr const&, UaActivateSessionReq const&) { LM(UASRV, LE, "Unexpected"); }
+
+    virtual void onReceive(UaSession&, UaEncodedMessageHdr const&, UaServiceHandler const&) { LM(UASRV, LE, "Unexpected"); }
 
     virtual void onEnter(UaSession&) {}
 

@@ -28,6 +28,7 @@ public:
     Result receive(UaEncodedMessageHdr const&, UaCreateSessionReq const&);
     Result receive(UaEncodedMessageHdr const&, UaActivateSessionReq const&);
     Result receive(UaEncodedMessageHdr const&, UaCloseSessionReq const&);
+    Result receive(UaEncodedMessageHdr const&, UaServiceHandler const&);
 
 private:
 

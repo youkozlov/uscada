@@ -15,6 +15,8 @@ public:
     void onReceive(UaSession&, UaEncodedMessageHdr const&, UaActivateSessionReq const&) final;
 
     void onReceive(UaSession&, UaEncodedMessageHdr const&, UaCloseSessionReq const&) final;
+
+    void onReceive(UaSession&, UaEncodedMessageHdr const&, UaServiceHandler const&) final;
 };
 
 } // namespace app::ua::service

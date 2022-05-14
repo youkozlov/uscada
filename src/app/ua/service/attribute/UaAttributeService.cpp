@@ -18,9 +18,9 @@ UaAttributeService::~UaAttributeService()
 {
 }
 
-void UaAttributeService::subscribe(UaService& service)
+void UaAttributeService::subscribe(UaService& service, UaSessionService& sessionService)
 {
-    service.subscribeService(DataTypeId::ReadRequest_Encoding_DefaultBinary, std::make_unique<UaRead>(*this));
+    service.subscribeService(DataTypeId::ReadRequest_Encoding_DefaultBinary, std::make_unique<UaRead>(*this, sessionService));
 }
 
 void UaAttributeService::receive(UaEncodedMessageHdr const& hdr, UaReadReq const& req)

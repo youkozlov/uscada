@@ -41,6 +41,7 @@ private:
         void send(MsgUaServiceConfigRsp const& msg) final { comp.getSender().send(msg); }
         void send(MsgUaEncodedMessageSendReq const& msg) final { comp.getSender().send(msg); }
         void send(MsgUaServiceReleaseRsp const& msg) final { comp.getSender().send(msg); }
+        void send(MsgUaAssociateSecureChannelReq const& msg) final { comp.getSender().send(msg); }
     private:
         UaServiceComponent& comp;
     };

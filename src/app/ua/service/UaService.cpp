@@ -13,7 +13,7 @@ UaService::UaService()
 {
     discoverySrv.subscribe(*this);
     sessionSrv.subscribe(*this);
-    attributeSrv.subscribe(*this);
+    attributeSrv.subscribe(*this, sessionSrv);
 }
 
 UaService::~UaService()
