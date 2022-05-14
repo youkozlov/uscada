@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ModbusInitRsp.hpp"
-#include "ModbusReleaseRsp.hpp"
-#include "ModbusConfigRsp.hpp"
-#include "ModbusClientAduRsp.hpp"
-#include "ModbusAduReq.hpp"
+#include "MsgModbusInitRsp.hpp"
+#include "MsgModbusReleaseRsp.hpp"
+#include "MsgModbusConfigRsp.hpp"
+#include "MsgModbusClientAduRsp.hpp"
+#include "MsgModbusAduReq.hpp"
 
 #include "Logger.hpp"
 
@@ -22,15 +22,15 @@ public:
 
     virtual void onStart(ModbusTestFsm&) { LM(CTRL, LE, "Unexpected call"); }
 
-    virtual void onModbusInitRspReceive(ModbusTestFsm&, ModbusInitRsp const&) { LM(CTRL, LE, "Unexpected call"); }
+    virtual void onModbusInitRspReceive(ModbusTestFsm&, MsgModbusInitRsp const&) { LM(CTRL, LE, "Unexpected call"); }
 
-    virtual void onModbusReleaseRspReceive(ModbusTestFsm&, ModbusReleaseRsp const&) { LM(CTRL, LE, "Unexpected call"); }
+    virtual void onModbusReleaseRspReceive(ModbusTestFsm&, MsgModbusReleaseRsp const&) { LM(CTRL, LE, "Unexpected call"); }
 
-    virtual void onModbusConfigRspReceive(ModbusTestFsm&, ModbusConfigRsp const&) { LM(CTRL, LE, "Unexpected call"); }
+    virtual void onModbusConfigRspReceive(ModbusTestFsm&, MsgModbusConfigRsp const&) { LM(CTRL, LE, "Unexpected call"); }
 
-    virtual void onModbusClientAduRspReceive(ModbusTestFsm&, ModbusClientAduRsp const&) { LM(CTRL, LE, "Unexpected call"); }
+    virtual void onModbusClientAduRspReceive(ModbusTestFsm&, MsgModbusClientAduRsp const&) { LM(CTRL, LE, "Unexpected call"); }
 
-    virtual void onModbusAduReqReceive(ModbusTestFsm&, ModbusAduReq const&) { LM(CTRL, LE, "Unexpected call"); }
+    virtual void onModbusAduReqReceive(ModbusTestFsm&, MsgModbusAduReq const&) { LM(CTRL, LE, "Unexpected call"); }
 
     virtual void onStop(ModbusTestFsm&) { LM(CTRL, LE, "Unexpected call"); }
 

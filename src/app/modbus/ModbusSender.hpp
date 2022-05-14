@@ -2,11 +2,11 @@
 
 #include "SenderBase.hpp"
 
-#include "ModbusInitRsp.hpp"
-#include "ModbusConfigRsp.hpp"
-#include "ModbusAduReq.hpp"
-#include "ModbusClientAduRsp.hpp"
-#include "ModbusReleaseRsp.hpp"
+#include "MsgModbusInitRsp.hpp"
+#include "MsgModbusConfigRsp.hpp"
+#include "MsgModbusAduReq.hpp"
+#include "MsgModbusClientAduRsp.hpp"
+#include "MsgModbusReleaseRsp.hpp"
 
 namespace app::modbus
 {
@@ -16,11 +16,11 @@ class Sender : public reactor::SenderBase<Sender>
 public:
     virtual ~Sender() {}
 
-    virtual void send(ModbusInitRsp const&) = 0;
-    virtual void send(ModbusConfigRsp const&) = 0;
-    virtual void send(ModbusAduReq const&) = 0;
-    virtual void send(ModbusClientAduRsp const&) = 0;
-    virtual void send(ModbusReleaseRsp const&) = 0;
+    virtual void send(MsgModbusInitRsp const&) = 0;
+    virtual void send(MsgModbusConfigRsp const&) = 0;
+    virtual void send(MsgModbusAduReq const&) = 0;
+    virtual void send(MsgModbusClientAduRsp const&) = 0;
+    virtual void send(MsgModbusReleaseRsp const&) = 0;
 };
 
 } // namespace app::modbus

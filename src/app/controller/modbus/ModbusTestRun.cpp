@@ -13,7 +13,7 @@ void ModbusTestRun::onEnter(ModbusTestFsm& fsm)
     fsm.getEntity().sendModbusClientAduReq();
 }
 
-void ModbusTestRun::onModbusClientAduRspReceive(ModbusTestFsm& fsm, ModbusClientAduRsp const& rsp)
+void ModbusTestRun::onModbusClientAduRspReceive(ModbusTestFsm& fsm, MsgModbusClientAduRsp const& rsp)
 {
     switch (fsm.getEntity().process(rsp))
     {
@@ -29,7 +29,7 @@ void ModbusTestRun::onModbusClientAduRspReceive(ModbusTestFsm& fsm, ModbusClient
     }
 }
 
-void ModbusTestRun::onModbusAduReqReceive(ModbusTestFsm& fsm, ModbusAduReq const& rsp)
+void ModbusTestRun::onModbusAduReqReceive(ModbusTestFsm& fsm, MsgModbusAduReq const& rsp)
 {
     fsm.getEntity().process(rsp);
 }

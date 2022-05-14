@@ -26,6 +26,39 @@ enum MsgIds : reactor::MsgId
     , modbusClientAduRsp
     , modbusAduReq
     , modbusAduRsp
+
+    , uaTransportInitReq
+    , uaTransportInitRsp
+    , uaTransportReleaseReq
+    , uaTransportReleaseRsp
+    , uaTransportConfigReq
+    , uaTransportConfigRsp
+    , uaSecuredMessageSendReq
+    , uaSecuredMessageReceiveInd
+    , uaConnectionReleaseReq
+    , uaConnectionReleaseInd
+
+    , uaSecureChannelInitReq
+    , uaSecureChannelInitRsp
+    , uaSecureChannelReleaseReq
+    , uaSecureChannelReleaseRsp
+    , uaSecureChannelConfigReq
+    , uaSecureChannelConfigRsp
+    , uaOpenSecureChannelReq
+    , uaOpenSecureChannelRsp
+    , uaCloseSecureChannelReq
+    , uaCloseSecureChannelRsp
+    , uaAssociateSecureChannelReq
+  
+    , uaServiceInitReq
+    , uaServiceInitRsp
+    , uaServiceReleaseReq
+    , uaServiceReleaseRsp
+    , uaServiceConfigReq
+    , uaServiceConfigRsp
+    , uaEncodedMessageSendReq
+    , uaEncodedMessageReceiveInd
+
 };
 
 } // namespace app

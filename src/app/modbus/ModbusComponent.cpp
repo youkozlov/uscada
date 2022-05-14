@@ -1,12 +1,13 @@
 #include "ModbusComponent.hpp"
 
-#include "ModbusInitReq.hpp"
-#include "ModbusReleaseReq.hpp"
-#include "ModbusConfigReq.hpp"
+#include "MsgModbusInitReq.hpp"
+#include "MsgModbusReleaseReq.hpp"
+#include "MsgModbusConfigReq.hpp"
+#include "MsgModbusClientAduReq.hpp"
+#include "MsgModbusAduRsp.hpp"
+
 #include "ModbusClient.hpp"
 #include "ModbusServer.hpp"
-#include "ModbusClientAduReq.hpp"
-#include "ModbusAduRsp.hpp"
 #include "Modbus.hpp"
 
 #include "Logger.hpp"
@@ -26,36 +27,36 @@ void ModbusComponent::registerComponent()
 {
     getReactor().registerHandlers
     ({
-          { ModbusInitReq::msgId(), [this](auto const& msg){ receive(static_cast<ModbusInitReq const&>(msg)); }}
-        , { ModbusReleaseReq::msgId(), [this](auto const& msg){ receive(static_cast<ModbusReleaseReq const&>(msg)); }}
-        , { ModbusConfigReq::msgId(), [this](auto const& msg){ receive(static_cast<ModbusConfigReq const&>(msg)); } }
-        , { ModbusClientAduReq::msgId(), [this](auto const& msg){ receive(static_cast<ModbusClientAduReq const&>(msg)); }}
-        , { ModbusAduRsp::msgId(), [this](auto const& msg){ receive(static_cast<ModbusAduRsp const&>(msg)); }}
+          { MsgModbusInitReq::msgId(), [this](auto const& msg){ receive(static_cast<MsgModbusInitReq const&>(msg)); }}
+        , { MsgModbusReleaseReq::msgId(), [this](auto const& msg){ receive(static_cast<MsgModbusReleaseReq const&>(msg)); }}
+        , { MsgModbusConfigReq::msgId(), [this](auto const& msg){ receive(static_cast<MsgModbusConfigReq const&>(msg)); } }
+        , { MsgModbusClientAduReq::msgId(), [this](auto const& msg){ receive(static_cast<MsgModbusClientAduReq const&>(msg)); }}
+        , { MsgModbusAduRsp::msgId(), [this](auto const& msg){ receive(static_cast<MsgModbusAduRsp const&>(msg)); }}
     });
 }
 
-void ModbusComponent::receive(ModbusInitReq const& req)
+void ModbusComponent::receive(MsgModbusInitReq const& req)
 {
     LM(MODBUS, LD, "ModbusInitReq received");
 
     Modbus::Init init{req.maxNumServers, req.maxNumClients};
     modbus = std::make_unique<Modbus>(init);
 
-    reactor::MsgStore<ModbusInitRsp> msgStore;
+    reactor::MsgStore<MsgModbusInitRsp> msgStore;
     Sender::sendMsg(msgStore);
 }
 
-void ModbusComponent::receive(ModbusReleaseReq const&)
+void ModbusComponent::receive(MsgModbusReleaseReq const&)
 {
     LM(MODBUS, LD, "ModbusReleaseReq received");
 
     modbus.reset();
 
-    reactor::MsgStore<ModbusReleaseRsp> msgStore;
+    reactor::MsgStore<MsgModbusReleaseRsp> msgStore;
     Sender::sendMsg(msgStore);
 }
 
-void ModbusComponent::receive(ModbusConfigReq const& req)
+void ModbusComponent::receive(MsgModbusConfigReq const& req)
 {
     LM(MODBUS, LD, "ModbusConfigReq received");
 
@@ -63,7 +64,7 @@ void ModbusComponent::receive(ModbusConfigReq const& req)
         modbus->receive(req);
 }
 
-void ModbusComponent::receive(ModbusClientAduReq const& req)
+void ModbusComponent::receive(MsgModbusClientAduReq const& req)
 {
     LM(MODBUS, LD, "ModbusClientAduReq received");
 
@@ -71,7 +72,7 @@ void ModbusComponent::receive(ModbusClientAduReq const& req)
         modbus->receive(req);
 }
 
-void ModbusComponent::receive(ModbusAduRsp const& rsp)
+void ModbusComponent::receive(MsgModbusAduRsp const& rsp)
 {
     LM(MODBUS, LD, "ModbusAduRsp received");
     if (modbus)

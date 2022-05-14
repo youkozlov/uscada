@@ -9,11 +9,11 @@
 
 namespace app
 {
-struct ModbusInitReq;
-struct ModbusReleaseReq;
-struct ModbusConfigReq;
-struct ModbusClientAduReq;
-struct ModbusAduRsp;
+struct MsgModbusInitReq;
+struct MsgModbusReleaseReq;
+struct MsgModbusConfigReq;
+struct MsgModbusClientAduReq;
+struct MsgModbusAduRsp;
 }
 
 namespace app::modbus
@@ -28,11 +28,11 @@ class ModbusComponent : public reactor::ComponentBase<CompIds::compModbus>
 public:
     explicit ModbusComponent(reactor::SenderInterface&, reactor::ReactorInterface&);
 
-    void receive(ModbusInitReq const&);
-    void receive(ModbusConfigReq const&);
-    void receive(ModbusClientAduReq const&);
-    void receive(ModbusAduRsp const&);
-    void receive(ModbusReleaseReq const&);
+    void receive(MsgModbusInitReq const&);
+    void receive(MsgModbusConfigReq const&);
+    void receive(MsgModbusClientAduReq const&);
+    void receive(MsgModbusAduRsp const&);
+    void receive(MsgModbusReleaseReq const&);
 
 private:
     void registerComponent();
@@ -43,11 +43,11 @@ private:
         ModbusSender(ModbusComponent& comp_)
             : comp(comp_)
         {}
-        void send(ModbusInitRsp const& msg) final { comp.getSender().send(msg); }
-        void send(ModbusConfigRsp const& msg) final { comp.getSender().send(msg); }
-        void send(ModbusAduReq const& msg) final { comp.getSender().send(msg); }
-        void send(ModbusClientAduRsp const& msg) final { comp.getSender().send(msg); }
-        void send(ModbusReleaseRsp const& msg) final { comp.getSender().send(msg); }
+        void send(MsgModbusInitRsp const& msg) final { comp.getSender().send(msg); }
+        void send(MsgModbusConfigRsp const& msg) final { comp.getSender().send(msg); }
+        void send(MsgModbusAduReq const& msg) final { comp.getSender().send(msg); }
+        void send(MsgModbusClientAduRsp const& msg) final { comp.getSender().send(msg); }
+        void send(MsgModbusReleaseRsp const& msg) final { comp.getSender().send(msg); }
     private:
         ModbusComponent& comp;
     };

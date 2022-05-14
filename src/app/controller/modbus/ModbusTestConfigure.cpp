@@ -11,7 +11,7 @@ void ModbusTestConfigure::onEnter(ModbusTestFsm& fsm)
     fsm.getEntity().sendModbusConfigReq();
 }
 
-void ModbusTestConfigure::onModbusConfigRspReceive(ModbusTestFsm& fsm, ModbusConfigRsp const& rsp)
+void ModbusTestConfigure::onModbusConfigRspReceive(ModbusTestFsm& fsm, MsgModbusConfigRsp const& rsp)
 {
     fsm.getEntity().process(rsp);
     fsm.transit<ModbusTestRun>();

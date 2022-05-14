@@ -25,19 +25,6 @@ add_library(common_ua
     protocols/secure/OpcUaClientSecureChannelReceiveOpenRsp.cpp
     protocols/secure/OpcUaClientSecureChannelConnecting.cpp
     protocols/secure/OpcUaClientSecureChannelInit.cpp
-    services/OpcUaServer.cpp
-    services/OpcUaClient.cpp
-    services/UaGetEndpoints.cpp
-    services/session/UaSession.cpp
-    services/session/UaSessionInit.cpp
-    services/session/UaSessionCreated.cpp
-    services/session/UaSessionActivated.cpp
-    services/session/UaCreateSession.cpp
-    services/session/UaCloseSession.cpp
-    services/session/UaActivateSession.cpp
-    services/session/UaSessionController.cpp
-    services/attribute/UaRead.cpp
-    services/attribute/UaAttributeController.cpp
 )
 
 target_include_directories(common_ua PUBLIC
@@ -48,10 +35,6 @@ target_include_directories(common_ua PUBLIC
     protocols/connection
     protocols/secure
     protocols/mock
-    services
-    services/common
-    services/session
-    services/attribute
 )
 
 target_link_libraries(common_ua

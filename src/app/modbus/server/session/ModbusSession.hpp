@@ -10,8 +10,8 @@
 #include "PduBuffer.hpp"
 #include "ModbusDefs.hpp"
 #include "ModbusSessionFsm.hpp"
-#include "ModbusAduRsp.hpp"
 #include "AduRequest.hpp"
+#include "MsgModbusAduRsp.hpp"
 
 namespace app::modbus
 {
@@ -42,7 +42,7 @@ public:
 
     void start();
 
-    void receive(ModbusAduRsp const&);
+    void receive(MsgModbusAduRsp const&);
 
 
 
@@ -54,7 +54,7 @@ public:
 
     Result receive();
 
-    Result send(ModbusAduRsp const&);
+    Result send(MsgModbusAduRsp const&);
 
     void releaseSession();
 

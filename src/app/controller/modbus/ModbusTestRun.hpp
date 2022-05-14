@@ -14,9 +14,9 @@ public:
 
     void onEnter(ModbusTestFsm&) final;
 
-    void onModbusClientAduRspReceive(ModbusTestFsm&, ModbusClientAduRsp const&) final;
+    void onModbusClientAduRspReceive(ModbusTestFsm&, MsgModbusClientAduRsp const&) final;
 
-    void onModbusAduReqReceive(ModbusTestFsm&, ModbusAduReq const&) final;
+    void onModbusAduReqReceive(ModbusTestFsm&, MsgModbusAduReq const&) final;
 
     void onStop(ModbusTestFsm&) final;
 

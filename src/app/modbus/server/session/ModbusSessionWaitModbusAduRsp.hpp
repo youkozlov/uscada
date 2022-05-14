@@ -16,7 +16,7 @@ public:
 
     void onDataReceived(ModbusSessionFsm&) final;
 
-    void onModbusAduRspReceive(ModbusSessionFsm&, ModbusAduRsp const&) final;
+    void onModbusAduRspReceive(ModbusSessionFsm&, MsgModbusAduRsp const&) final;
 
     void onTimer(ModbusSessionFsm&) final;
 

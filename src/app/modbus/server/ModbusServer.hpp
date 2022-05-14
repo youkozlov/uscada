@@ -10,11 +10,7 @@
 #include "ModbusSessionPool.hpp"
 #include "EntityId.hpp"
 #include "LinkAddr.hpp"
-
-namespace app
-{
-struct ModbusAduRsp;
-} // namespace app
+#include "MsgModbusAduRsp.hpp"
 
 namespace app::modbus
 {
@@ -37,7 +33,7 @@ public:
 
     void stop();
 
-    void receive(ModbusAduRsp const&);
+    void receive(MsgModbusAduRsp const&);
 
 private:
 

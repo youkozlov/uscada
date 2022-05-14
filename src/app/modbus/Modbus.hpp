@@ -3,9 +3,9 @@
 #include <vector>
 #include <memory>
 
-#include "ModbusConfigReq.hpp"
-#include "ModbusClientAduReq.hpp"
-#include "ModbusAduRsp.hpp"
+#include "MsgModbusConfigReq.hpp"
+#include "MsgModbusClientAduReq.hpp"
+#include "MsgModbusAduRsp.hpp"
 
 #include "ReactorInterface.hpp"
 #include "ModbusServer.hpp"
@@ -27,9 +27,9 @@ public:
 
     ~Modbus();
 
-    void receive(ModbusConfigReq const&);
-    void receive(ModbusClientAduReq const&);
-    void receive(ModbusAduRsp const&);
+    void receive(MsgModbusConfigReq const&);
+    void receive(MsgModbusClientAduReq const&);
+    void receive(MsgModbusAduRsp const&);
 
 private:
     std::vector<std::unique_ptr<ModbusServer>> servers;

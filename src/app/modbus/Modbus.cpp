@@ -17,7 +17,7 @@ Modbus::~Modbus()
 {
 }
 
-void Modbus::receive(ModbusConfigReq const& req)
+void Modbus::receive(MsgModbusConfigReq const& req)
 {
     for (unsigned i = 0; i < req.numItems; ++i)
     {
@@ -51,8 +51,8 @@ void Modbus::receive(ModbusConfigReq const& req)
         }
     }
 
-    reactor::MsgStore<ModbusConfigRsp> msgStore;
-    ModbusConfigRsp& rsp = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusConfigRsp> msgStore;
+    MsgModbusConfigRsp& rsp = msgStore.getMsg();
     rsp.numItems = req.numItems;
     for (unsigned i = 0; i < req.numItems; ++i)
     {
@@ -62,7 +62,7 @@ void Modbus::receive(ModbusConfigReq const& req)
     Sender::sendMsg(msgStore);
 }
 
-void Modbus::receive(ModbusClientAduReq const& req)
+void Modbus::receive(MsgModbusClientAduReq const& req)
 {
     for (unsigned i = 0; i < req.numItems; ++i)
     {
@@ -71,8 +71,8 @@ void Modbus::receive(ModbusClientAduReq const& req)
         if (item.clientId >= clients.size() || not clients[item.clientId])
         {
             LM(MODBUS, LE, "Invalid clientId, %u", item.clientId);
-            reactor::MsgStore<ModbusClientAduRsp> msgStore;
-            ModbusClientAduRsp& rsp = msgStore.getMsg();
+            reactor::MsgStore<MsgModbusClientAduRsp> msgStore;
+            MsgModbusClientAduRsp& rsp = msgStore.getMsg();
             rsp.clientId = item.clientId;
             rsp.transactId = item.transactId;
             rsp.error = ModbusError::noerror;
@@ -85,7 +85,7 @@ void Modbus::receive(ModbusClientAduReq const& req)
     }
 }
 
-void Modbus::receive(ModbusAduRsp const& msg)
+void Modbus::receive(MsgModbusAduRsp const& msg)
 {
     if (msg.serverId >= servers.size() || not servers[msg.serverId])
     {

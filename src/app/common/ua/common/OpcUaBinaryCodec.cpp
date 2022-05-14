@@ -1131,6 +1131,38 @@ OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaOpenSecureChannelReq const& 
     return s;
 }
 
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaCloseSecureChannelReq& val)
+{
+    LM(UA, LD, "UaCloseSecureChannelReq>>");
+
+    s   >> val.requestHdr;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaCloseSecureChannelReq const& val)
+{
+    LM(UA, LD, "UaCloseSecureChannelReq<<");
+
+    s   << val.requestHdr;
+    return s;
+}
+
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaCloseSecureChannelRsp& val)
+{
+    LM(UA, LD, "UaCloseSecureChannelRsp>>");
+
+    s   >> val.responseHdr;
+    return s;
+}
+
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec& s, UaCloseSecureChannelRsp const& val)
+{
+    LM(UA, LD, "UaCloseSecureChannelRsp<<");
+
+    s   << val.responseHdr;
+    return s;
+}
+
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec& s, UaChannelSecurityToken& val)
 {
     LM(UA, LD, "UaChannelSecurityToken>>");

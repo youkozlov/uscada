@@ -4,8 +4,8 @@
 
 #include "Deployer.hpp"
 #include "ReactorManager.hpp"
-#include "ControllerStartReq.hpp"
-#include "ControllerStopReq.hpp"
+#include "MsgControllerStartReq.hpp"
+#include "MsgControllerStopReq.hpp"
 
 int main(int, char**)
 {
@@ -19,13 +19,13 @@ int main(int, char**)
 
         reactorManager.start();
 
-        app::ControllerStartReq start;
+        app::MsgControllerStartReq start;
         reactorManager.send(start);
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(20s);
 
-        app::ControllerStopReq stop;
+        app::MsgControllerStopReq stop;
         reactorManager.send(stop);
 
         using namespace std::chrono_literals;

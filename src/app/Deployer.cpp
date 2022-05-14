@@ -7,6 +7,9 @@
 #include "Reactor.hpp"
 #include "ConnectorSimple.hpp"
 #include "ModbusComponent.hpp"
+#include "UaTransportComponent.hpp"
+#include "UaSecureChannelComponent.hpp"
+#include "UaServiceComponent.hpp"
 #include "ControllerComponent.hpp"
 #include "ReactorManager.hpp"
 #include "Logger.hpp"
@@ -28,9 +31,10 @@ std::vector<reactor::Container> getDepl(DeploymentType depType)
     case DeploymentType::cpu3:
         return
             {
-                  {{CompIds::compConnector}, 1,  0b00000100}
-                , {{CompIds::compModbus}, 1,     0b00010000}
-                , {{CompIds::compController}, 1, 0b01000000}
+                  {{CompIds::compConnector},        1,  0b00000100}
+                , {{CompIds::compModbus},           1,  0b00010000}
+                , {{CompIds::compUaTransport, CompIds::compUaSecChannel, CompIds::compUaService},      1,  0b01000000}
+                , {{CompIds::compController},       1,  0b10000000}
             };
     default:
         LM(GEN, LE, "Unexpected");
@@ -65,6 +69,24 @@ void Deployer::apply(reactor::ReactorManager& manager, DeploymentType depType)
             case CompIds::compModbus:
             {
                 std::unique_ptr<reactor::ComponentInterface> comp{new modbus::ModbusComponent(manager, *reactor)};
+                manager.addComponent(std::move(comp));
+            }
+            break;
+            case CompIds::compUaTransport:
+            {
+                std::unique_ptr<reactor::ComponentInterface> comp{new ua::transport::UaTransportComponent(manager, *reactor)};
+                manager.addComponent(std::move(comp));
+            }
+            break;
+            case CompIds::compUaSecChannel:
+            {
+                std::unique_ptr<reactor::ComponentInterface> comp{new ua::securechannel::UaSecureChannelComponent(manager, *reactor)};
+                manager.addComponent(std::move(comp));
+            }
+            break;
+            case CompIds::compUaService:
+            {
+                std::unique_ptr<reactor::ComponentInterface> comp{new ua::service::UaServiceComponent(manager, *reactor)};
                 manager.addComponent(std::move(comp));
             }
             break;

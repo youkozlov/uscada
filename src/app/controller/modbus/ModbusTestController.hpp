@@ -10,13 +10,13 @@
 
 namespace app
 {
-struct ControllerStartReq;
-struct ControllerStopReq;
-struct ModbusInitRsp;
-struct ModbusReleaseRsp;
-struct ModbusConfigRsp;
-struct ModbusClientAduRsp;
-struct ModbusAduReq;
+struct MsgControllerStartReq;
+struct MsgControllerStopReq;
+struct MsgModbusInitRsp;
+struct MsgModbusReleaseRsp;
+struct MsgModbusConfigRsp;
+struct MsgModbusClientAduRsp;
+struct MsgModbusAduReq;
 }
 
 namespace app::controller
@@ -34,13 +34,13 @@ class ModbusTestController
 public:
     explicit ModbusTestController();
 
-    void receive(ControllerStartReq const&);
-    void receive(ControllerStopReq const&);
-    void receive(ModbusInitRsp const&);
-    void receive(ModbusReleaseRsp const&);
-    void receive(ModbusConfigRsp const&);
-    void receive(ModbusClientAduRsp const&);
-    void receive(ModbusAduReq const&);
+    void receive(MsgControllerStartReq const&);
+    void receive(MsgControllerStopReq const&);
+    void receive(MsgModbusInitRsp const&);
+    void receive(MsgModbusReleaseRsp const&);
+    void receive(MsgModbusConfigRsp const&);
+    void receive(MsgModbusClientAduRsp const&);
+    void receive(MsgModbusAduReq const&);
 
     void resetTestCaseCounter();
     void startTimer(long);
@@ -48,13 +48,13 @@ public:
     void sendModbusInitReq();
     void sendModbusConfigReq();
     void sendModbusReleaseReq();
-    void process(ModbusInitRsp const&);
-    void process(ModbusReleaseRsp const&);
-    void process(ModbusConfigRsp const&);
+    void process(MsgModbusInitRsp const&);
+    void process(MsgModbusReleaseRsp const&);
+    void process(MsgModbusConfigRsp const&);
 
     void sendModbusClientAduReq();
-    Result process(ModbusClientAduRsp const&);
-    Result process(ModbusAduReq const&);
+    Result process(MsgModbusClientAduRsp const&);
+    Result process(MsgModbusAduReq const&);
 
     static constexpr long runDelay = 10000;
 

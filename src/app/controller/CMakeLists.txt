@@ -5,7 +5,9 @@ add_library(controller
     modbus/ModbusTestConfigure.cpp
     modbus/ModbusTestSetup.cpp
     modbus/ModbusTestRun.cpp
-    ua/OpcUaController.cpp
+    ua/UaControllerInited.cpp
+    ua/UaControllerInit.cpp
+    ua/UaController.cpp
 
     ControllerComponent.cpp
 )

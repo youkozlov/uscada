@@ -2,9 +2,9 @@
 #include "AcceptorInterface.hpp"
 #include "TimerInterface.hpp"
 #include "ModbusSession.hpp"
-#include "ModbusAduRsp.hpp"
 #include "Logger.hpp"
 #include "ModbusReactor.hpp"
+#include "MsgModbusAduRsp.hpp"
 
 namespace app::modbus
 {
@@ -35,7 +35,7 @@ void ModbusServer::stop()
     acceptor.reset();
 }
 
-void ModbusServer::receive(ModbusAduRsp const& rsp)
+void ModbusServer::receive(MsgModbusAduRsp const& rsp)
 {
     LM(MODBUS, LD, "Server-%u, ModbusAduRsp received", id);
 

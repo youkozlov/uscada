@@ -40,7 +40,7 @@ void ModbusSession::start()
     fsm.getState().onStart(fsm);
 }
 
-void ModbusSession::receive(ModbusAduRsp const& rsp)
+void ModbusSession::receive(MsgModbusAduRsp const& rsp)
 {
     fsm.getState().onModbusAduRspReceive(fsm, rsp);
 }
@@ -136,8 +136,8 @@ Result ModbusSession::receive()
         return Result::done;
     }
 
-    reactor::MsgStore<ModbusAduReq> msgStore;
-    ModbusAduReq& req = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusAduReq> msgStore;
+    MsgModbusAduReq& req = msgStore.getMsg();
 
     req.serverId = serverId;
     req.sessionId = uid;
@@ -153,7 +153,7 @@ Result ModbusSession::receive()
     return Result::done;
 }
 
-Result ModbusSession::send(ModbusAduRsp const& rsp)
+Result ModbusSession::send(MsgModbusAduRsp const& rsp)
 {
     if (rsp.transactId != storedAdu.transactId)
     {

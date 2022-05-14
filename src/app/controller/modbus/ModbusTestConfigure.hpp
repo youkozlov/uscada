@@ -14,7 +14,7 @@ public:
 
     void onEnter(ModbusTestFsm&) final;
 
-    void onModbusConfigRspReceive(ModbusTestFsm&, ModbusConfigRsp const&) final;
+    void onModbusConfigRspReceive(ModbusTestFsm&, MsgModbusConfigRsp const&) final;
 
 private:
     /* data */

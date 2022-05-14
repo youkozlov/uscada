@@ -172,8 +172,8 @@ Status ModbusClient::receive()
         return Status::done;
     }
 
-    reactor::MsgStore<ModbusClientAduRsp> msgStore;
-    ModbusClientAduRsp& rsp = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusClientAduRsp> msgStore;
+    MsgModbusClientAduRsp& rsp = msgStore.getMsg();
     rsp.clientId = aduReq.clientId;
     rsp.transactId = aduRsp.transactId;
     rsp.error = ModbusError::noerror;
@@ -197,8 +197,8 @@ void ModbusClient::receivePostaction()
 
 void ModbusClient::provideRspError(AduRequest const& adu)
 {
-    reactor::MsgStore<ModbusClientAduRsp> msgStore;
-    ModbusClientAduRsp& rsp = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusClientAduRsp> msgStore;
+    MsgModbusClientAduRsp& rsp = msgStore.getMsg();
     rsp.clientId = adu.clientId;
     rsp.transactId = adu.transactId;
     rsp.error = ModbusError::noerror;
@@ -219,8 +219,8 @@ void ModbusClient::provideRspTimeout()
 
 void ModbusClient::provideRspModbusError(AduRequest const& adu, ModbusError error)
 {
-    reactor::MsgStore<ModbusClientAduRsp> msgStore;
-    ModbusClientAduRsp& rsp = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusClientAduRsp> msgStore;
+    MsgModbusClientAduRsp& rsp = msgStore.getMsg();
     rsp.clientId = adu.clientId;
     rsp.transactId = adu.transactId;
     rsp.error = error;

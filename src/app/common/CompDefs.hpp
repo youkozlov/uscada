@@ -11,6 +11,9 @@ enum CompIds : reactor::ComponentId
     , compDetector
     , compController
     , compModbus
+    , compUaTransport
+    , compUaSecChannel
+    , compUaService
 };
 
 } // namespace app

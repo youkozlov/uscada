@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-#include "ConnectorInitReq.hpp"
-#include "ConnectorInitRsp.hpp"
+#include "MsgConnectorInitRsp.hpp"
 
 namespace app
 {
@@ -17,14 +16,14 @@ ConnectorSimple::ConnectorSimple(reactor::SenderInterface& sender, reactor::Reac
 void ConnectorSimple::registerComponent()
 {
     getReactor().registerHandler(
-          ConnectorInitReq::msgId()
-        , [this](reactor::MsgInterface const& msg){ receive(static_cast<ConnectorInitReq const&>(msg)); }
+          MsgConnectorInitReq::msgId()
+        , [this](reactor::MsgInterface const& msg){ receive(static_cast<MsgConnectorInitReq const&>(msg)); }
     );
 }
 
-void ConnectorSimple::receive(ConnectorInitReq const&)
+void ConnectorSimple::receive(MsgConnectorInitReq const&)
 {
-    ConnectorInitRsp rsp;
+    MsgConnectorInitRsp rsp;
     getSender().send(rsp);
 }
 

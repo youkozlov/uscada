@@ -1,0 +1,3 @@
+add_subdirectory(service)
+add_subdirectory(securechannel)
+add_subdirectory(transport)

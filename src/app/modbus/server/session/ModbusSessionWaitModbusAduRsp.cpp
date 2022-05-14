@@ -29,7 +29,7 @@ void ModbusSessionWaitModbusAduRsp::onDataReceived(ModbusSessionFsm& fsm)
     }
 }
 
-void ModbusSessionWaitModbusAduRsp::onModbusAduRspReceive(ModbusSessionFsm& fsm, ModbusAduRsp const& rsp)
+void ModbusSessionWaitModbusAduRsp::onModbusAduRspReceive(ModbusSessionFsm& fsm, MsgModbusAduRsp const& rsp)
 {
     switch (fsm.getEntity().send(rsp))
     {

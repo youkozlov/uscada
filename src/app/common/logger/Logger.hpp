@@ -13,6 +13,9 @@ enum class LogTask
     GEN = 0,
     CTRL,
     MODBUS,
+    UATL,
+    UASC,
+    UASRV,
     UA,
 
     NUM

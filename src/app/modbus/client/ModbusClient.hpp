@@ -12,7 +12,7 @@
 #include "ModbusDefs.hpp"
 #include "PduBuffer.hpp"
 #include "ModbusAduStorage.hpp"
-#include "ModbusClientAduReq.hpp"
+#include "MsgModbusClientAduReq.hpp"
 
 namespace app::modbus
 {

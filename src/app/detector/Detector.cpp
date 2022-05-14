@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "DetectorInitReq.hpp"
-#include "DetectorInitRsp.hpp"
+#include "MsgDetectorInitReq.hpp"
+#include "MsgDetectorInitRsp.hpp"
 
 namespace app
 {
@@ -17,14 +17,14 @@ Detector::Detector(reactor::SenderInterface& sender, reactor::ReactorInterface& 
 void Detector::registerComponent()
 {
     getReactor().registerHandler(
-          DetectorInitReq::msgId()
-        , [this](reactor::MsgInterface const& msg){ receive(static_cast<DetectorInitReq const&>(msg)); }
+          MsgDetectorInitReq::msgId()
+        , [this](reactor::MsgInterface const& msg){ receive(static_cast<MsgDetectorInitReq const&>(msg)); }
     );
 }
 
-void Detector::receive(DetectorInitReq const&)
+void Detector::receive(MsgDetectorInitReq const&)
 {
-    DetectorInitRsp rsp;
+    MsgDetectorInitRsp rsp;
     getSender().send(rsp);
 }
 

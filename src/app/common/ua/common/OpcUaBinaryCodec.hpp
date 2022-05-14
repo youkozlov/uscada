@@ -40,6 +40,8 @@
 #include "UaChannelSecurityToken.hpp"
 #include "UaOpenSecureChannelReq.hpp"
 #include "UaOpenSecureChannelRsp.hpp"
+#include "UaCloseSecureChannelReq.hpp"
+#include "UaCloseSecureChannelRsp.hpp"
 #include "UaGetEndpointsReq.hpp"
 #include "UaGetEndpointsRsp.hpp"
 #include "UaEndpointDescription.hpp"
@@ -147,6 +149,10 @@ OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaRequestHeader&);
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaRequestHeader const&);
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaOpenSecureChannelReq&);
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaOpenSecureChannelReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaCloseSecureChannelReq&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaCloseSecureChannelReq const&);
+OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaCloseSecureChannelRsp&);
+OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaCloseSecureChannelRsp const&);
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaChannelSecurityToken&);
 OpcUaBinaryCodec& operator<<(OpcUaBinaryCodec&, UaChannelSecurityToken const&);
 OpcUaBinaryCodec& operator>>(OpcUaBinaryCodec&, UaResponseHeader&);

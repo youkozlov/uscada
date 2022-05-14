@@ -21,13 +21,13 @@ void ModbusTestInit::onStop(ModbusTestFsm& fsm)
     fsm.getEntity().sendModbusReleaseReq();
 }
 
-void ModbusTestInit::onModbusInitRspReceive(ModbusTestFsm& fsm, ModbusInitRsp const& rsp)
+void ModbusTestInit::onModbusInitRspReceive(ModbusTestFsm& fsm, MsgModbusInitRsp const& rsp)
 {
     fsm.getEntity().process(rsp);
     fsm.transit<ModbusTestConfigure>();
 }
 
-void ModbusTestInit::onModbusReleaseRspReceive(ModbusTestFsm& fsm, ModbusReleaseRsp const& rsp)
+void ModbusTestInit::onModbusReleaseRspReceive(ModbusTestFsm& fsm, MsgModbusReleaseRsp const& rsp)
 {
     fsm.getEntity().process(rsp);
 }

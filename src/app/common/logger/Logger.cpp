@@ -41,6 +41,12 @@ char const* toString(LogTask task)
         return "MODBUS";
     case LogTask::UA:
         return "UA";
+    case LogTask::UATL:
+        return "UATL";
+    case LogTask::UASC:
+        return "UASC";
+    case LogTask::UASRV:
+        return "UASRV";
     case LogTask::NUM:
         return "Invalid";
     }

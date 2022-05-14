@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ModbusAduRsp.hpp"
 #include "Logger.hpp"
+#include "MsgModbusAduRsp.hpp"
 
 namespace app::modbus
 {
@@ -19,7 +19,7 @@ public:
 
     virtual void onDataReceived(ModbusSessionFsm&) { LM(MODBUS, LE, "Unexpected call"); }
 
-    virtual void onModbusAduRspReceive(ModbusSessionFsm&, ModbusAduRsp const&) { LM(MODBUS, LE, "Unexpected call"); }
+    virtual void onModbusAduRspReceive(ModbusSessionFsm&, MsgModbusAduRsp const&) { LM(MODBUS, LE, "Unexpected call"); }
 
     virtual void onTimer(ModbusSessionFsm&) { LM(MODBUS, LE, "Unexpected call"); }
 

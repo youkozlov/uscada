@@ -2,16 +2,16 @@
 
 #include "ControllerSender.hpp"
 #include "ControllerReactor.hpp"
-#include "ModbusInitReq.hpp"
-#include "ModbusInitRsp.hpp"
-#include "ModbusReleaseReq.hpp"
-#include "ModbusReleaseRsp.hpp"
-#include "ModbusConfigReq.hpp"
-#include "ModbusConfigRsp.hpp"
-#include "ModbusClientAduReq.hpp"
-#include "ModbusClientAduRsp.hpp"
-#include "ModbusAduReq.hpp"
-#include "ModbusAduRsp.hpp"
+#include "MsgModbusInitReq.hpp"
+#include "MsgModbusInitRsp.hpp"
+#include "MsgModbusReleaseReq.hpp"
+#include "MsgModbusReleaseRsp.hpp"
+#include "MsgModbusConfigReq.hpp"
+#include "MsgModbusConfigRsp.hpp"
+#include "MsgModbusClientAduReq.hpp"
+#include "MsgModbusClientAduRsp.hpp"
+#include "MsgModbusAduReq.hpp"
+#include "MsgModbusAduRsp.hpp"
 
 #include "Logger.hpp"
 
@@ -110,37 +110,37 @@ ModbusTestController::ModbusTestController()
     };
 }
 
-void ModbusTestController::receive(ControllerStartReq const&)
+void ModbusTestController::receive(MsgControllerStartReq const&)
 {
     fsm.getState().onStart(fsm);
 }
 
-void ModbusTestController::receive(ControllerStopReq const&)
+void ModbusTestController::receive(MsgControllerStopReq const&)
 {
     fsm.getState().onStop(fsm);
 }
 
-void ModbusTestController::receive(ModbusInitRsp const& rsp)
+void ModbusTestController::receive(MsgModbusInitRsp const& rsp)
 {
     fsm.getState().onModbusInitRspReceive(fsm, rsp);
 }
 
-void ModbusTestController::receive(ModbusReleaseRsp const& rsp)
+void ModbusTestController::receive(MsgModbusReleaseRsp const& rsp)
 {
     fsm.getState().onModbusReleaseRspReceive(fsm, rsp);
 }
 
-void ModbusTestController::receive(ModbusConfigRsp const& rsp)
+void ModbusTestController::receive(MsgModbusConfigRsp const& rsp)
 {
     fsm.getState().onModbusConfigRspReceive(fsm, rsp);
 }
 
-void ModbusTestController::receive(ModbusClientAduRsp const& rsp)
+void ModbusTestController::receive(MsgModbusClientAduRsp const& rsp)
 {
     fsm.getState().onModbusClientAduRspReceive(fsm, rsp);
 }
 
-void ModbusTestController::receive(ModbusAduReq const& req)
+void ModbusTestController::receive(MsgModbusAduReq const& req)
 {
     fsm.getState().onModbusAduReqReceive(fsm, req);
 }
@@ -167,8 +167,8 @@ void ModbusTestController::stopTimer()
 
 void ModbusTestController::sendModbusInitReq()
 {
-    reactor::MsgStore<ModbusInitReq> msgStore;
-    ModbusInitReq& req = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusInitReq> msgStore;
+    MsgModbusInitReq& req = msgStore.getMsg();
     req.maxNumServers = 1;
     req.maxNumClients = 1;
     Sender::sendMsg(msgStore);
@@ -176,8 +176,8 @@ void ModbusTestController::sendModbusInitReq()
 
 void ModbusTestController::sendModbusConfigReq()
 {
-    reactor::MsgStore<ModbusConfigReq> msgStore;
-    ModbusConfigReq& req = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusConfigReq> msgStore;
+    MsgModbusConfigReq& req = msgStore.getMsg();
     EntityId id = 0;
     req.numItems = 0;
     for (unsigned i = 0; i < 1u; ++i)
@@ -210,8 +210,8 @@ void ModbusTestController::sendModbusConfigReq()
 
 void ModbusTestController::sendModbusClientAduReq()
 {
-    reactor::MsgStore<ModbusClientAduReq> msgStore;
-    ModbusClientAduReq& req = msgStore.getMsg();
+    reactor::MsgStore<MsgModbusClientAduReq> msgStore;
+    MsgModbusClientAduReq& req = msgStore.getMsg();
 
     req.numItems = testCases.size();
     for (unsigned testCaseId = 0; testCaseId < req.numItems; ++testCaseId)
@@ -239,7 +239,7 @@ void ModbusTestController::sendModbusClientAduReq()
     Sender::sendMsg(msgStore);
 }
 
-Result ModbusTestController::process(ModbusClientAduRsp const& rsp)
+Result ModbusTestController::process(MsgModbusClientAduRsp const& rsp)
 {
     testCaseCounter += 1;
 
@@ -321,25 +321,25 @@ Result ModbusTestController::process(ModbusClientAduRsp const& rsp)
 
 void ModbusTestController::sendModbusReleaseReq()
 {
-    reactor::MsgStore<ModbusReleaseReq> msgStore;
+    reactor::MsgStore<MsgModbusReleaseReq> msgStore;
     Sender::sendMsg(msgStore);
 }
 
-void ModbusTestController::process(ModbusInitRsp const&)
+void ModbusTestController::process(MsgModbusInitRsp const&)
 {
 }
 
-void ModbusTestController::process(ModbusReleaseRsp const&)
+void ModbusTestController::process(MsgModbusReleaseRsp const&)
 {
 }
 
-void ModbusTestController::process(ModbusConfigRsp const&)
+void ModbusTestController::process(MsgModbusConfigRsp const&)
 {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(2s);
 }
 
-Result ModbusTestController::process(ModbusAduReq const& req)
+Result ModbusTestController::process(MsgModbusAduReq const& req)
 {
     auto& it = testCases[req.transactId];
 
@@ -348,8 +348,8 @@ Result ModbusTestController::process(ModbusAduReq const& req)
     case ModbusFunction::readHoldingRegisters:
     case ModbusFunction::readInputRegisters:
     {
-        reactor::MsgStore<ModbusAduRsp> msgStore;
-        ModbusAduRsp& rsp = msgStore.getMsg();
+        reactor::MsgStore<MsgModbusAduRsp> msgStore;
+        MsgModbusAduRsp& rsp = msgStore.getMsg();
         rsp.serverId = req.serverId;
         rsp.sessionId = req.sessionId;
         rsp.transactId = req.transactId;
@@ -362,8 +362,8 @@ Result ModbusTestController::process(ModbusAduReq const& req)
     break;
     case ModbusFunction::presetSingleRegister:
     {
-        reactor::MsgStore<ModbusAduRsp> msgStore;
-        ModbusAduRsp& rsp = msgStore.getMsg();
+        reactor::MsgStore<MsgModbusAduRsp> msgStore;
+        MsgModbusAduRsp& rsp = msgStore.getMsg();
         rsp.serverId = req.serverId;
         rsp.sessionId = req.sessionId;
         rsp.transactId = req.transactId;
@@ -377,8 +377,8 @@ Result ModbusTestController::process(ModbusAduReq const& req)
     break;
     case ModbusFunction::presetMultipleRegisters:
     {
-        reactor::MsgStore<ModbusAduRsp> msgStore;
-        ModbusAduRsp& rsp = msgStore.getMsg();
+        reactor::MsgStore<MsgModbusAduRsp> msgStore;
+        MsgModbusAduRsp& rsp = msgStore.getMsg();
         rsp.serverId = req.serverId;
         rsp.sessionId = req.sessionId;
         rsp.transactId = req.transactId;
@@ -391,8 +391,8 @@ Result ModbusTestController::process(ModbusAduReq const& req)
     break;
     default:
     {
-        reactor::MsgStore<ModbusAduRsp> msgStore;
-        ModbusAduRsp& rsp = msgStore.getMsg();
+        reactor::MsgStore<MsgModbusAduRsp> msgStore;
+        MsgModbusAduRsp& rsp = msgStore.getMsg();
         rsp.serverId = req.serverId;
         rsp.sessionId = req.sessionId;
         rsp.transactId = req.transactId;

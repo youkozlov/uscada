@@ -18,9 +18,9 @@ public:
 
     void onStop(ModbusTestFsm&) final;
 
-    void onModbusInitRspReceive(ModbusTestFsm&, ModbusInitRsp const&) final;
+    void onModbusInitRspReceive(ModbusTestFsm&, MsgModbusInitRsp const&) final;
 
-    void onModbusReleaseRspReceive(ModbusTestFsm&, ModbusReleaseRsp const&) final;
+    void onModbusReleaseRspReceive(ModbusTestFsm&, MsgModbusReleaseRsp const&) final;
 
 private:
     /* data */

@@ -46,6 +46,8 @@ enum class DataTypeId : std::uint16_t
     , GetEndpointsResponse_Encoding_DefaultBinary = 431
     , OpenSecureChannelRequest_Encoding_DefaultBinary = 446
     , OpenSecureChannelResponse_Encoding_DefaultBinary = 449
+    , CloseSecureChannelRequest_Encoding_DefaultBinary = 452
+    , CloseSecureChannelResponse_Encoding_DefaultBinary = 455
     , CreateSessionRequest_Encoding_DefaultBinary = 461
     , CreateSessionResponse_Encoding_DefaultBinary = 464
     , ActivateSessionRequest_Encoding_DefaultBinary = 467
